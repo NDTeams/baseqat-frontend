@@ -1,0 +1,216 @@
+{
+  "welcome": "Welcome",
+  "templates": "templates",
+  "increase_font": "Increase Font",
+  "decrease_font": "Decrease Font",
+  "HomeSite": {
+  "government_website": "Official Government Website",
+  "verify": "Verify",
+  "today": "Today",
+  "download_app": "Download App",
+  "toggle_colors": "Toggle Colors",
+  "screen_reader": "Screen Reader",
+  "home": "Home",
+  "about_us": "About Us",
+  "services": "Products & Services",
+  "media_center": "Media Center",
+  "support": "Support",
+  "foundation": "Foundation",
+  "vision_mission": "Vision, Mission & Values",
+  "regulations": "Regulations",
+  "annual_report": "Annual Report",
+  "structure": "Structure",
+  "organizational_structure": "Organizational Structure",
+  "board": "Board of Directors",
+  "executive_management": "Executive Management",
+  "departments_roles": "Departments & Roles",
+  "strategy": "Strategy & Policies",
+  "policies": "Policies",
+  "hr_strategy": "HR Strategy",
+  "service_agreement": "Service Level Agreement",
+  "vision_2030": "Vision 2030",
+  "join_us": "Join Us",
+  "current_jobs": "Current Jobs",
+  "suppliers": "Suppliers & Tenders",
+  "partners": "Our Partners",
+  "news_events": "News & Events",
+  "jobs_portal": "Jobs Portal",
+  "zoomimage": "Zoom image"
+  },"PartnerStats": {
+    "trustedClients": "Trusted Clients",
+    "completedProjects": "Completed Projects",
+    "countriesWorked": "Countries Worked",
+    "satisfactionRate": "Satisfaction Rate",
+    "expertsPartners": "Experts & Partners",
+    "monthlyWorkshops": "Monthly Workshops"
+  },
+  "CoursesSlider":{
+  "basqat_programs": "Basqat Programs",
+  "choose_service_for_stage": "Choose the service that fits your project's stage"
+},
+"Teachers": {
+    "experts_network": "Experts Network",
+    "specialized_mentors": "Specialized Mentors & Advisors",
+    "team_description": "A team with diverse expertise in product, growth, data, and finance."
+},
+ "videolibrary": {
+    "badge": "Gallery",
+    "title": "Moments from our programs and workshops",
+    "description": "Live photos from launch sessions, workshops, and team collaboration."
+  },
+  "gallery": {
+    "badge": "Gallery",
+    "title": "Highlights from our programs and workshops",
+    "description": "Live photos from launch sessions, workshops, and team collaboration."
+  },
+   "contact": {
+    "badge": "Contact Us",
+    "title": "We are ready to support you",
+    "description": "Tell us about your idea or project so we can help you with a clear plan or a quick consultation.",
+    "phoneLabel": "Phone",
+    "emailLabel": "Email",
+    "addressLabel": "Address",
+    "address": "Riyadh, Saudi Arabia",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Enter your name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "service": "Service Type",
+    "message": "Your Message",
+    "messagePlaceholder": "Describe your need or idea",
+    "submit": "Send Request",
+    "serviceOptions": {
+      "choose": "Choose a service",
+      "market": "Market readiness",
+      "launch": "Acceleration & Launch",
+      "digital": "Digital transformation",
+      "session": "Tactical session",
+      "training": "Training workshops"
+    }
+  },
+   "footer": {
+    "description": "A business accelerator supporting entrepreneurs with preparation, acceleration, and digital transformation services.",
+    "links": {
+      "title": "Links",
+      "home": "Home",
+      "services": "Services",
+      "programs": "Programs",
+      "trainers": "Trainers"
+    },
+    "info": {
+      "title": "Information",
+      "news": "News",
+      "gallery": "Gallery",
+      "contact": "Contact"
+    },
+    "contact": {
+      "title": "Contact"
+    },
+    "bottom": {
+      "copyright": "© 2025 Basqat. All rights reserved.",
+      "made": "Made with passion for entrepreneurs."
+    }
+  },
+  "blog": {
+    "imageAlt": "Blog Image",
+    "badge": "Blog",
+    "date": "July 12, 2025",
+    "author": "Basqat Team",
+    "readingTime": "6 min read",
+    "title": "How to Launch Your Digital Product with Confidence in 8 Weeks",
+    "description": "In this article, we share a practical methodology to speed up digital product launches, from market testing to your first paying customer, with real examples and actionable tips.",
+    "quote": "“A successful launch starts with understanding the customer, building a lightweight solution, measuring impact, and iterating improvements.”",
+    "section1": {
+      "title": "1) Rapid Market Testing",
+      "content": "Start with clear hypotheses about the problem and target audience, then test with simple messages and small ads to track engagement before building the product."
+    },
+    "section2": {
+      "title": "2) Build a Lightweight First Version",
+      "content": "Focus on a core feature that solves the biggest pain, and use ready-made tools to reduce development time and cost."
+    },
+    "section3": {
+      "title": "3) Set Up Your Sales Funnel",
+      "content": "Use a clear landing page, a concise value proposition, social proof, and a booking form or free trial to gather early customers."
+    },
+    "tags": {
+      "label": "Tags:",
+      "items": ["Product Launch", "Digital Products", "Growth"]
+    }
+  },
+  "relatedArticles": {
+    "title": "Related Articles",
+    "items": [
+      {
+        "category": "Growth",
+        "title": "Customer Segment Testing in One Week",
+        "date": "12/07/2025",
+        "href": "#"
+      },
+      {
+        "category": "Funding",
+        "title": "Ready Financial Models for Investor Pitches",
+        "date": "11/07/2025",
+        "href": "#"
+      },
+      {
+        "category": "Operations",
+        "title": "First 90 Days Plan for Sales Teams",
+        "date": "10/07/2025",
+        "href": "#"
+      }
+    ]
+  },
+  "contactInfo": {
+    "title": "Contact Information",
+    "phoneLabel": "Phone",
+    "emailLabel": "Email",
+    "addressLabel": "Address",
+    "addressValue": "Riyadh, Saudi Arabia",
+    "mapTitle": "Location Map",
+    "mapPlaceholder": "Interactive Map (Placeholder)"
+  },
+   "form": {
+    "title": "Send a Message",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Enter your name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "type": "Request Type",
+    "message": "Your Message",
+    "messagePlaceholder": "Write your question or project details",
+    "submit": "Send",
+    "success": "Form submitted successfully!",
+    "types": {
+      "general": "General Inquiry",
+      "support": "Technical Support",
+      "partners": "Partnerships",
+      "media": "Media & Communication"
+    }
+  },
+  "contactHeader": {
+    "subtitle": "Contact Us",
+    "title": "We are here to support you and answer your questions",
+    "description": "Tell us about your project or your inquiry, and our team will get back to you within one business day to provide the right support."
+  },
+  "courses": {
+    "subtitle": "Courses & Programs",
+    "title": "Explore the Course Archive",
+    "description": "Search past programs and check their details, outcomes, and available materials."
+  },
+  "programs": {
+    "searchPlaceholder": "Search for a program...",
+    "allCategories": "All Categories",
+    "marketPrep": "Market Preparation",
+    "acceleration": "Acceleration & Launch",
+    "digitalTransformation": "Digital Transformation",
+    "duration": "Duration",
+    "weeks": "weeks",
+    "rating": "Rating",
+    "stars": "stars"
+  },
+   "news": {
+    "title": "Basqat News",
+    "subtitle": "Latest updates and content"
+  }
+  
+}
