@@ -2,19 +2,18 @@
 
 import { useContext, useEffect } from 'react';
 import { LanguageContext } from '@/app/layout';
-import i18n from '@/lib/i18n'; // استدعاء i18n مباشرة بدل useTranslation
+import i18n from '@/lib/i18n'; 
 
 export default function LanguageSwitcher() {
   const { language, setLanguage } = useContext(LanguageContext);
 
-  // ضبط اللغة الحالية عند التحميل
   useEffect(() => {
-    setLanguage(i18n.language); // تأكد من مزامنة الـ Context مع i18n
+    setLanguage(i18n.language); 
   }, [setLanguage]);
 
   const toggleLanguage = () => {
     const newLang = language === 'ar' ? 'en' : 'ar';
-    i18n.changeLanguage(newLang); // الآن هذه الدالة موجودة
+    i18n.changeLanguage(newLang); 
     setLanguage(newLang);
   };
 

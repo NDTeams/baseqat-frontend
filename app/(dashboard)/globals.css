@@ -55,6 +55,14 @@ a {
   @apply text-darkPrimary;
 } */
 
-.dark img {
-  filter: brightness(0.8) contrast(1.2);
+
+/* اختياري: عكس ترتيب النصوص الداخلية إن لزم */
+[dir="ltr"] .paginate_bto{
+  transform: rotate(180deg);
+}
+.form-group label {
+    font-weight: 600;        /* semi-bold */
+    color: #30846C;          /* custom teal/green */
+    font-size: 0.875rem; 
+    padding-bottom: 2px;    /* 14px */
 }

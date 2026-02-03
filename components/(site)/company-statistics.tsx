@@ -13,6 +13,7 @@ interface Stat {
   suffix?: string
 }
 
+
 export default function PartnerStats() {
   const { t } = useTranslation()
   

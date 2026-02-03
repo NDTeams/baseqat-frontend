@@ -10,15 +10,19 @@ module.exports = {
     extend: {
       colors: {
         primary: '#047857',
+        secondary: '#B59B79', // لون البداية للتدرج
         darkPrimary: '#333333',    // رمادي داكن للوضع الليلي
-        background: '#374151',     // خلفية عادية
-        foreground: '#171717',     // نص عادي
-        'background-dark': '#121212',  // خلفية داكنة
-        'foreground-dark': '#EDEDED'   // نص داكن
+        background: '#374151', 
+        dashboardBg: '#2f8a6f',
+            // خلفية عادية
+        // foreground: '#171717',     // نص عادي
+        // 'background-dark': '#121212',  // خلفية داكنة
+        // 'foreground-dark': '#EDEDED'   // نص داكن
       },
       fontFamily: {
   cairo: ['Cairo', 'sans-serif'],
 },
+
 
     },
   },

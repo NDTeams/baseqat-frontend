@@ -1,19 +1,19 @@
 "use client";
 
 import { createContext, useState, ReactNode } from "react";
-import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Cairo } from "next/font/google";
+import Sidebar from "@/components/(dashboard)/sidebar";
+import Header from "@/components/(dashboard)/header";
 
 const cairo = Cairo({
   subsets: ["latin", "arabic"],
   weight: ["300","400","500","600","700","800","900"],
 });
 
-// ✅ تم إصلاح المشكلة: استخدام _lang أو إزالة المعامل
 export const LanguageContext = createContext({
   language: "en",
-  setLanguage: (_lang: string) => {}, // وضع _ قبل المعامل
+  setLanguage: (_lang: string) => {}, 
 });
 
 export default function ClientLayout({ children }: { children: ReactNode }) {
@@ -21,24 +21,23 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
 
   return (
     <html className={cairo.className} lang={language} dir={language === "ar" ? "rtl" : "ltr"}>
-      <body className="flex h-screen bg-card dark:bg-black dark:text-white">
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+      <body className="flex h-screen bg-gray-50 ">
           <LanguageContext.Provider value={{ language, setLanguage }}>
-            <div className="flex h-screen bg-card">
-              <main className="flex-1 flex flex-col">
+            <div className="flex h-screen bg-gray-50">
+        {/* <!-- Mobile Overlay --> */}
+        <div  className="sidebar-overlay"></div>
+        
+        {/* <!-- Right Sidebar --> */}
+       <Sidebar />
 
-                {/* Header */}
-                <div className="sticky top-0 z-[1000]"></div>
+        {/* <!-- Main Content --> */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <Header />
+          <main className="flex-1 overflow-y-auto p-6">{children}</main>
 
-                {/* Main Content */}
-                <section className="flex-1">{children}</section>
-
-                {/* Footer */}
-                <div className="bg-card"></div>
-              </main>
-            </div>
+        </div>
+    </div>
           </LanguageContext.Provider>
-        </ThemeProvider>
       </body>
     </html>
   );
