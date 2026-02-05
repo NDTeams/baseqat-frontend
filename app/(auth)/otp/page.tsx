@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShieldAlt, faArrowRight } from "@fortawesome/free-solid-svg-icons";
-
+import Link from "next/link";
 export default function OTPPage() {
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [timer, setTimer] = useState(60);
@@ -172,13 +172,13 @@ export default function OTPPage() {
 
               {/* Back to Login */}
               <div className="text-center">
-                <a
+                <Link
                   href="/login"
                   className="text-sm text-gray-600 hover:text-primary hover:underline flex items-center justify-center"
                 >
                   <FontAwesomeIcon icon={faArrowRight} className="ml-1" />
                   العودة إلى تسجيل الدخول
-                </a>
+                </Link>
               </div>
             </form>
           </div>
