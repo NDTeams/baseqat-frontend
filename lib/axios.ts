@@ -22,8 +22,8 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const api = axios.create({
-  // سحب الرابط مباشرة من متغيرات البيئة
-  baseURL: process.env.NEXT_PUBLIC_API_URL, 
+  // استخدام رابط محلي (سيتم توجيهه عبر Next.js rewrites)
+  baseURL: "/api", 
   headers: {
     "Content-Type": "application/json",
   },

@@ -131,7 +131,7 @@ export default function OTPPage() {
                       onChange={(e) => handleChange(e, i)}
                       onKeyDown={(e) => handleKeyDown(e, i)}
                       onPaste={handlePaste}
-                      ref={(el) => (inputsRef.current[i] = el!)}
+                      ref={(el) => { if (el) inputsRef.current[i] = el; }}
                       className={`otp-input w-10 h-10 md:w-12 md:h-12 text-lg md:text-xl text-center border rounded-md ${
                         value ? "border-primary" : "border-gray-300"
                       }`}

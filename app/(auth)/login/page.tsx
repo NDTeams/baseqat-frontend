@@ -4,36 +4,57 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLeaf, faEnvelope, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // لاستخدام التوجيه
-import { AuthService } from "@/services/auth/page"; // تأكد من المسار الصحيح لملف الـ api
+import { useRouter } from "next/navigation";
+import { AuthService } from "@/services/auth/page";
+import ModalMessage from "@/components/modal-message";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState(""); // state للبريد
-  const [password, setPassword] = useState(""); // state لكلمة المرور
-  const [isLoading, setIsLoading] = useState(false); // لحالة التحميل
-  const [error, setError] = useState(""); // لعرض الأخطاء إن وجدت
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [modal, setModal] = useState({
+    isOpen: false,
+    type: "success" as "success" | "error" | "warning",
+    title: "",
+    message: "" as string | string[],
+  });
   
   const router = useRouter();
   const togglePassword = () => setShowPassword(!showPassword);
 
-  // دالة معالجة تسجيل الدخول
+  const showModal = (type: "success" | "error" | "warning", title: string, message: string | string[]) => {
+    setModal({ isOpen: true, type, title, message });
+  };
+
+  const closeModal = () => {
+    setModal({ ...modal, isOpen: false });
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
 
     try {
-      // استدعاء خدمة تسجيل الدخول من الملف الذي أرفقته
       const response = await AuthService.login(email, password);
       
-      if (response) {
-        // إذا نجح الدخول، ننتقل لصفحة الـ OTP كما في تصميمك
-        router.push("/otp"); 
+      if (response.succeeded) {
+        showModal(
+          "success",
+          "تسجيل الدخول بنجاح!",
+          "تم تسجيل دخولك بنجاح. جاري الانتقال..."
+        );
+        
+        setTimeout(() => {
+          router.push("/otp");
+        }, 1500);
+      } else {
+        const errorMessages = response.errors || [response.message];
+        showModal("error", "فشل تسجيل الدخول", errorMessages);
       }
     } catch (err: any) {
-      // التعامل مع الخطأ القادم من PHP
-      setError(err.response?.data?.message || "فشل تسجيل الدخول، تأكد من البيانات");
+      const errorMessage = err.response?.data?.message || "حدث خطأ في الاتصال بالخادم";
+      showModal("error", "خطأ", errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -41,6 +62,15 @@ export default function LoginPage() {
 
   return (
     <div className="canvas min-h-screen relative flex">
+      <ModalMessage
+        isOpen={modal.isOpen}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        onClose={closeModal}
+        autoClose={modal.type === "success" ? 0 : 5000}
+      />
+
       {/* Full Page Background */}
       <div className="absolute inset-0">
         <div
@@ -74,9 +104,6 @@ export default function LoginPage() {
                 <Link href="/register" className="text-primary hover:underline font-medium">إنشاء حساب</Link>
               </p>
             </div>
-
-            {/* عرض رسالة الخطأ إذا وجدت */}
-            {error && <div className="bg-red-100 text-red-600 p-3 rounded-lg mb-4 text-sm text-center">{error}</div>}
 
             <form className="space-y-6" onSubmit={handleLogin}>
               <div>
@@ -118,7 +145,7 @@ export default function LoginPage() {
                   <input type="checkbox" className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary" />
                   <span className="mr-2 text-sm text-gray-600">تذكرني</span>
                 </label>
-                <Link href="/forgot-password" className="text-sm text-primary hover:underline">نسيت كلمة المرور؟</Link>
+                <Link href="/forgot-passwor" className="text-sm text-primary hover:underline">نسيت كلمة المرور؟</Link>
               </div>
 
               <button

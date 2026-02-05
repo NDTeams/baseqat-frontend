@@ -28,7 +28,7 @@ export default function AddEditUserModal({
         <div className="modal-header flex justify-center mb-4">
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl text-gray-500 cursor-pointer transition-all duration-200 relative overflow-hidden cursor-pointer" onClick={() => document.getElementById('profileImageInput')?.click()}>
             {!profilePreview ? (
-              <FontAwesomeIcon icon={faUserPlus} size="1.5xp" />
+              <FontAwesomeIcon icon={faUserPlus} size="lg" />
             ) : (
               <img src={profilePreview} alt="Profile Preview" className="w-20 h-20 rounded-full object-cover" />
             )}

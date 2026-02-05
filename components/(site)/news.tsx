@@ -61,6 +61,7 @@ export default function News() {
         <TeachersHeader
         expertsNetwork={t("news.title")}
         specializedMentors={t("news.subtitle")}
+        teamDescription={t("news.description") || ""}
       />
         {/* Header */}
        

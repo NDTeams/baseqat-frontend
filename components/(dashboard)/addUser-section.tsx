@@ -107,6 +107,8 @@ export default function UsersPage() {
           setUsersPerPage={setUsersPerPage}
           openEditUserModal={openEditUserModal}
           openDeleteUserModal={openDeleteUserModal}
+          toggleView={toggleView}
+          isTableView={isTableView}
         />
       ) : (
         <UserGrid 

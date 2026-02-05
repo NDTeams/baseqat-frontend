@@ -130,7 +130,7 @@ export default function UserTable({
                 )}
               </td>
               <td className="p-2 flex flex-wrap gap-1">
-                {user.permissions.map((perm, idx) => (
+                {user.permissions.map((perm: string, idx: number) => (
                   <span
                     key={idx}
                     className={`inline-block px-2 py-1 m-0.5 bg-blue-100 text-blue-800 rounded-md text-xs font-medium ${

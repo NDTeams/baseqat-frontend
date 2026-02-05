@@ -5,26 +5,35 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLeaf, faEnvelope, faEye, faEyeSlash, faUser, faPhone } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AuthService } from "@/services/auth/page"; // تأكد أن التصدير في هذا الملف هو AuthService
+import { AuthService } from "@/services/auth/page";
+import ModalMessage from "@/components/modal-message";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [modal, setModal] = useState({
+    isOpen: false,
+    type: "success" as "success" | "error" | "warning",
+    title: "",
+    message: "" as string | string[],
+  });
   const router = useRouter();
 
   const togglePassword = () => setShowPassword(!showPassword);
 
-  // دالة معالجة إرسال النموذج
+  const showModal = (type: "success" | "error" | "warning", title: string, message: string | string[]) => {
+    setModal({ isOpen: true, type, title, message });
+  };
+
+  const closeModal = () => {
+    setModal({ ...modal, isOpen: false });
+  };
+
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
 
-    // جلب البيانات من الحقول بناءً على الـ "name"
     const formData = new FormData(e.currentTarget);
-    
-    // بناء الكائن بنفس الهيكل المطلوب بالضبط
     const userData = {
       email: formData.get("email"),
       fullName: formData.get("fullName"),
@@ -33,17 +42,29 @@ export default function RegisterPage() {
     };
 
     try {
-      // إرسال البيانات (ستذهب كـ JSON تلقائياً عبر axios)
       const response = await AuthService.register(userData);
       
-      if (response) {
-        alert("تم إنشاء الحساب بنجاح!");
-        router.push("/login"); 
+      // التحقق من الاستجابة بناءً على succeeded
+      if (response.succeeded) {
+        showModal(
+          "success",
+          "تم التسجيل بنجاح!",
+          "تم إنشاء حسابك بنجاح. يرجى التحقق من بريدك الإلكتروني لتفعيل الحساب."
+        );
+        
+        // الانتظار ثم الذهاب للصفحة التالية
+        setTimeout(() => {
+          router.push("/login");
+        }, 2000);
+      } else {
+        // عرض الأخطاء من الـ API
+        const errorMessages = response.errors || [response.message];
+        showModal("error", "خطأ في التسجيل", errorMessages);
       }
     } catch (err: any) {
-      // إظهار رسالة الخطأ القادمة من السيرفر (PHP) إن وجدت
-      const errorMessage = err.response?.data?.message || "حدث خطأ أثناء التسجيل، حاول مرة أخرى.";
-      setError(errorMessage);
+      // معالجة أخطاء الشبكة
+      const errorMessage = err.response?.data?.message || "حدث خطأ في الاتصال بالخادم";
+      showModal("error", "خطأ", errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -51,7 +72,16 @@ export default function RegisterPage() {
 
   return (
     <div className="canvas min-h-screen relative flex">
-      {/* Background Section - تصميمك الأصلي */}
+      <ModalMessage
+        isOpen={modal.isOpen}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        onClose={closeModal}
+        autoClose={modal.type === "success" ? 3000 : 5000}
+      />
+
+      {/* Background Section */}
       <div className="absolute inset-0">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat filter brightness-[0.6] contrast-[1.2] saturate-[1.1] z-0"
@@ -83,8 +113,6 @@ export default function RegisterPage() {
                 <Link href="/login" className="text-primary hover:underline font-medium">تسجيل الدخول</Link>
               </p>
             </div>
-
-            {error && <div className="bg-red-100 text-red-600 p-2 rounded mb-4 text-sm text-center font-medium">{error}</div>}
 
             <form className="space-y-2.5" onSubmit={handleRegister}>
               {/* Full Name Field */}
@@ -153,7 +181,7 @@ export default function RegisterPage() {
                 type="submit"
                 disabled={isLoading}
                 className={`w-full text-white py-3 mt-4 px-6 rounded-lg font-semibold text-lg transition-all ${
-                  isLoading ? "bg-gray-400" : "bg-primary hover:bg-primary-dark"
+                  isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-primary hover:bg-primary-dark"
                 }`}
               >
                 {isLoading ? "جاري المعالجة..." : "إنشاء الحساب"}

@@ -63,7 +63,7 @@ export default function BlogArticle() {
         {/* الوسوم */}
         <div className="flex flex-wrap gap-2 pt-4">
           <span className="text-sm font-semibold text-slate-600">{t("blog.tags.label")}</span>
-          {t("blog.tags.items", { returnObjects: true }).map((tag: string, idx: number) => (
+          {Array.isArray(t("blog.tags.items", { returnObjects: true })) && (t("blog.tags.items", { returnObjects: true }) as string[]).map((tag: string, idx: number) => (
             <Link
               key={idx}
               className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm"

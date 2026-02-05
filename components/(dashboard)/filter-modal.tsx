@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
-export default function FilterModal({ applyFilters, clearFilters }) {
+export default function FilterModal({ applyFilters, clearFilters }: { applyFilters: () => void; clearFilters: () => void }) {
   const [isOpen, setIsOpen] = useState(true); // تحكم في ظهور المودال
 
   return (
