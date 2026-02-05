@@ -43,7 +43,6 @@ export default function RegisterPage() {
 
     try {
       const response = await AuthService.register(userData);
-      
       // التحقق من الاستجابة بناءً على succeeded
       if (response.succeeded) {
         showModal(
@@ -51,7 +50,7 @@ export default function RegisterPage() {
           "تم التسجيل بنجاح!",
           "تم إنشاء حسابك بنجاح. يرجى التحقق من بريدك الإلكتروني لتفعيل الحساب."
         );
-        
+
         // الانتظار ثم الذهاب للصفحة التالية
         setTimeout(() => {
           router.push("/login");
@@ -180,9 +179,8 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full text-white py-3 mt-4 px-6 rounded-lg font-semibold text-lg transition-all ${
-                  isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-primary hover:bg-primary-dark"
-                }`}
+                className={`w-full text-white py-3 mt-4 px-6 rounded-lg font-semibold text-lg transition-all ${isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-primary hover:bg-primary-dark"
+                  }`}
               >
                 {isLoading ? "جاري المعالجة..." : "إنشاء الحساب"}
               </button>

@@ -19,7 +19,7 @@ export default function LoginPage() {
     title: "",
     message: "" as string | string[],
   });
-  
+
   const router = useRouter();
   const togglePassword = () => setShowPassword(!showPassword);
 
@@ -37,17 +37,27 @@ export default function LoginPage() {
 
     try {
       const response = await AuthService.login(email, password);
-      
+
       if (response.succeeded) {
-        showModal(
-          "success",
-          "تسجيل الدخول بنجاح!",
-          "تم تسجيل دخولك بنجاح. جاري الانتقال..."
-        );
-        
-        setTimeout(() => {
-          router.push("/otp");
-        }, 1500);
+        if (response.data.token) {
+          console.log("Received token:", response.data.token); // تحقق من وجود التوكن في الاستجابة
+          localStorage.setItem("authToken", response.data.token);
+        }
+        if (response.data.roles) {
+           console.log("User roles:", response.data.roles); // تحقق من وجود الأدوار في الاستجابة
+        }
+        if (response.data.isAuthenticated) {
+          showModal(
+            "success",
+            "تسجيل الدخول بنجاح!",
+            response.data.fullName
+          );
+        }
+
+
+        // setTimeout(() => {
+        //   router.push("/otp");
+        // }, 1500);
       } else {
         const errorMessages = response.errors || [response.message];
         showModal("error", "فشل تسجيل الدخول", errorMessages);
@@ -151,9 +161,8 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full text-white py-3 mt-4 px-6 rounded-lg font-semibold text-lg transition-colors ${
-                  isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-primary hover:bg-primary-dark"
-                }`}
+                className={`w-full text-white py-3 mt-4 px-6 rounded-lg font-semibold text-lg transition-colors ${isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-primary hover:bg-primary-dark"
+                  }`}
               >
                 {isLoading ? "جاري التحميل..." : "تسجيل الدخول"}
               </button>
