@@ -41,13 +41,13 @@ export default function HeroSection() {
 
   return (
     <section
-      className="relative w-full overflow-hidden pt-[4.5rem]"
+      className="relative w-full overflow-hidden pt-[0.5rem]"
       style={{
         background:
           "linear-gradient(135deg, rgba(12, 30, 24, 0.9) 0%, rgba(20, 55, 45, 0.85) 40%, rgba(14, 36, 28, 0.95) 100%), #0f241c",
       }}
     >
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-16 sm:pt-28 mt-12 md:mt-0 pb-16 lg:pb-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-1 sm:pt-12 mt-12 md:mt-0 pb-16 lg:pb-8">
         <div
           key={index}
           className="grid lg:grid-cols-2 gap-8 sm:gap-12 items-center animate-fade"

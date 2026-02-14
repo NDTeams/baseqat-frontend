@@ -39,9 +39,9 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
                 </div>
 
                 {/* Main Content */}
-                <section className="flex-1 font-cairo">
+                <div className="flex-1 font-cairo">
                   {children}
-                </section>
+                </div>
 
                 {/* Footer */}
                 <div className="bg-card"></div>

@@ -31,7 +31,9 @@ a {
     color-scheme: dark;
   }
 }
-
+ /* .backgroundImage{
+    background: 'linear-gradient(135deg, #1a5f4a 0%, #2d8659 100%)',
+} */
 /* مثال لاستخدام الألوان */
 /* .text-primary {
   @apply text-primary;

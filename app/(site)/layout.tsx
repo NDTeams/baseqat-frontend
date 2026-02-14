@@ -18,11 +18,10 @@ export const LanguageContext = createContext({
 });
 
 export default function ClientLayout({ children }: { children: ReactNode }) {
-  
   const [language, setLanguage] = useState("ar");
-  const [grayscale, setGrayscale] = useState(false); // 👈 state للون الرمادي
+  const [grayscale, setGrayscale] = useState(false);
 
-  // تطبيق اللون الرمادي على <body> كامل
+  // تطبيق اللون الرمادي على <body>
   useEffect(() => {
     if (grayscale) {
       document.body.classList.add("grayscale");
@@ -31,41 +30,42 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
     }
   }, [grayscale]);
 
+  // ✅ تغيير اتجاه الصفحة كامل (html)
+  useEffect(() => {
+    const html = document.documentElement;
+
+    html.setAttribute("lang", language);
+    html.setAttribute("dir", language === "ar" ? "rtl" : "ltr");
+  }, [language]);
+
   return (
-    <html
-      lang={language}
-      dir={language === "ar" ? "rtl" : "ltr"}
-      suppressHydrationWarning
-    >
-      <body
-        className={`${cairo.className} font-cairo flex-1 h-screen bg-card dark:bg-black dark:text-white`}
-        suppressHydrationWarning
-      >
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <LanguageContext.Provider value={{ language, setLanguage }}>
-            <div className="flex-1 h-screen bg-card">
-              <div className="flex-1 flex flex-col max-w-[100%] lg:max-w-[100vw]">
-                
-                {/* Header */}
-                <div className="sticky top-0 z-[1000]">
-                  <Header 
-                    grayscale={grayscale} 
-                    setGrayscale={setGrayscale} 
-                  />
-                </div>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+      <LanguageContext.Provider value={{ language, setLanguage }}>
+        <div
+          className={`${cairo.className} font-cairo flex-1 h-screen bg-card dark:bg-black dark:text-white`}
+        >
+          <div className="flex-1 h-screen bg-card">
+            <div className="flex-1 flex flex-col max-w-[100%] lg:max-w-[100vw]">
 
-                {/* Main Content */}
-                <section className="flex-1 font-cairo">
-                  {children}
-                </section>
-
-                {/* Footer */}
-                <Footer />
+              {/* Header */}
+              <div className="sticky top-0 z-[1000]">
+                <Header 
+                  grayscale={grayscale} 
+                  setGrayscale={setGrayscale} 
+                />
               </div>
+
+              {/* Main Content */}
+              <div className="flex-1 font-cairo">
+                {children}
+              </div>
+
+              {/* Footer */}
+              <Footer />
             </div>
-          </LanguageContext.Provider>
-        </ThemeProvider>
-      </body>
-    </html>
+          </div>
+        </div>
+      </LanguageContext.Provider>
+    </ThemeProvider>
   );
 }

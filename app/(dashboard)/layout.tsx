@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useState, ReactNode } from "react";
+import { createContext, useState, ReactNode, useEffect } from "react";
 import "./globals.css";
 import { Cairo } from "next/font/google";
 import Sidebar from "@/components/dashboard/sidebar";
@@ -19,26 +19,32 @@ export const LanguageContext = createContext({
 export default function ClientLayout({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState("ar");
 
-  return (
-    <html className={cairo.className} lang={language} dir={language === "ar" ? "rtl" : "ltr"}>
-      <body className="flex h-screen bg-gray-50 ">
-          <LanguageContext.Provider value={{ language, setLanguage }}>
-            <div className="flex h-screen bg-gray-50">
-        {/* <!-- Mobile Overlay --> */}
-        <div  className="sidebar-overlay"></div>
-        
-        {/* <!-- Right Sidebar --> */}
-       <Sidebar />
+  // ✅ تغيير اتجاه الصفحة كامل (html)
+  useEffect(() => {
+    const html = document.documentElement;
+    html.setAttribute("lang", language);
+    html.setAttribute("dir", language === "ar" ? "rtl" : "ltr");
+  }, [language]);
 
-        {/* <!-- Main Content --> */}
+  return (
+    <LanguageContext.Provider value={{ language, setLanguage }}>
+      <div className={`${cairo.className} flex h-screen bg-gray-50`}>
+
+        {/* Mobile Overlay */}
+        <div className="sidebar-overlay"></div>
+
+        {/* Sidebar */}
+        <Sidebar />
+
+        {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
           <Header />
-          <main className="flex-1 overflow-y-auto p-6">{children}</main>
-
+          <main className="flex-1 overflow-y-auto p-6">
+            {children}
+          </main>
         </div>
-    </div>
-          </LanguageContext.Provider>
-      </body>
-    </html>
+
+      </div>
+    </LanguageContext.Provider>
   );
 }

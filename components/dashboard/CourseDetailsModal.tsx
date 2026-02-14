@@ -11,7 +11,7 @@ interface Course {
   type: 'online' | 'onsite';
   section: string;
   durationDays: number;
-  durationHours: number;
+  durationHours: number; 
   status: 'active' | 'completed' | 'upcoming';
   description: string;
   requirements: string[];
