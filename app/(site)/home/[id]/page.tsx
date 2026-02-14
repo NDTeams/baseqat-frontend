@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInstagram, faFacebookF, faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
-import { teachers, Teacher } from "@/components/(site)/teachers";
+import { teachers, Teacher } from "@/components/site/teachers";
 
 export default function TeacherDetailPage() {
   const params = useParams();

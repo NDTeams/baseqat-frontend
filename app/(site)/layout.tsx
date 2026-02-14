@@ -3,8 +3,8 @@
 import { createContext, useState, ReactNode, useEffect } from "react";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
-import Header from "@/components/(site)/header";
-import Footer from "@/components/(site)/footer";
+import Header from "@/components/site/header";
+import Footer from "@/components/site/footer";
 import { Cairo } from "next/font/google";
 
 const cairo = Cairo({

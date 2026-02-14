@@ -1,6 +1,6 @@
 "use client"; 
-import Coursessection from '@/components/(site)/coursessection';
-import ContactHeader from '@/components/(site)/contactheader';
+import Coursessection from '@/components/site/coursessection';
+import ContactHeader from '@/components/site/contactheader';
 import { useTranslation } from 'react-i18next';
 export default function CoursesArchive() {
     const { t } = useTranslation();

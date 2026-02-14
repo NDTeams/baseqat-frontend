@@ -3,8 +3,8 @@
 import { createContext, useState, ReactNode } from "react";
 import "./globals.css";
 import { Cairo } from "next/font/google";
-import Sidebar from "@/components/(dashboard)/sidebar";
-import Header from "@/components/(dashboard)/header";
+import Sidebar from "@/components/dashboard/sidebar";
+import Header from "@/components/dashboard/header";
 
 const cairo = Cairo({
   subsets: ["latin", "arabic"],

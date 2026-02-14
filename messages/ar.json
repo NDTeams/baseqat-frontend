@@ -11,10 +11,12 @@
   "toggle_colors": "تبديل الألوان",
   "screen_reader": "قارئ المحتوى",
   "home": "الرئيسية",
-  "about_us": "عن الصندوق",
+  "about_us": "من نحن",
+  "coursesHeader": "الدورات التدريبة",
+  "consultantsHeader": "الخبراء والمستشارين",
   "services": "المنتجات والخدمات",
   "media_center": "المركز الإعلامي",
-  "support": "الدعم والمساعدة",
+  "contactHeader": "الدعم والمساعدة",
   "foundation": "النشأة والتأسيس",
   "vision_mission": "الرؤية والرسالة والقيم",
   "regulations": "اللوائح",
@@ -212,5 +214,12 @@
    "news": {
     "title": "أخبار باسقات",
     "subtitle": "آخر التحديثات والمحتوى"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "profile": "ملفي الشخصي",
+    "control_panel": "لوحة التحكم",
+    "settings": "الإعدادات"
   }
 }

@@ -7,14 +7,15 @@ import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faAdjust,
-  faMobile,
-  faHeadphones,
   faBars,
-  faXmark,
-  faMagnifyingGlass,
-  faChevronDown,
   faCalendarDays,
+  faUser,
+  faSignOut,
+  faGear,
+  faHeadphones,
 } from '@fortawesome/free-solid-svg-icons';
+import Cookies from 'js-cookie';
+import { AuthService } from '@/services/auth/page';
 import LanguageSwitcher from '@/components/language';
 import SearchModal from './search-modal';
 import FontSizeController from './fontsize-controller';
@@ -26,10 +27,20 @@ interface HeaderProps {
 }
 
 export default function Header({ grayscale, setGrayscale }: HeaderProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [megaOpen, setMegaOpen] = useState(false);
+  const [megaOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [isLoggedIn] = useState(() => {
+    // Initialize with auth token check
+    if (typeof window !== 'undefined') {
+      const token = Cookies.get('auth_token');
+      return !!token;
+    }
+    return false;
+  });
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const isRTL = i18n.language === 'ar';
 
   // ضبط التاريخ اليوم
   useEffect(() => {
@@ -47,7 +58,9 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
     <header className="fixed inset-x-0 top-0 z-50">
       
       {/* ====== Row 1 ====== */}
-      <div className="bg-slate-100 text-slate-800 text-sm sm:px-2 md:px-4">
+      {/*  شريط علوي يتم تفعيله اذا باسقات  */}
+      {/* اخذت ترخيص  منصة التدريب الإلكتروني  */}
+      {/* <div className="bg-slate-100 text-slate-800 text-sm sm:px-2 md:px-4">
         <div className="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2 text-xs sm:text-sm">
             <span>{t('HomeSite.government_website')}</span>
@@ -56,7 +69,7 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
             {t('HomeSite.verify')}
           </Link>
         </div>
-      </div>
+      </div> */}
 
       {/* ====== Row 2 ====== */}
       <div className="bg-primary text-white text-sm px-2 md:px-4">
@@ -67,10 +80,11 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
           </button>
 
           <div className="hidden lg:flex items-center gap-4 text-xs sm:text-sm">
-            <button className="flex items-center gap-1 hover:text-slate-100">
+            {/* يتم تفعيل إذا تم الانتهاء من تطبيق الجوال  */}
+            {/* <button className="flex items-center gap-1 hover:text-slate-100">
               <FontAwesomeIcon icon={faMobile} />
               {t('HomeSite.download_app')}
-            </button>
+            </button> */}
 
             {/* زر تبديل اللون الرمادي */}
             <button onClick={() => setGrayscale(!grayscale)} className="flex items-center gap-1 hover:text-slate-100">
@@ -111,7 +125,8 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
                 {t('HomeSite.home')}
               </Link>
 
-              <button
+              {/* اذا تم الانتهاء من محتوى البروفايل سيتم تفعيل هذا الزر */}
+              {/* <button
                 onClick={() => setMegaOpen(!megaOpen)}
                 className="px-3 py-2 rounded-xl flex items-center gap-1 hover:text-primary"
               >
@@ -120,11 +135,13 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
                   icon={faChevronDown}
                   className={`${megaOpen ? 'rotate-180' : ''} transition-transform`}
                 />
-              </button>
-
+              </button> */}
+              <Link href="/aboutus" className="px-3 py-2 rounded-xl hover:text-primary">{t('HomeSite.about_us')}</Link>
+              <Link href="/courses-archive" className="px-3 py-2 rounded-xl hover:text-primary">{t('HomeSite.coursesHeader')}</Link>
+              <Link href="/courses-archive" className="px-3 py-2 rounded-xl hover:text-primary">{t('HomeSite.consultantsHeader')}</Link>
               <Link href="/services" className="px-3 py-2 rounded-xl hover:text-primary">{t('HomeSite.services')}</Link>
               <Link href="/media" className="px-3 py-2 rounded-xl hover:text-primary">{t('HomeSite.media_center')}</Link>
-              <Link href="/support" className="px-3 py-2 rounded-xl hover:text-primary">{t('HomeSite.support')}</Link>
+              <Link href="/contact" className="px-3 py-2 rounded-xl hover:text-primary">{t('HomeSite.contactHeader')}</Link>
 
               {/* Mega Menu */}
               {megaOpen && (
@@ -181,15 +198,78 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
 
           {/* أيقونات البحث واللغة */}
           <div className="hidden md:flex items-center gap-1 text-sm font-semibold">
-            <button
+            {/* <button
               onClick={() => setSearchOpen(true)}
               className="w-10 h-10 rounded-full border hover:border-emerald-200 hover:text-primary flex items-center justify-center"
             >
               <FontAwesomeIcon icon={faMagnifyingGlass} />
-            </button>
+            </button> */}
 
             <LanguageSwitcher />
-            <Link href="/jobs" className="font-semibold hover:text-primary">{t('HomeSite.jobs_portal')}</Link>
+            
+            {/* Login/User Icon Section */}
+            {isLoggedIn ? (
+              <div className="relative">
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center hover:bg-emerald-700 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg"
+                  title="User Menu"
+                >
+                  <FontAwesomeIcon icon={faUser} size="lg" />
+                </button>
+
+                {/* User Dropdown Menu */}
+                {userMenuOpen && (
+                  <div className={`absolute top-full mt-3 w-56 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 ${isRTL ? 'left-0' : 'right-0'}`}>
+                    {/* Header */}
+                    <div className="bg-gradient-to-r from-primary to-emerald-700 text-white px-4 py-3">
+                      <p className="text-sm font-semibold">{t('auth.profile')}</p>
+                    </div>
+                    
+                    {/* Menu Items */}
+                    <div className="py-2">
+                      <Link
+                        href="/student-dashboard"
+                        className={`flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors duration-150 border-none ${isRTL ? 'flex-row-reverse text-right' : ''}`}
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <FontAwesomeIcon icon={faUser} className="text-primary w-5 flex-shrink-0" />
+                        <span className="font-medium text-sm">{t('auth.profile')}</span>
+                      </Link>
+                      
+                      <Link
+                        href="/dashboard/settings"
+                        className={`flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors duration-150 border-none ${isRTL ? 'flex-row-reverse text-right' : ''}`}
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <FontAwesomeIcon icon={faGear} className="text-primary w-5 flex-shrink-0" />
+                        <span className="font-medium text-sm">{t('auth.control_panel')}</span>
+                      </Link>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="border-t border-slate-100"></div>
+                    
+                    {/* Logout Button */}
+                    <button
+                      onClick={() => {
+                        setUserMenuOpen(false);
+                        AuthService.logout();
+                      }}
+                      className={`w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 transition-colors duration-150 font-medium text-sm ${isRTL ? 'flex-row-reverse text-right' : ''}`}
+                    >
+                      <FontAwesomeIcon icon={faSignOut} className="w-5 flex-shrink-0" />
+                      <span>{t('auth.logout')}</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link href="/" className="px-3 py-2 rounded-xl bg-primary text-white">
+                {t('auth.login')}
+              </Link>
+              
+            )}
           </div>
         </div>
       </div>

@@ -8,7 +8,7 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
-import TeachersHeader from "@/components/(site)/teachers-header";
+import TeachersHeader from "@/components/site/teachers-header";
 export interface Teacher {
   id: string;
   name: string;

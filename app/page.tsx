@@ -1,12 +1,12 @@
-import Login from '@/app/(auth)/login/page';
+import Homes from "@/app/(site)/home/page";
 import '../lib/i18n';
-
+import Layout from "@/app/(site)/layout";
 
 export default function Home() {
 
   return (
-    <div>
-      <Login />
-    </div>
+      <Layout>
+      <Homes />
+      </Layout>
   );
 }

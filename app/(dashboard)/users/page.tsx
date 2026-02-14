@@ -1,4 +1,4 @@
-import AddUserSection from "@/components/(dashboard)/addUser-section"
+import AddUserSection from "@/components/dashboard/addUser-section"
 export default function Users() {
     return(
         <div className="space-y-6">

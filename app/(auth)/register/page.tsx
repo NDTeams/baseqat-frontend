@@ -45,11 +45,13 @@ export default function RegisterPage() {
       const response = await AuthService.register(userData);
       // التحقق من الاستجابة بناءً على succeeded
       if (response.succeeded) {
+        
         showModal(
           "success",
           "تم التسجيل بنجاح!",
           "تم إنشاء حسابك بنجاح. يرجى التحقق من بريدك الإلكتروني لتفعيل الحساب."
         );
+       
 
         // الانتظار ثم الذهاب للصفحة التالية
         setTimeout(() => {

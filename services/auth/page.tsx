@@ -19,12 +19,12 @@ export const AuthService = {
 
   // تسجيل دخول وحفظ التوكن
   login: async (email: string, pass: string): Promise<ApiResponse> => {
-    const res = await api.post("/Account/LoginByEmail", { email, password: pass });
+    const res = await api.post("Account/LoginByEmail", { email, password: pass });
     const responseData = res.data;
     
     // التحقق من النجاح وحفظ التوكن
     if (responseData.succeeded && responseData.data?.token) {
-      Cookies.set("auth_token", responseData.data.token, { expires: 7 });
+      Cookies.set("auth_token", responseData.data.token, { expires: 5 });
     }
     
     return responseData;
@@ -43,8 +43,8 @@ export const AuthService = {
   }
 };
 
-export const DashboardService = {
-  getUsers: () => api.get("/dashboard/users"),
-  createUser: (data: any) => api.post("/dashboard/users", data),
-  deleteUser: (id: number) => api.post("/dashboard/delete-user", { id }),
-};
+// export const DashboardService = {
+//   getUsers: () => api.get("/dashboard/users"),
+//   createUser: (data: any) => api.post("/dashboard/users", data),
+//   deleteUser: (id: number) => api.post("/dashboard/delete-user", { id }),
+// };

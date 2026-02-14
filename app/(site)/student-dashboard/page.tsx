@@ -1,5 +1,5 @@
-import Sidebar from "@/components/(site)/sidebar";
-import DashboardMain from "@/components/(site)/dashboard-main";
+import Sidebar from "@/components/site/sidebar";
+import DashboardMain from "@/components/site/dashboard-main";
 export default function StudentDashboard() {
     return (
     <main className="pt-40 pb-16 bg-slate-50 min-h-screen">

@@ -12,9 +12,11 @@
   "screen_reader": "Screen Reader",
   "home": "Home",
   "about_us": "About Us",
+  "coursesHeader": "Courses",
+  "consultantsHeader": "Experts & Consultants",
   "services": "Products & Services",
   "media_center": "Media Center",
-  "support": "Support",
+  "contactHeader": "Support",
   "foundation": "Foundation",
   "vision_mission": "Vision, Mission & Values",
   "regulations": "Regulations",
@@ -211,6 +213,12 @@
    "news": {
     "title": "Basqat News",
     "subtitle": "Latest updates and content"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "profile": "My Profile",
+    "control_panel": "Control Panel",
+    "settings": "Settings"
   }
-  
 }

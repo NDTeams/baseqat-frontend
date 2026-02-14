@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import DashboardContent from "@/components/(site)/dashboard-content";
+import DashboardContent from "@/components/site/dashboard-content";
 export default function DashboardMain() {
   return (
     <div className="flex-1 space-y-6">

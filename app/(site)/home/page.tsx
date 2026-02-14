@@ -1,14 +1,14 @@
 'use client';
 
 import '@/lib/i18n';
-import Hero from '@/components/(site)/hero';
-import CoursesSlider from "@/components/(site)/courses-slider";
-import Teachers from "@/components/(site)/teachers";
-import  StatsSection  from '@/components/(site)/company-statistics';
-import News from '@/components/(site)/news'; 
-import Gallery from '@/components/(site)/gallery';
-import VideoLibrary from '@/components/(site)/videoLibrary';
-import Contactsection from '@/components/(site)/contactsection';
+import Hero from '@/components/site/hero';
+import CoursesSlider from "@/components/site/courses-slider";
+import Teachers from "@/components/site/teachers";
+import  StatsSection  from '@/components/site/company-statistics';
+import News from '@/components/site/news'; 
+import Gallery from '@/components/site/gallery';
+import VideoLibrary from '@/components/site/videoLibrary';
+import Contactsection from '@/components/site/contactsection';
 export default function Home() {
 
   return (

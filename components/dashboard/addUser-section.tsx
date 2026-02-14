@@ -7,11 +7,11 @@ import {
   faChevronLeft, faChevronRight, faExclamation, faUser, faCalendar
 } from "@fortawesome/free-solid-svg-icons";
 
-import UserTable from "@/components/(dashboard)/user-table";
-import UserGrid from "@/components/(dashboard)/user-grid";
-import AddEditUserModal from "@/components/(dashboard)/addEdituser-modal";
-import DeleteUserModal from "@/components/(dashboard)/deleteUser-modal";
-import FilterModal from "@/components/(dashboard)/filter-user-modal";
+import UserTable from "@/components/dashboard/user-table";
+import UserGrid from "@/components/dashboard/user-grid";
+import AddEditUserModal from "@/components/dashboard/addEdituser-modal";
+import DeleteUserModal from "@/components/dashboard/deleteUser-modal";
+import FilterModal from "@/components/dashboard/filter-user-modal";
 
 export default function UsersPage() {
   const [isTableView, setIsTableView] = useState(true);

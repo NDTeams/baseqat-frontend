@@ -52,12 +52,13 @@ export default function LoginPage() {
             "تسجيل الدخول بنجاح!",
             response.data.fullName
           );
+
         }
 
 
-        // setTimeout(() => {
-        //   router.push("/otp");
-        // }, 1500);
+        setTimeout(() => {
+          router.push("/student-dashboard");
+        }, 1500);
       } else {
         const errorMessages = response.errors || [response.message];
         showModal("error", "فشل تسجيل الدخول", errorMessages);

@@ -3,7 +3,7 @@
 
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
-import TeachersHeader from "@/components/(site)/teachers-header";
+import TeachersHeader from "@/components/site/teachers-header";
 
 interface NewsItem {
   title: string;

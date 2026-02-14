@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import MessageForm from "@/components/(site)/message-form";
-import ContactInfo from "@/components/(site)/contactInfo";
-import ContactHeader from "@/components/(site)/contactheader";
+import MessageForm from "@/components/site/message-form";
+import ContactInfo from "@/components/site/contactInfo";
+import ContactHeader from "@/components/site/contactheader";
 import { useTranslation } from "react-i18next";
 export default function ContactPage() {
       const { t } = useTranslation();

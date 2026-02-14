@@ -6,9 +6,9 @@ import {
   faSearch,
   faBell,
   faEnvelope,
-  faGlobe,
+  // faGlobe,
 } from "@fortawesome/free-solid-svg-icons";
-import LanguageDropdown from "@/components/(dashboard)/language";
+import LanguageDropdown from "@/components/dashboard/language";
 
 export default function Header() {
   return (

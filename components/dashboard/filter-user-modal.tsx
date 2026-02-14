@@ -14,7 +14,7 @@ export default function FilterModal({ closeModal }: FilterModalProps) {
 
         {/* Header */}
         <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 ">
-          <h3 className="text-xl font-semibold text-[#30846C] m-0 font-semibold">تصفية المستخدمين</h3>
+          <h3 className="text-xl  text-[#30846C] m-0 font-semibold">تصفية المستخدمين</h3>
           <button className="filter-modal-close text-gray-500" onClick={closeModal}>
             <FontAwesomeIcon icon={faTimes} />
           </button>
