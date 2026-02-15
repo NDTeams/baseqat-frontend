@@ -6,7 +6,7 @@ import "./globals.css";
 import Header from "@/components/site/header";
 import Footer from "@/components/site/footer";
 import { Cairo } from "next/font/google";
-
+// import WhatsAppButton from "@/components/whatsapp-button";
 const cairo = Cairo({
   subsets: ["latin", "arabic"],
   weight: ["300", "400", "500", "600", "700", "800", "900"],
@@ -59,7 +59,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
               <div className="flex-1 font-cairo">
                 {children}
               </div>
-
+               {/* <WhatsAppButton /> */}
               {/* Footer */}
               <Footer />
             </div>

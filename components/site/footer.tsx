@@ -36,7 +36,8 @@ export default function Footer() {
   ];
 
   return (
-    <footer id="contact" className={`${styles.footer} text-white py-20`}>
+    <footer id="contact" className={`${styles.footer} text-white py-20`}
+  style={{ background: 'linear-gradient(135deg, #1a5f4a 0%, #2d8659 100%)' } }>
       <div className="container mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
 
