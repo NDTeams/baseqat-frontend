@@ -10,7 +10,6 @@ import {
   faMobile,
   faHeadphones,
   faXmark,
-  faMagnifyingGlass,
   faChevronDown,
 } from '@fortawesome/free-solid-svg-icons';
 import LanguageSwitcher from '@/components/language';
@@ -21,7 +20,7 @@ interface MobileMenuProps {
   setMenuOpen: (val: boolean) => void;
   grayscale: boolean;
   setGrayscale: (val: boolean) => void;
-  setSearchOpen: (val: boolean) => void;
+  setSearchOpen?: (val: boolean) => void;
 }
 
 export default function MobileMenu({
@@ -29,10 +28,10 @@ export default function MobileMenu({
   setMenuOpen,
   grayscale,
   setGrayscale,
-  setSearchOpen,
 }: MobileMenuProps) {
   const { t } = useTranslation();
   const [megaOpen, setMegaOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   return (
     <div
@@ -40,6 +39,7 @@ export default function MobileMenu({
       onClick={() => {
         setMenuOpen(false);
         setMegaOpen(false);
+        setAboutOpen(false);
       }}
     >
       <div
@@ -54,6 +54,7 @@ export default function MobileMenu({
             onClick={() => {
               setMenuOpen(false);
               setMegaOpen(false);
+              setAboutOpen(false);
             }}
             className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center"
           >
@@ -95,61 +96,39 @@ export default function MobileMenu({
 
           {/* about us */}
           <button
-            onClick={() => setMegaOpen(!megaOpen)}
+            onClick={() => setAboutOpen(!aboutOpen)}
             className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-emerald-50"
           >
             <span>{t('HomeSite.about_us')}</span>
             <FontAwesomeIcon
               icon={faChevronDown}
-              className={`transition-transform duration-300 ${megaOpen ? 'rotate-180' : ''}`}
+              className={`transition-transform duration-300 ${aboutOpen ? 'rotate-180' : ''}`}
             />
           </button>
 
-          {megaOpen && (
-            <div className="mt-2 bg-slate-50 border rounded-xl p-4">
-              <div className="grid grid-cols-1 gap-4 text-sm text-slate-800">
-
-                <div className="space-y-2">
-                  <h4 className="font-bold text-primary">{t('HomeSite.about_us')}</h4>
-                  <ul className="space-y-1">
-                    <li>{t('HomeSite.foundation')}</li>
-                    <li>{t('HomeSite.vision_mission')}</li>
-                    <li>{t('HomeSite.regulations')}</li>
-                    <li>{t('HomeSite.annual_report')}</li>
-                  </ul>
-                </div>
-
-                <div className="space-y-2">
-                  <h4 className="font-bold text-primary">{t('HomeSite.structure')}</h4>
-                  <ul className="space-y-1">
-                    <li>{t('HomeSite.organizational_structure')}</li>
-                    <li>{t('HomeSite.board')}</li>
-                    <li>{t('HomeSite.executive_management')}</li>
-                    <li>{t('HomeSite.departments_roles')}</li>
-                  </ul>
-                </div>
-
-                <div className="space-y-2">
-                  <h4 className="font-bold text-primary">{t('HomeSite.strategy')}</h4>
-                  <ul className="space-y-1">
-                    <li>{t('HomeSite.policies')}</li>
-                    <li>{t('HomeSite.hr_strategy')}</li>
-                    <li>{t('HomeSite.service_agreement')}</li>
-                    <li>{t('HomeSite.vision_2030')}</li>
-                  </ul>
-                </div>
-
-                <div className="space-y-2">
-                  <h4 className="font-bold text-primary">{t('HomeSite.join_us')}</h4>
-                  <ul className="space-y-1">
-                    <li>{t('HomeSite.current_jobs')}</li>
-                    <li>{t('HomeSite.suppliers')}</li>
-                    <li>{t('HomeSite.partners')}</li>
-                    <li>{t('HomeSite.news_events')}</li>
-                  </ul>
-                </div>
-
-              </div>
+          {aboutOpen && (
+            <div className="mt-2 bg-primary rounded-lg overflow-hidden">
+              <Link
+                href="/ceo-message"
+                className="block px-4 py-3 text-white hover:bg-emerald-800 transition-colors"
+                onClick={() => setAboutOpen(false)}
+              >
+                كلمة الرئيس التنفيذي
+              </Link>
+              <Link
+                href="/achievements"
+                className="block px-4 py-3 text-white hover:bg-emerald-800 transition-colors border-t border-emerald-700"
+                onClick={() => setAboutOpen(false)}
+              >
+                إنجازات باسقات
+              </Link>
+              <Link
+                href="/aboutus"
+                className="block px-4 py-3 text-white hover:bg-emerald-800 transition-colors border-t border-emerald-700"
+                onClick={() => setAboutOpen(false)}
+              >
+                {t('HomeSite.about_us')}
+              </Link>
             </div>
           )}
 
@@ -157,28 +136,18 @@ export default function MobileMenu({
             {t('HomeSite.services')}
           </Link>
 
-          <Link href="/media" className="block px-3 py-2 rounded-lg hover:bg-emerald-50">
+          <Link href="/media-center" className="block px-3 py-2 rounded-lg hover:bg-emerald-50">
             {t('HomeSite.media_center')}
           </Link>
 
-          <Link href="/support" className="block px-3 py-2 rounded-lg hover:bg-emerald-50">
-            {t('HomeSite.support')}
+          <Link href="/contact" className="block px-3 py-2 rounded-lg hover:bg-emerald-50">
+            {t('HomeSite.contactHeader')}
           </Link>
         </div>
 
         {/* Footer */}
         <div className="pt-3 border-t text-xs text-slate-600 flex items-center justify-between">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setSearchOpen(true)}
-              className="w-10 h-10 rounded-full border hover:border-emerald-200 hover:text-primary flex items-center justify-center"
-            >
-              <FontAwesomeIcon icon={faMagnifyingGlass} />
-            </button>
-
-            <LanguageSwitcher />
-          </div>
-
+          <LanguageSwitcher />
           <span>{t('HomeSite.jobs_portal')}</span>
         </div>
       </div>

@@ -4,21 +4,22 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
+import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faAdjust,
-  faMobile,
-  faHeadphones,
+  // faMobile,
+  //aHeadphones,
   faBars,
-  faXmark,
-  faMagnifyingGlass,
+  //faXmark,
   faChevronDown,
   faCalendarDays,
+  faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import LanguageSwitcher from '@/components/language';
-import SearchModal from './search-modal';
 import FontSizeController from './fontsize-controller';
 import MobileMenu from './mobile-menu';
+import { AuthService } from '@/services/auth/page';
 
 interface HeaderProps {
   grayscale: boolean;
@@ -29,7 +30,9 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
   const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // ضبط التاريخ اليوم
   useEffect(() => {
@@ -43,11 +46,34 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
     if (el) el.textContent = today;
   }, []);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('[data-dropdown="about"]')) {
+        setAboutOpen(false);
+      }
+      if (!target.closest('[data-dropdown="user"]')) {
+        setUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const hasToken =
+      typeof window !== 'undefined' &&
+      (localStorage.getItem('authToken') || Cookies.get('auth_token'));
+    setIsLoggedIn(Boolean(hasToken));
+  }, []);
+
   return (
     <header className="fixed inset-x-0 top-0 z-50">
-      
+
       {/* ====== Row 1 ====== */}
-      <div className="bg-slate-100 text-slate-800 text-sm sm:px-2 md:px-4">
+      {/* <div className="bg-slate-100 text-slate-800 text-sm sm:px-2 md:px-4">
         <div className="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2 text-xs sm:text-sm">
             <span>{t('HomeSite.government_website')}</span>
@@ -56,7 +82,7 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
             {t('HomeSite.verify')}
           </Link>
         </div>
-      </div>
+      </div> */}
 
       {/* ====== Row 2 ====== */}
       <div className="bg-primary text-white text-sm px-2 md:px-4">
@@ -67,10 +93,10 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
           </button>
 
           <div className="hidden lg:flex items-center gap-4 text-xs sm:text-sm">
-            <button className="flex items-center gap-1 hover:text-slate-100">
+            {/* <button className="flex items-center gap-1 hover:text-slate-100">
               <FontAwesomeIcon icon={faMobile} />
               {t('HomeSite.download_app')}
-            </button>
+            </button> */}
 
             {/* زر تبديل اللون الرمادي */}
             <button onClick={() => setGrayscale(!grayscale)} className="flex items-center gap-1 hover:text-slate-100">
@@ -78,10 +104,10 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
               {t('HomeSite.toggle_colors')}
             </button>
 
-            <button className="flex items-center gap-1 hover:text-slate-100">
+            {/* <button className="flex items-center gap-1 hover:text-slate-100">
               <FontAwesomeIcon icon={faHeadphones} />
               {t('HomeSite.screen_reader')}
-            </button>
+            </button> */}
 
             <FontSizeController />
           </div>
@@ -111,7 +137,48 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
                 {t('HomeSite.home')}
               </Link>
 
-              <button
+              {/* About Us Dropdown */}
+              <div className="relative group" data-dropdown="about">
+                <button
+                  onClick={() => setAboutOpen(!aboutOpen)}
+                  className="px-3 py-2 rounded-xl hover:text-primary flex items-center gap-1"
+                >
+                  {t('HomeSite.about_us')}
+                  <FontAwesomeIcon
+                    icon={faChevronDown}
+                    className={`text-xs transition-transform ${aboutOpen ? 'rotate-180' : ''}`}
+                  />
+                </button>
+
+                {/* Dropdown Menu */}
+                {aboutOpen && (
+                  <div className="absolute top-full right-0 mt-2 bg-primary rounded-lg shadow-lg overflow-hidden z-40 min-w-52">
+                    <Link
+                      href="/ceo-message"
+                      className="block px-4 py-3 text-white hover:bg-emerald-800 transition-colors"
+                      onClick={() => setAboutOpen(false)}
+                    >
+                      كلمة الرئيس التنفيذي
+                    </Link>
+                    <Link
+                      href="/achievements"
+                      className="block px-4 py-3 text-white hover:bg-emerald-800 transition-colors border-t border-emerald-700"
+                      onClick={() => setAboutOpen(false)}
+                    >
+                      إنجازات باسقات
+                    </Link>
+                    <Link
+                      href="/aboutus"
+                      className="block px-4 py-3 text-white hover:bg-emerald-800 transition-colors border-t border-emerald-700"
+                      onClick={() => setAboutOpen(false)}
+                    >
+                      {t('HomeSite.about_us')}
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* <button
                 onClick={() => setMegaOpen(!megaOpen)}
                 className="px-3 py-2 rounded-xl flex items-center gap-1 hover:text-primary"
               >
@@ -120,11 +187,12 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
                   icon={faChevronDown}
                   className={`${megaOpen ? 'rotate-180' : ''} transition-transform`}
                 />
-              </button>
-
+              </button> */}
+              
               <Link href="/services" className="px-3 py-2 rounded-xl hover:text-primary">{t('HomeSite.services')}</Link>
-              <Link href="/media" className="px-3 py-2 rounded-xl hover:text-primary">{t('HomeSite.media_center')}</Link>
-              <Link href="/support" className="px-3 py-2 rounded-xl hover:text-primary">{t('HomeSite.support')}</Link>
+              <Link href="/courses-archive" className="px-3 py-2 rounded-xl hover:text-primary">{t('HomeSite.coursesHeader')}</Link>
+              <Link href="/media-center" className="px-3 py-2 rounded-xl hover:text-primary">{t('HomeSite.media_center')}</Link>
+              <Link href="/contact" className="px-3 py-2 rounded-xl hover:text-primary">{t('HomeSite.contactHeader')}</Link>
 
               {/* Mega Menu */}
               {megaOpen && (
@@ -180,13 +248,60 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
           </div>
 
           {/* أيقونات البحث واللغة */}
-          <div className="hidden md:flex items-center gap-1 text-sm font-semibold">
-            <button
-              onClick={() => setSearchOpen(true)}
-              className="w-10 h-10 rounded-full border hover:border-emerald-200 hover:text-primary flex items-center justify-center"
-            >
-              <FontAwesomeIcon icon={faMagnifyingGlass} />
-            </button>
+          <div className="hidden md:flex items-center gap-2 text-sm font-semibold">
+            {isLoggedIn ? (
+              <div className="relative" data-dropdown="user">
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl border border-emerald-100 hover:border-emerald-300 hover:text-primary transition"
+                >
+                  <FontAwesomeIcon icon={faUser} />
+                  <FontAwesomeIcon
+                    icon={faChevronDown}
+                    className={`text-xs transition-transform ${userMenuOpen ? 'rotate-180' : ''}`}
+                  />
+                </button>
+
+                {userMenuOpen && (
+                  <div className="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden z-50">
+                    <Link
+                      href="/dashboard"
+                      className="block px-4 py-3 text-slate-800 hover:bg-emerald-50"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      {t('auth.control_panel')}
+                    </Link>
+                    <Link
+                      href="/student-dashboard/profile"
+                      className="block px-4 py-3 text-slate-800 hover:bg-emerald-50 border-t border-slate-100"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      {t('auth.profile')}
+                    </Link>
+                    <Link
+                      href="/settings"
+                      className="block px-4 py-3 text-slate-800 hover:bg-emerald-50 border-t border-slate-100"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      {t('auth.settings')}
+                    </Link>
+                    <button
+                      onClick={() => AuthService.logout()}
+                      className="w-full text-right px-4 py-3 text-red-600 hover:bg-red-50 border-t border-slate-100"
+                    >
+                      {t('auth.logout')}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="px-4 py-2 rounded-xl bg-primary text-white hover:bg-emerald-700 transition"
+              >
+                {t('auth.login')}
+              </Link>
+            )}
 
             <LanguageSwitcher />
             <Link href="/jobs" className="font-semibold hover:text-primary">{t('HomeSite.jobs_portal')}</Link>
@@ -201,12 +316,9 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
           setMenuOpen={setMenuOpen}
           grayscale={grayscale}
           setGrayscale={setGrayscale}
-          setSearchOpen={setSearchOpen}
+          setSearchOpen={() => {}}
         />
       )}
-
-      {/* Search Modal */}
-      <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
   );
 }

@@ -11,6 +11,11 @@ import {
 
 export default function contactInfoInfo() {
   const { t } = useTranslation();
+  const phoneNumber = "+966 55 843 8050";
+  const phoneHref = "tel:+966558438050";
+  const email = "info@baseqatbusiness.com";
+  const mapUrl =
+    "https://www.google.com/maps/place/%D8%A8%D8%A7%D8%B3%D9%82%D8%A7%D8%AA%E2%80%AD/@24.4468012,39.5086862,113m/data=!3m1!1e3!4m6!3m5!1s0x15bdc74420baf74b:0x350525b6d9cdd250!8m2!3d24.4468062!4d39.5085615!16s%2Fg%2F11g10plq_b";
 
   return (
     <section className="space-y-5">
@@ -29,12 +34,9 @@ export default function contactInfoInfo() {
               <p className="font-semibold text-slate-900">
                 {t("contactInfo.phoneLabel")}
               </p>
-              <Link
-                href="tel:+966500000000"
-                className="text-emerald-700 font-bold"
-              >
-                +966 50 000 0000
-              </Link>
+              <a href={phoneHref} className="text-emerald-700 font-bold" dir="ltr">
+                {phoneNumber}
+              </a>
             </div>
           </div>
 
@@ -47,12 +49,9 @@ export default function contactInfoInfo() {
               <p className="font-semibold text-slate-900">
                 {t("contactInfo.emailLabel")}
               </p>
-              <Link
-                href="mailto:hello@basqat.com"
-                className="text-emerald-700 font-bold"
-              >
-                hello@basqat.com
-              </Link>
+              <a href={`mailto:${email}`} className="text-emerald-700 font-bold">
+                {email}
+              </a>
             </div>
           </div>
 
@@ -75,9 +74,17 @@ export default function contactInfoInfo() {
         <h2 className="text-xl font-bold text-slate-900">
           {t("contactInfo.mapTitle")}
         </h2>
-        <div className="w-full h-64 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500 text-sm">
-          {t("contactInfo.mapPlaceholder")}
-        </div>
+        <a
+          href={mapUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full h-64 rounded-xl overflow-hidden border border-slate-200 bg-gradient-to-br from-emerald-50 via-white to-emerald-100 hover:shadow-md transition"
+        >
+          <div className="h-full w-full flex flex-col items-center justify-center text-slate-600 text-sm">
+            <span className="font-semibold text-slate-800">{t("contactInfo.mapTitle")}</span>
+            <span className="mt-2 text-emerald-700">{t("contactInfo.mapPlaceholder")}</span>
+          </div>
+        </a>
       </div>
     </section>
   );

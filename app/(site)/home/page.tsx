@@ -8,7 +8,6 @@ import  StatsSection  from '@/components/site/company-statistics';
 import News from '@/components/site/news'; 
 import Gallery from '@/components/site/gallery';
 import VideoLibrary from '@/components/site/videoLibrary';
-import Contactsection from '@/components/site/contactsection';
 export default function Home() {
 
   return (
@@ -20,7 +19,6 @@ export default function Home() {
     <News />
     <Gallery />
     <VideoLibrary />
-    <Contactsection />
 
 
   </div>

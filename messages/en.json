@@ -93,11 +93,13 @@
    "footer": {
     "description": "A business accelerator supporting entrepreneurs with preparation, acceleration, and digital transformation services.",
     "links": {
-      "title": "Links",
+      "title": "Quick Links",
       "home": "Home",
       "services": "Services",
       "programs": "Programs",
-      "trainers": "Trainers"
+      "trainers": "Trainers",
+      "terms": "Terms & Conditions",
+      "privacy": "Privacy Policy"
     },
     "info": {
       "title": "Information",
@@ -106,10 +108,17 @@
       "contact": "Contact"
     },
     "contact": {
-      "title": "Contact"
+      "title": "Contact Us",
+      "phone": "Phone Number",
+      "email": "Email Address",
+      "location": "Location",
+      "locationTitle": "Riyadh - Al Nakheel District",
+      "locationDesc": "Kingdom of Saudi Arabia",
+      "viewOnMap": "Click to view on map",
+      "locationText": "Our headquarters in the heart of Riyadh, the perfect place to work, collaborate, and innovate"
     },
     "bottom": {
-      "copyright": "© 2025 Basqat. All rights reserved.",
+      "copyright": "© 2025 Basqat Business. All rights reserved.",
       "made": "Made with passion for entrepreneurs."
     }
   },
@@ -167,9 +176,9 @@
     "phoneLabel": "Phone",
     "emailLabel": "Email",
     "addressLabel": "Address",
-    "addressValue": "Riyadh, Saudi Arabia",
+    "addressValue": "Riyadh - Al Nakheel District, Saudi Arabia",
     "mapTitle": "Location Map",
-    "mapPlaceholder": "Interactive Map (Placeholder)"
+    "mapPlaceholder": "View on Google Maps"
   },
    "form": {
     "title": "Send a Message",
@@ -199,6 +208,29 @@
     "title": "Explore the Course Archive",
     "description": "Search past programs and check their details, outcomes, and available materials."
   },
+  "media": {
+    "subtitle": "Media Center",
+    "title": "Media Center",
+    "description": "Explore our collection of photos, articles, and events from our programs and workshops",
+    "gallery": {
+      "title": "Gallery",
+      "description": "Discover our photo gallery showcasing memorable moments from our events and workshops"
+    },
+    "articles": {
+      "title": "Articles",
+      "description": "Read our latest insights, tips, and expert articles on entrepreneurship and business growth"
+    },
+    "events": {
+      "title": "Events",
+      "description": "Explore our upcoming events and past events from conferences to workshops and networking sessions"
+    }
+  },
+  "map": {
+    "name": "Basqat Business",
+    "tagline": "Accelerator for Entrepreneurs in Riyadh",
+    "description": "A business accelerator offering training, acceleration programs and practical mentorship in Riyadh — workshops, events, and advisory services to turn ideas into successful projects.",
+    "label": "Basqat — Business Accelerator (Al Nakheel)"
+  },
   "programs": {
     "searchPlaceholder": "Search for a program...",
     "allCategories": "All Categories",
@@ -214,11 +246,107 @@
     "title": "Basqat News",
     "subtitle": "Latest updates and content"
   },
-  "auth": {
+"auth": {
     "login": "Login",
     "logout": "Logout",
     "profile": "My Profile",
     "control_panel": "Control Panel",
     "settings": "Settings"
+  },
+  "about": {
+    "subtitle": "About Us",
+    "title": "Basqat Business Company",
+    "description": "A leading business accelerator supporting entrepreneurs in Saudi Arabia and beyond, providing market preparation, acceleration, and digital transformation services.",
+    "stats": {
+      "clients": "Happy Clients",
+      "projects": "Completed Projects",
+      "years": "Years of Experience",
+      "satisfaction": "Satisfaction Rate"
+    },
+    "vision": "Our Vision",
+    "visionText": "To be the premier strategic partner for entrepreneurs in the region, enabling them to build successful and sustainable companies that contribute to achieving Saudi Vision 2030.",
+    "mission": "Our Mission",
+    "missionText": "We provide integrated and customized programs to support entrepreneurs, from the idea stage through launch and growth, through proven methodologies and expert trainers.",
+    "ourValues": "Our Values",
+    "valuesDescription": "Our core values that guide our work and define our relationships with clients and partners",
+    "values": {
+      "innovation": "Innovation",
+      "innovationDesc": "We adopt the latest methodologies and technologies to develop innovative solutions that meet changing market needs",
+      "teamwork": "Teamwork",
+      "teamworkDesc": "We believe in the power of teamwork and work in full coordination with our clients to achieve their shared goals",
+      "quality": "Quality",
+      "qualityDesc": "We commit to the highest quality standards in every service we provide and every project we deliver"
+    },
+    "whyChooseUs": "Why Choose Basqat?",
+    "whyChooseUsDesc": "We offer a unique experience combining practical expertise and personal support",
+    "benefits": {
+      "experts": "A team of certified experts and consultants",
+      "methods": "Proven methodologies with documented results",
+      "support": "Continuous support throughout your business journey",
+      "results": "Tangible and measurable results"
+    },
+    "yearsExperience": "Years of Experience",
+    "ctaTitle": "Start Your Journey With Us",
+    "ctaDesc": "Join the community of successful entrepreneurs and achieve your dreams of building your own business",
+    "contactUs": "Contact Us",
+    "explorePrograms": "Explore Programs"
+  },
+  "services": {
+    "pageTitle": "Our Comprehensive Services",
+    "pageSubtitle": "Integrated solutions to support your entrepreneurial journey from idea to growth and investment",
+    "acceleration": {
+      "title": "Business Acceleration",
+      "description": "A specialized program to accelerate your company's growth through strategic guidance, funding, and an expert network",
+      "features": ["Comprehensive company assessment", "Customized strategic plan", "Intensive training sessions", "Access to investor network", "Continuous technical support"]
+    },
+    "incubation": {
+      "title": "Business Incubation",
+      "description": "A supportive environment for entrepreneurs to transform ideas into projects capable of growth and investment",
+      "features": ["Equipped workspaces", "Expert guidance", "Periodic consultation sessions", "Seminars and workshops", "Funding opportunities"]
+    },
+    "training": {
+      "title": "Training & Consulting",
+      "description": "Specialized training programs and strategic consulting for individuals and companies",
+      "features": ["Specialized courses", "Practical training", "Recognized certificates", "Individual consulting", "Continuous follow-up"]
+    },
+    "workspace": {
+      "title": "Office Spaces",
+      "description": "Offices and meeting rooms equipped with the latest technology and professional work environment",
+      "features": ["Individual and shared offices", "Meeting rooms", "Reception services", "High-speed internet", "Modern facilities"]
+    },
+    "digital": {
+      "title": "Digital & Technical Support",
+      "description": "Integrated digital solutions and specialized technical support to transform your entire business",
+      "features": ["App development", "Digital solutions", "24/7 technical support", "Technical consulting", "Data security"]
+    },
+    "development": {
+      "title": "Business Development",
+      "description": "Advanced strategies to develop and improve the overall performance of the institution",
+      "features": ["Market analysis", "Feasibility studies", "Growth plans", "Process improvement", "Performance measurement"]
+    },
+    "learnMore": "Learn More",
+    "closeMore": "Close More",
+    "whyChoose": "Why Choose Our Services?",
+    "whyChooseDesc": "We offer advanced solutions backed by high expertise and a specialized team",
+    "whyChooseFeatures": [
+      {
+        "title": "Outstanding Experience",
+        "desc": "More than 10 years supporting entrepreneurs"
+      },
+      {
+        "title": "Results Focused",
+        "desc": "66% of our partners achieved significant growth"
+      },
+      {
+        "title": "Strategic Partnerships",
+        "desc": "Extensive network of investors and experts"
+      },
+      {
+        "title": "Innovative Solutions",
+        "desc": "Customized programs for each client's needs"
+      }
+    ],
+    "ctaTitle": "Ready to Get Started?",
+    "ctaDesc": "Let us help you achieve your entrepreneurial dreams and reach your goals"
   }
 }
