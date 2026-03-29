@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(npm run dev:*)",
+      "Bash(taskkill:*)",
+      "Bash(npx next:*)",
+      "Read(//d/2026/baseqat/bas/student-dashboard/**)",
+      "Bash(python3:*)",
+      "Bash(python -c:*)",
+      "Bash(node -e:*)",
+      "WebFetch(domain:localhost)",
+      "Bash(npx tsc:*)",
+      "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZDI4ZjUwMS0zYjExLTQzMTEtYTgyMC0wNmY2YjY2MDIzZmUiLCJ1bmlxdWVfbmFtZSI6ImFsLWJheXRpQGhvdG1haWwuY29tIiwianRpIjoiNmFjMjlmY2MtM2UxOC00Mzg3LWI3ZmQtMjdjMTZiNjU1ODhiIiwicm9sZSI6IlN1cGVyQWRtaW4iLCJuYmYiOjE3NzE2NjQ0MjEsImV4cCI6MTc3MTY2ODAyMSwiaWF0IjoxNzcxNjY0NDIxLCJpc3MiOiJIdXNCYWl0aSIsImF1ZCI6Ik1DQ0lFbXBsb3llZSJ9.eYq4IK59ECNTPEQS86alMJdKbjlcAZpWw47sMxwQizI\")",
+      "Bash(dotnet run:*)",
+      "Bash(start cmd //c \"npm run dev\")",
+      "Bash(netstat:*)",
+      "Bash(cmd //c \"start cmd //c npm run dev\")",
+      "Bash(powershell -Command:*)",
+      "Bash(start \"Frontend Dev\" cmd //k \"npm run dev\")",
+      "Bash(gh repo create:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
+    ]
+  }
+}
