@@ -69,10 +69,10 @@ export default function Sidebar() {
     <aside
       className={`h-screen flex-shrink-0 flex flex-col bg-emerald-700 text-white shadow-2xl relative transition-all duration-300 z-50
       ${isCollapsed ? "w-[72px]" : "w-[260px]"}
-      ${isMobile ? (sidebarOpen ? "fixed left-0 top-0" : "fixed -left-full top-0") : ""}`}
+      ${isMobile ? `fixed top-0 right-0 transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "translate-x-full"}` : ""}`}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-white/10 bg-emerald-800/30">
+      <Link href="/" className="flex items-center gap-3 px-5 py-5 border-b border-white/10 bg-emerald-800/30 hover:bg-emerald-800/50 transition-colors">
         <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-white shadow-lg flex-shrink-0 overflow-hidden">
           <img
             src="/site/logo.png"
@@ -90,7 +90,7 @@ export default function Sidebar() {
             </span>
           </div>
         )}
-      </div>
+      </Link>
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1 sidebar-scrollbar">
@@ -235,6 +235,13 @@ export default function Sidebar() {
             text="المؤشرات"
             collapsed={isCollapsed}
             active={pathname === "/indicators"}
+          />
+          <MenuItem
+            href="/home-statistics"
+            icon={faChartLine}
+            text="إحصائيات الموقع"
+            collapsed={isCollapsed}
+            active={pathname === "/home-statistics"}
           />
         </MenuSection>
 

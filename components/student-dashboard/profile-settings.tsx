@@ -96,23 +96,16 @@ export default function ProfileSettings() {
   };
 
   return (
-    <div dir="rtl" className="min-h-screen bg-neutral-50 font-cairo">
-      {/* Header */}
-      <header className="bg-white/95 backdrop-blur-sm border-b border-neutral-200 shadow-sm sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-              <FontAwesomeIcon icon={faUser} className="text-primary text-xl" />
-            </div>
-            <h1 className="text-2xl font-black text-neutral-900">الإعدادات</h1>
-          </div>
-          <button className="p-2 hover:bg-neutral-100 rounded-xl transition">
-            <FontAwesomeIcon icon={faGlobe} className="text-xl text-neutral-700" />
-          </button>
+    <div className="font-cairo">
+      {/* Page Title */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+          <FontAwesomeIcon icon={faUser} className="text-emerald-700 text-lg" />
         </div>
-      </header>
+        <h1 className="text-2xl font-black text-neutral-900">الإعدادات</h1>
+      </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div>
         <div className="mb-6" data-aos="fade-up">
           <div className="flex flex-wrap gap-3 border-b border-neutral-200">
             {[
@@ -230,33 +223,6 @@ export default function ProfileSettings() {
           </div>
         </div>
       </div>
-
-      {/* Mobile Bottom Navigation - Hidden on desktop */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-neutral-200 shadow-lg">
-        <div className="flex items-center justify-around py-3 px-2">
-          {[
-            { icon: faUser, label: 'الملف' },
-            { icon: faBookOpen, label: 'الدورات' },
-            { icon: faTasks, label: 'المهام' },
-            { icon: faCertificate, label: 'الشهادات' },
-            { icon: faBell, label: 'الإشعارات' },
-          ].map((item, index) => (
-            <a
-              key={index}
-              href="#"
-              className={`flex flex-col items-center gap-1 py-2 px-1 rounded-xl transition-all ${
-                index === 0 ? 'text-primary bg-primary/10' : 'text-neutral-600'
-              }`}
-            >
-              <FontAwesomeIcon icon={item.icon} className={`text-xl ${index === 0 ? 'scale-110' : ''}`} />
-              <span className="text-xs font-medium">{item.label}</span>
-              {index === 0 && (
-                <div className="absolute top-1 right-1/2 transform translate-x-1/2 w-1.5 h-1.5 bg-primary rounded-full" />
-              )}
-            </a>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
@@ -312,7 +278,7 @@ function PersonalInfoTab() {
               </label>
               <input
                 type={field.type}
-                value={field.value}
+                defaultValue={field.value}
                 className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition"
               />
             </div>
@@ -324,7 +290,7 @@ function PersonalInfoTab() {
             </label>
             <input
               type="text"
-              value="المدينة المنورة، المملكة العربية السعودية"
+              defaultValue="المدينة المنورة، المملكة العربية السعودية"
               className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition"
             />
           </div>
@@ -335,10 +301,9 @@ function PersonalInfoTab() {
             </label>
             <textarea
               rows={4}
+              defaultValue="طالب مهتم بالتحول الرقمي وتطوير الأعمال. أسعى لتطوير مهاراتي في مجال التكنولوجيا وريادة الأعمال من خلال الدورات المتخصصة في منصة باسقات."
               className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition resize-none"
-            >
-              طالب مهتم بالتحول الرقمي وتطوير الأعمال. أسعى لتطوير مهاراتي في مجال التكنولوجيا وريادة الأعمال من خلال الدورات المتخصصة في منصة باسقات.
-            </textarea>
+            />
             <p className="text-xs text-neutral-500 mt-1">500 حرف متبقي</p>
           </div>
         </div>
@@ -831,7 +796,7 @@ function SocialLinksTab() {
               <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                 <input
                   type="url"
-                  value={social.value}
+                  defaultValue={social.value}
                   placeholder={social.value || `https://${social.title.toLowerCase()}.com/username`}
                   className="flex-1 px-4 py-2.5 border border-neutral-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition text-sm"
                 />

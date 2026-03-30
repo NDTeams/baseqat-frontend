@@ -33,6 +33,7 @@ export default function LoginPage() {
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [modal, setModal] = useState({
     isOpen: false,
     type: "success" as "success" | "error" | "warning",
@@ -81,7 +82,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await AuthService.login(email, password);
+      const response = await AuthService.login(email, password, rememberMe);
 
       if (response.succeeded) {
         if (response.data.token) {
@@ -316,6 +317,8 @@ export default function LoginPage() {
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
                   className="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500 cursor-pointer"
                 />
                 <span className="text-sm text-slate-600">تذكرني</span>

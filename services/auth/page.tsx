@@ -18,15 +18,21 @@ export const AuthService = {
   },
 
   // تسجيل دخول وحفظ التوكن
-  login: async (email: string, pass: string): Promise<ApiResponse> => {
-    const res = await api.post("Account/LoginByEmail", { email, password: pass });
+  login: async (email: string, pass: string, rememberMe: boolean = false): Promise<ApiResponse> => {
+    const res = await api.post("Account/LoginByEmail", { email, password: pass, rememberMe });
     const responseData = res.data;
-    
+
     // التحقق من النجاح وحفظ التوكن
     if (responseData.succeeded && responseData.data?.token) {
-      Cookies.set("auth_token", responseData.data.token, { expires: 5 });
+      if (rememberMe) {
+        // تذكرني: حفظ التوكن لمدة 30 يوم
+        Cookies.set("auth_token", responseData.data.token, { expires: 30 });
+      } else {
+        // بدون تذكرني: كوكي جلسة فقط (يُحذف عند إغلاق المتصفح)
+        Cookies.set("auth_token", responseData.data.token);
+      }
     }
-    
+
     return responseData;
   },
 
