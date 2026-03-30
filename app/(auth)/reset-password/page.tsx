@@ -1,34 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faEnvelope,
+  faLock,
   faEye,
   faEyeSlash,
-  faLock,
-  faSignInAlt,
   faSpinner,
   faCheckCircle,
   faShieldHalved,
   faGraduationCap,
   faComments,
+  faArrowRight,
+  faShieldAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { AuthService } from "@/services/auth/page";
 import ModalMessage from "@/components/modal-message";
 
 interface FieldErrors {
-  email?: string;
   password?: string;
+  confirmPassword?: string;
 }
 
-export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
+function ResetPasswordForm() {
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email") || "";
+  const token = searchParams.get("token") || "";
+  const router = useRouter();
+
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -39,9 +45,6 @@ export default function LoginPage() {
     title: "",
     message: "" as string | string[],
   });
-
-  const router = useRouter();
-  const togglePassword = () => setShowPassword(!showPassword);
 
   const showModal = (type: "success" | "error" | "warning", title: string, message: string | string[]) => {
     setModal({ isOpen: true, type, title, message });
@@ -54,20 +57,22 @@ export default function LoginPage() {
   const validateForm = (): FieldErrors => {
     const newErrors: FieldErrors = {};
 
-    if (!email.trim()) {
-      newErrors.email = "البريد الإلكتروني مطلوب";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      newErrors.email = "صيغة البريد الإلكتروني غير صحيحة";
+    if (!password.trim()) {
+      newErrors.password = "كلمة المرور الجديدة مطلوبة";
+    } else if (password.length < 6) {
+      newErrors.password = "كلمة المرور يجب أن تكون 6 أحرف على الأقل";
     }
 
-    if (!password.trim()) {
-      newErrors.password = "كلمة المرور مطلوبة";
+    if (!confirmPassword.trim()) {
+      newErrors.confirmPassword = "تأكيد كلمة المرور مطلوب";
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = "كلمتا المرور غير متطابقتين";
     }
 
     return newErrors;
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
 
@@ -81,26 +86,20 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await AuthService.login(email, password);
+      const response = await AuthService.resetPassword(email, token, password);
 
       if (response.succeeded) {
-        if (response.data.token) {
-          localStorage.setItem("authToken", response.data.token);
-        }
-        if (response.data.isAuthenticated) {
-          showModal(
-            "success",
-            "تسجيل الدخول بنجاح!",
-            response.data.fullName
-          );
-        }
-
+        showModal(
+          "success",
+          "تم تغيير كلمة المرور",
+          "تم إعادة تعيين كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول."
+        );
         setTimeout(() => {
-          router.push("/student-dashboard");
-        }, 1500);
+          router.push("/login");
+        }, 2000);
       } else {
         const errorMessages = response.errors || [response.message];
-        showModal("error", "فشل تسجيل الدخول", errorMessages);
+        showModal("error", "فشل العملية", errorMessages);
       }
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || "حدث خطأ في الاتصال بالخادم";
@@ -111,12 +110,8 @@ export default function LoginPage() {
   };
 
   const getFieldBorderClass = (fieldName: keyof FieldErrors) => {
-    if (submitted && errors[fieldName]) {
-      return "border-red-400 shadow-sm shadow-red-100";
-    }
-    if (focusedField === fieldName) {
-      return "border-emerald-500 shadow-sm shadow-emerald-100";
-    }
+    if (submitted && errors[fieldName]) return "border-red-400 shadow-sm shadow-red-100";
+    if (focusedField === fieldName) return "border-emerald-500 shadow-sm shadow-emerald-100";
     return "border-slate-200 hover:border-slate-300";
   };
 
@@ -140,20 +135,15 @@ export default function LoginPage() {
         title={modal.title}
         message={modal.message}
         onClose={closeModal}
-        autoClose={modal.type === "success" ? 0 : 5000}
+        autoClose={modal.type === "success" ? 3000 : 5000}
       />
 
       {/* Right Side - Branding */}
       <div className="hidden lg:flex lg:w-[45%] relative overflow-hidden">
-        {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-600" />
-
-        {/* Decorative shapes */}
         <div className="absolute top-0 left-0 w-96 h-96 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2" />
         <div className="absolute bottom-0 right-0 w-80 h-80 bg-white/5 rounded-full translate-x-1/3 translate-y-1/3" />
         <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-white/5 rounded-full" />
-
-        {/* Dot pattern */}
         <div
           className="absolute inset-0 opacity-10"
           style={{
@@ -162,28 +152,18 @@ export default function LoginPage() {
           }}
         />
 
-        {/* Content */}
         <div className="relative z-10 flex flex-col justify-center items-center w-full px-12">
-          {/* Logo */}
           <div className="mb-10">
-            <Image
-              src="/site/logo.png"
-              alt="باسقات"
-              width={180}
-              height={72}
-              className="h-16 w-auto brightness-0 invert"
-            />
+            <Image src="/site/logo.png" alt="باسقات" width={180} height={72} className="h-16 w-auto brightness-0 invert" />
           </div>
 
-          {/* Tagline */}
           <h2 className="text-3xl font-bold text-white text-center mb-3 leading-relaxed">
-            مرحباً بعودتك
+            إعادة تعيين كلمة المرور
           </h2>
           <p className="text-emerald-100 text-center text-lg mb-12 max-w-sm leading-relaxed">
-            سجل دخولك للوصول إلى دوراتك واستشاراتك
+            أدخل كلمة المرور الجديدة لاستعادة الوصول إلى حسابك
           </p>
 
-          {/* Features */}
           <div className="space-y-5 w-full max-w-sm">
             {features.map((feature, index) => (
               <div
@@ -199,7 +179,6 @@ export default function LoginPage() {
             ))}
           </div>
 
-          {/* Bottom decoration */}
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 text-emerald-200/60 text-sm">
             <div className="w-8 h-px bg-emerald-200/40" />
             <span>باسقات للتدريب والاستشارات</span>
@@ -213,71 +192,45 @@ export default function LoginPage() {
         <div className="w-full max-w-[460px]">
           {/* Mobile Logo */}
           <div className="lg:hidden flex justify-center mb-8">
-            <Image
-              src="/site/logo.png"
-              alt="باسقات"
-              width={140}
-              height={56}
-              className="h-12 w-auto"
-            />
+            <Image src="/site/logo.png" alt="باسقات" width={140} height={56} className="h-12 w-auto" />
           </div>
 
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-                <FontAwesomeIcon icon={faSignInAlt} className="text-emerald-700" />
+                <FontAwesomeIcon icon={faShieldAlt} className="text-emerald-700" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-slate-800">تسجيل الدخول</h1>
+                <h1 className="text-2xl font-bold text-slate-800">كلمة مرور جديدة</h1>
               </div>
             </div>
             <p className="text-slate-500 text-sm">
-              مستخدم جديد؟{" "}
-              <Link href="/register" className="text-emerald-700 hover:text-emerald-800 font-semibold transition">
-                إنشاء حساب
-              </Link>
+              أدخل كلمة المرور الجديدة لحسابك
             </p>
           </div>
 
-          {/* Form */}
-          <form className="space-y-5" onSubmit={handleLogin}>
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-                البريد الإلكتروني <span className="text-red-500">*</span>
-              </label>
-              <div className={`relative rounded-xl border-2 transition-all duration-200 ${getFieldBorderClass("email")}`}>
-                <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                  <FontAwesomeIcon
-                    icon={faEnvelope}
-                    className={`text-sm transition-colors ${getIconColorClass("email")}`}
-                  />
-                </div>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (submitted) setErrors((prev) => ({ ...prev, email: undefined }));
-                  }}
-                  className="w-full pr-10 pl-4 py-3 bg-transparent rounded-xl text-slate-700 placeholder-slate-400 text-sm outline-none"
-                  placeholder="example@email.com"
-                  dir="ltr"
-                  style={{ textAlign: "right" }}
-                  onFocus={() => setFocusedField("email")}
-                  onBlur={() => setFocusedField(null)}
-                />
-              </div>
-              {submitted && errors.email && (
-                <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.email}</p>
-              )}
-            </div>
+          {/* Password Requirements */}
+          <div className="bg-slate-100 border border-slate-200 rounded-xl p-4 mb-6">
+            <p className="text-xs font-semibold text-slate-600 mb-2">متطلبات كلمة المرور:</p>
+            <ul className="space-y-1.5">
+              <li className={`flex items-center gap-2 text-xs ${password.length >= 6 ? "text-emerald-600" : "text-slate-400"}`}>
+                <FontAwesomeIcon icon={faCheckCircle} className="text-[10px]" />
+                <span>6 أحرف على الأقل</span>
+              </li>
+              <li className={`flex items-center gap-2 text-xs ${password && password === confirmPassword ? "text-emerald-600" : "text-slate-400"}`}>
+                <FontAwesomeIcon icon={faCheckCircle} className="text-[10px]" />
+                <span>كلمتا المرور متطابقتان</span>
+              </li>
+            </ul>
+          </div>
 
-            {/* Password */}
+          {/* Form */}
+          <form className="space-y-5" onSubmit={handleResetPassword}>
+            {/* New Password */}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-                كلمة المرور <span className="text-red-500">*</span>
+                كلمة المرور الجديدة <span className="text-red-500">*</span>
               </label>
               <div className={`relative rounded-xl border-2 transition-all duration-200 ${getFieldBorderClass("password")}`}>
                 <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -294,14 +247,14 @@ export default function LoginPage() {
                     if (submitted) setErrors((prev) => ({ ...prev, password: undefined }));
                   }}
                   className="w-full pr-10 pl-11 py-3 bg-transparent rounded-xl text-slate-700 placeholder-slate-400 text-sm outline-none"
-                  placeholder="أدخل كلمة المرور"
+                  placeholder="أدخل كلمة المرور الجديدة"
                   onFocus={() => setFocusedField("password")}
                   onBlur={() => setFocusedField(null)}
                 />
                 <button
                   type="button"
                   className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition"
-                  onClick={togglePassword}
+                  onClick={() => setShowPassword(!showPassword)}
                 >
                   <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} className="text-sm" />
                 </button>
@@ -311,21 +264,41 @@ export default function LoginPage() {
               )}
             </div>
 
-            {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500 cursor-pointer"
-                />
-                <span className="text-sm text-slate-600">تذكرني</span>
+            {/* Confirm Password */}
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                تأكيد كلمة المرور <span className="text-red-500">*</span>
               </label>
-              <Link
-                href="/forgot-password"
-                className="text-sm text-emerald-700 hover:text-emerald-800 font-medium transition"
-              >
-                نسيت كلمة المرور؟
-              </Link>
+              <div className={`relative rounded-xl border-2 transition-all duration-200 ${getFieldBorderClass("confirmPassword")}`}>
+                <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <FontAwesomeIcon
+                    icon={faLock}
+                    className={`text-sm transition-colors ${getIconColorClass("confirmPassword")}`}
+                  />
+                </div>
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    if (submitted) setErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+                  }}
+                  className="w-full pr-10 pl-11 py-3 bg-transparent rounded-xl text-slate-700 placeholder-slate-400 text-sm outline-none"
+                  placeholder="أعد إدخال كلمة المرور"
+                  onFocus={() => setFocusedField("confirmPassword")}
+                  onBlur={() => setFocusedField(null)}
+                />
+                <button
+                  type="button"
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} className="text-sm" />
+                </button>
+              </div>
+              {submitted && errors.confirmPassword && (
+                <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.confirmPassword}</p>
+              )}
             </div>
 
             {/* Submit Button */}
@@ -341,36 +314,41 @@ export default function LoginPage() {
               {isLoading ? (
                 <>
                   <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
-                  <span>جاري تسجيل الدخول...</span>
+                  <span>جاري حفظ كلمة المرور...</span>
                 </>
               ) : (
                 <>
-                  <FontAwesomeIcon icon={faSignInAlt} />
-                  <span>تسجيل الدخول</span>
+                  <FontAwesomeIcon icon={faShieldAlt} />
+                  <span>حفظ كلمة المرور الجديدة</span>
                 </>
               )}
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="flex items-center gap-3 my-6">
-            <div className="flex-1 h-px bg-slate-200" />
-            <span className="text-xs text-slate-400 font-medium">أو</span>
-            <div className="flex-1 h-px bg-slate-200" />
-          </div>
-
-          {/* Register Link */}
-          <p className="text-center text-sm text-slate-500">
-            ليس لديك حساب؟{" "}
+          {/* Back to Login */}
+          <div className="mt-6 text-center">
             <Link
-              href="/register"
-              className="text-emerald-700 font-semibold hover:text-emerald-800 transition"
+              href="/login"
+              className="inline-flex items-center gap-2 text-sm text-emerald-700 font-semibold hover:text-emerald-800 transition"
             >
-              إنشاء حساب جديد
+              <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
+              <span>العودة إلى تسجيل الدخول</span>
             </Link>
-          </p>
+          </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <FontAwesomeIcon icon={faSpinner} className="animate-spin text-emerald-700 text-2xl" />
+      </div>
+    }>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }

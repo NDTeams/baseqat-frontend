@@ -44,8 +44,12 @@ api.interceptors.response.use(
   (error) => {
     // التحقق من أننا في جهة العميل (Client-side) قبل استخدام window
     if (error.response?.status === 401 && typeof window !== "undefined") {
+      // لا نعيد التوجيه تلقائياً للـ login، فقط نحذف التوكن
+      // سيتم التعامل مع إعادة التوجيه من خلال middleware أو الصفحة نفسها
       Cookies.remove("auth_token");
-      window.location.href = "/login";
+      Cookies.remove("auth_token", { path: "/" });
+      localStorage.clear();
+      sessionStorage.clear();
     }
     return Promise.reject(error);
   }

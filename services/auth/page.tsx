@@ -36,10 +36,48 @@ export const AuthService = {
     return res.data;
   },
     
+  // إعادة تعيين كلمة المرور
+  resetPassword: async (email: string, token: string, newPassword: string): Promise<ApiResponse> => {
+    const res = await api.post("/Account/ResetPassword", { email, token, newPassword });
+    return res.data;
+  },
+
   // تسجيل الخروج
-  logout: () => {
-    Cookies.remove("auth_token");
-    window.location.href = "/login";
+  logout: async () => {
+    try {
+      // إرسال طلب تسجيل الخروج للباك اند لإلغاء التوكن
+      const token = Cookies.get("auth_token");
+      if (token) {
+        await api.post("/Account/logout", {}, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      // حذف التوكن من الكوكيز بجميع الطرق الممكنة
+      Cookies.remove("auth_token", { path: "/" });
+      Cookies.remove("auth_token", { path: "/", domain: window.location.hostname });
+      Cookies.remove("auth_token");
+
+      // حذف أي كوكيز أخرى قد تكون موجودة
+      document.cookie.split(";").forEach((c) => {
+        document.cookie = c
+          .replace(/^ +/, "")
+          .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      });
+
+      // حذف جميع البيانات من localStorage
+      localStorage.clear();
+
+      // حذف جميع البيانات من sessionStorage
+      sessionStorage.clear();
+
+      // إعادة توجيه إلى الصفحة الرئيسية مع إعادة تحميل كاملة
+      window.location.href = "/";
+    }
   }
 };
 
