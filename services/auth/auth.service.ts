@@ -71,7 +71,7 @@ class AuthService {
       // إرسال طلب تسجيل الخروج للباك اند لإلغاء التوكن
       const token = Cookies.get("auth_token");
       if (token) {
-        await api.post("/auth/logout", {}, {
+        await api.post("/Account/logout", {}, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -80,20 +80,26 @@ class AuthService {
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      // حذف التوكن من الكوكيز بجميع المسارات
+      // حذف التوكن من الكوكيز بجميع الطرق الممكنة
       Cookies.remove("auth_token", { path: "/" });
+      Cookies.remove("auth_token", { path: "/", domain: window.location.hostname });
       Cookies.remove("auth_token");
 
+      // حذف أي كوكيز أخرى قد تكون موجودة
+      document.cookie.split(";").forEach((c) => {
+        document.cookie = c
+          .replace(/^ +/, "")
+          .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      });
+
       // حذف جميع البيانات من localStorage
-      localStorage.removeItem("user");
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("token");
+      localStorage.clear();
 
       // حذف جميع البيانات من sessionStorage
       sessionStorage.clear();
 
-      // إعادة توجيه إلى صفحة تسجيل الدخول مع إعادة تحميل كاملة
-      window.location.href = "/login";
+      // إعادة توجيه إلى الصفحة الرئيسية مع إعادة تحميل كاملة
+      window.location.href = "/";
     }
   }
 
