@@ -13,11 +13,20 @@ const cairo = Cairo({
 
 export const LanguageContext = createContext({
   language: "en",
-  setLanguage: (_lang: string) => {}, 
+  setLanguage: (_lang: string) => {},
+});
+
+export const SidebarContext = createContext({
+  sidebarOpen: false,
+  setSidebarOpen: (_open: boolean) => {},
+  toggleSidebar: () => {},
 });
 
 export default function ClientLayout({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState("ar");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   // ✅ تغيير اتجاه الصفحة كامل (html)
   useEffect(() => {
@@ -28,23 +37,30 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage }}>
-      <div className={`${cairo.className} flex h-screen bg-gray-50`}>
+      <SidebarContext.Provider value={{ sidebarOpen, setSidebarOpen, toggleSidebar }}>
+        <div className={`${cairo.className} flex h-screen bg-gray-50`}>
 
-        {/* Mobile Overlay */}
-        <div className="sidebar-overlay"></div>
+          {/* Mobile Overlay */}
+          {sidebarOpen && (
+            <div
+              className="fixed inset-0 bg-black/50 z-40 md:hidden"
+              onClick={() => setSidebarOpen(false)}
+            ></div>
+          )}
 
-        {/* Sidebar */}
-        <Sidebar />
+          {/* Sidebar */}
+          <Sidebar />
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <Header />
-          <main className="flex-1 overflow-y-auto p-6">
-            {children}
-          </main>
+          {/* Main Content */}
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <Header />
+            <main className="flex-1 overflow-y-auto p-6">
+              {children}
+            </main>
+          </div>
+
         </div>
-
-      </div>
+      </SidebarContext.Provider>
     </LanguageContext.Provider>
   );
 }

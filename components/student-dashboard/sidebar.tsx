@@ -28,7 +28,7 @@ interface SidebarItem {
 }
 
 const sidebarItems: SidebarItem[] = [
-  { href: "/dashboard", label: "لوحة التحكم", icon: faHome },
+  { href: "/index", label: "لوحة التحكم", icon: faHome },
   { href: "/profile", label: "صفحة البروفايل", icon: faUser },
   { href: "/attendance", label: "صفحة حضور الدورة", icon: faCalendarCheck, active: true },
   { href: "/my-courses", label: "صفحة الدورات الخاصة بالطالب", icon: faBookOpen },

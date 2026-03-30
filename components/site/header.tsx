@@ -8,13 +8,17 @@ import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faAdjust,
-  // faMobile,
-  //aHeadphones,
   faBars,
-  //faXmark,
   faChevronDown,
   faCalendarDays,
   faUser,
+  faSignOutAlt,
+  faCog,
+  faIdCard,
+  faGraduationCap,
+  faComments,
+  faNewspaper,
+  faHandshake,
 } from '@fortawesome/free-solid-svg-icons';
 import LanguageSwitcher from '@/components/language';
 import FontSizeController from './fontsize-controller';
@@ -29,12 +33,12 @@ interface HeaderProps {
 export default function Header({ grayscale, setGrayscale }: HeaderProps) {
   const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [megaOpen, setMegaOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [coursesOpen, setCoursesOpen] = useState(false);
+  const [consultationsOpen, setConsultationsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // ضبط التاريخ اليوم
   useEffect(() => {
     const today = new Date().toLocaleDateString('ar-SA', {
       weekday: 'long',
@@ -46,12 +50,17 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
     if (el) el.textContent = today;
   }, []);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (!target.closest('[data-dropdown="about"]')) {
         setAboutOpen(false);
+      }
+      if (!target.closest('[data-dropdown="courses"]')) {
+        setCoursesOpen(false);
+      }
+      if (!target.closest('[data-dropdown="consultations"]')) {
+        setConsultationsOpen(false);
       }
       if (!target.closest('[data-dropdown="user"]')) {
         setUserMenuOpen(false);
@@ -71,19 +80,6 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
-
-      {/* ====== Row 1 ====== */}
-      {/* <div className="bg-slate-100 text-slate-800 text-sm sm:px-2 md:px-4">
-        <div className="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2 text-xs sm:text-sm">
-            <span>{t('HomeSite.government_website')}</span>
-          </div>
-          <Link href="#" className="text-primary font-semibold hover:text-emerald-800 text-xs sm:text-sm">
-            {t('HomeSite.verify')}
-          </Link>
-        </div>
-      </div> */}
-
       {/* ====== Row 2 ====== */}
       <div className="bg-primary text-white text-sm px-2 md:px-4">
         <div className="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-3">
@@ -93,233 +89,307 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
           </button>
 
           <div className="hidden lg:flex items-center gap-4 text-xs sm:text-sm">
-            {/* <button className="flex items-center gap-1 hover:text-slate-100">
-              <FontAwesomeIcon icon={faMobile} />
-              {t('HomeSite.download_app')}
-            </button> */}
-
-            {/* زر تبديل اللون الرمادي */}
             <button onClick={() => setGrayscale(!grayscale)} className="flex items-center gap-1 hover:text-slate-100">
               <FontAwesomeIcon icon={faAdjust} />
               {t('HomeSite.toggle_colors')}
             </button>
-
-            {/* <button className="flex items-center gap-1 hover:text-slate-100">
-              <FontAwesomeIcon icon={faHeadphones} />
-              {t('HomeSite.screen_reader')}
-            </button> */}
-
             <FontSizeController />
           </div>
         </div>
       </div>
 
       {/* ====== Row 3 ====== */}
-      <div className="bg-white shadow-sm relative px-2 md:px-4">
+      <div className="bg-white shadow-md relative px-2 md:px-4">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            {/* زر فتح القائمة على الموبايل */}
+            {/* Mobile Menu Button */}
             <button
               onClick={() => setMenuOpen(true)}
-              className="md:hidden w-11 h-11 rounded-xl bg-primary text-white flex items-center justify-center"
+              className="md:hidden w-11 h-11 rounded-xl bg-primary text-white flex items-center justify-center hover:bg-emerald-800 transition"
             >
               <FontAwesomeIcon icon={faBars} />
             </button>
 
-            {/* الشعار */}
-            <Link href="/">
-              <Image src="/site/logo.png" alt="Logo" width={120} height={48} className="h-12 w-auto" />
+            {/* Logo */}
+            <Link href="/" className="flex-shrink-0">
+              <Image src="/site/logo.png" alt="باسقات" width={120} height={48} className="h-12 w-auto" />
             </Link>
 
-            {/* القوائم الرئيسية */}
-            <nav className="hidden md:flex items-center gap-4 text-sm font-semibold text-background relative">
-              <Link href="/" className="px-3 py-2 rounded-xl bg-primary text-white">
-                {t('HomeSite.home')}
+            {/* Main Navigation */}
+            <nav className="hidden md:flex items-center gap-1 text-sm font-semibold text-slate-700">
+              {/* Home */}
+              <Link href="/" className="px-4 py-2.5 rounded-xl bg-emerald-700 text-white hover:bg-emerald-800 transition">
+                الرئيسية
               </Link>
 
               {/* About Us Dropdown */}
-              <div className="relative group" data-dropdown="about">
+              <div className="relative" data-dropdown="about">
                 <button
                   onClick={() => setAboutOpen(!aboutOpen)}
-                  className="px-3 py-2 rounded-xl hover:text-primary flex items-center gap-1"
+                  className="px-4 py-2.5 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-2 transition"
                 >
-                  {t('HomeSite.about_us')}
+                  من نحن
                   <FontAwesomeIcon
                     icon={faChevronDown}
-                    className={`text-xs transition-transform ${aboutOpen ? 'rotate-180' : ''}`}
+                    className={`text-xs transition-transform duration-300 ${aboutOpen ? 'rotate-180' : ''}`}
                   />
                 </button>
 
-                {/* Dropdown Menu */}
                 {aboutOpen && (
-                  <div className="absolute top-full right-0 mt-2 bg-primary rounded-lg shadow-lg overflow-hidden z-40 min-w-52">
-                    <Link
-                      href="/ceo-message"
-                      className="block px-4 py-3 text-white hover:bg-emerald-800 transition-colors"
-                      onClick={() => setAboutOpen(false)}
-                    >
-                      كلمة الرئيس التنفيذي
-                    </Link>
-                    <Link
-                      href="/achievements"
-                      className="block px-4 py-3 text-white hover:bg-emerald-800 transition-colors border-t border-emerald-700"
-                      onClick={() => setAboutOpen(false)}
-                    >
-                      إنجازات باسقات
-                    </Link>
-                    <Link
-                      href="/aboutus"
-                      className="block px-4 py-3 text-white hover:bg-emerald-800 transition-colors border-t border-emerald-700"
-                      onClick={() => setAboutOpen(false)}
-                    >
-                      {t('HomeSite.about_us')}
-                    </Link>
+                  <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50">
+                    <div className="bg-gradient-to-r from-emerald-700 to-emerald-600 px-4 py-3">
+                      <h3 className="text-white font-bold text-sm">من نحن</h3>
+                    </div>
+                    <div className="p-2">
+                      <Link
+                        href="/aboutus"
+                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition"
+                        onClick={() => setAboutOpen(false)}
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                          <FontAwesomeIcon icon={faIdCard} className="text-emerald-700" />
+                        </div>
+                        <span className="text-sm">عن باسقات</span>
+                      </Link>
+                      <Link
+                        href="/ceo-message"
+                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition"
+                        onClick={() => setAboutOpen(false)}
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                          <FontAwesomeIcon icon={faUser} className="text-blue-700" />
+                        </div>
+                        <span className="text-sm">كلمة الرئيس التنفيذي</span>
+                      </Link>
+                      <Link
+                        href="/achievements"
+                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition"
+                        onClick={() => setAboutOpen(false)}
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center flex-shrink-0">
+                          <FontAwesomeIcon icon={faHandshake} className="text-yellow-700" />
+                        </div>
+                        <span className="text-sm">إنجازات باسقات</span>
+                      </Link>
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* <button
-                onClick={() => setMegaOpen(!megaOpen)}
-                className="px-3 py-2 rounded-xl flex items-center gap-1 hover:text-primary"
-              >
-                {t('HomeSite.about_us')}
-                <FontAwesomeIcon
-                  icon={faChevronDown}
-                  className={`${megaOpen ? 'rotate-180' : ''} transition-transform`}
-                />
-              </button> */}
-              
-              <Link href="/services" className="px-3 py-2 rounded-xl hover:text-primary">{t('HomeSite.services')}</Link>
-              <Link href="/courses-archive" className="px-3 py-2 rounded-xl hover:text-primary">{t('HomeSite.coursesHeader')}</Link>
-              <Link href="/media-center" className="px-3 py-2 rounded-xl hover:text-primary">{t('HomeSite.media_center')}</Link>
-              <Link href="/contact" className="px-3 py-2 rounded-xl hover:text-primary">{t('HomeSite.contactHeader')}</Link>
+              {/* Services */}
+              <Link href="/services" className="px-4 py-2.5 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition">
+                خدمات
+              </Link>
 
-              {/* Mega Menu */}
-              {megaOpen && (
-                <div className="mega-panel absolute  top-full mt-2 w-screen max-w-5xl bg-white border border-slate-100 rounded-2xl shadow-2xl py-6 px-6 z-50">
-                  <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6 text-sm text-slate-800">
-                    {/* About Us */}
-                    <div className="space-y-2">
-                      <h4 className="font-bold text-primary">{t('HomeSite.about_us')}</h4>
-                      <ul className="space-y-1">
-                        <li><a className="hover:text-primary" href="#">{t('HomeSite.foundation')}</a></li>
-                        <li><a className="hover:text-primary" href="#">{t('HomeSite.vision_mission')}</a></li>
-                        <li><a className="hover:text-primary" href="#">{t('HomeSite.regulations')}</a></li>
-                        <li><a className="hover:text-primary" href="#">{t('HomeSite.annual_report')}</a></li>
-                      </ul>
+              {/* Courses Dropdown */}
+              <div className="relative" data-dropdown="courses">
+                <button
+                  onClick={() => setCoursesOpen(!coursesOpen)}
+                  className="px-4 py-2.5 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-2 transition"
+                >
+                  الدورات التدريبية
+                  <FontAwesomeIcon
+                    icon={faChevronDown}
+                    className={`text-xs transition-transform duration-300 ${coursesOpen ? 'rotate-180' : ''}`}
+                  />
+                </button>
+
+                {coursesOpen && (
+                  <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50">
+                    <div className="bg-gradient-to-r from-emerald-700 to-emerald-600 px-4 py-3">
+                      <h3 className="text-white font-bold text-sm">الدورات التدريبية</h3>
                     </div>
-
-                    {/* Structure */}
-                    <div className="space-y-2">
-                      <h4 className="font-bold text-primary">{t('structure')}</h4>
-                      <ul className="space-y-1">
-                        <li><a className="hover:text-primary" href="#">{t('HomeSite.organizational_structure')}</a></li>
-                        <li><a className="hover:text-primary" href="#">{t('HomeSite.board')}</a></li>
-                        <li><a className="hover:text-primary" href="#">{t('HomeSite.executive_management')}</a></li>
-                        <li><a className="hover:text-primary" href="#">{t('HomeSite.departments_roles')}</a></li>
-                      </ul>
-                    </div>
-
-                    {/* Strategy */}
-                    <div className="space-y-2">
-                      <h4 className="font-bold text-primary">{t('HomeSite.strategy')}</h4>
-                      <ul className="space-y-1">
-                        <li><a className="hover:text-primary" href="#">{t('HomeSite.policies')}</a></li>
-                        <li><a className="hover:text-primary" href="#">{t('HomeSite.hr_strategy')}</a></li>
-                        <li><a className="hover:text-primary" href="#">{t('HomeSite.service_agreement')}</a></li>
-                        <li><a className="hover:text-primary" href="#">{t('HomeSite.vision_2030')}</a></li>
-                      </ul>
-                    </div>
-
-                    {/* Join Us */}
-                    <div className="space-y-2">
-                      <h4 className="font-bold text-primary">{t('HomeSite.join_us')}</h4>
-                      <ul className="space-y-1">
-                        <li><a className="hover:text-primary" href="#">{t('HomeSite.current_jobs')}</a></li>
-                        <li><a className="hover:text-primary" href="#">{t('HomeSite.suppliers')}</a></li>
-                        <li><a className="hover:text-primary" href="#">{t('HomeSite.partners')}</a></li>
-                        <li><a className="hover:text-primary" href="#">{t('HomeSite.news_events')}</a></li>
-                      </ul>
+                    <div className="p-2">
+                      <Link
+                        href="/courses-archive"
+                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition"
+                        onClick={() => setCoursesOpen(false)}
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                          <FontAwesomeIcon icon={faGraduationCap} className="text-emerald-700" />
+                        </div>
+                        <span className="text-sm">الدورات التدريبية</span>
+                      </Link>
+                      <Link
+                        href="/courses-categories"
+                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition"
+                        onClick={() => setCoursesOpen(false)}
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                          <FontAwesomeIcon icon={faGraduationCap} className="text-blue-700" />
+                        </div>
+                        <span className="text-sm">أقسام الدورات</span>
+                      </Link>
+                      <Link
+                        href="/instructors"
+                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition"
+                        onClick={() => setCoursesOpen(false)}
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
+                          <FontAwesomeIcon icon={faUser} className="text-purple-700" />
+                        </div>
+                        <span className="text-sm">المدربين</span>
+                      </Link>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+
+              {/* Consultations Dropdown */}
+              <div className="relative" data-dropdown="consultations">
+                <button
+                  onClick={() => setConsultationsOpen(!consultationsOpen)}
+                  className="px-4 py-2.5 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-2 transition"
+                >
+                  الاستشارات
+                  <FontAwesomeIcon
+                    icon={faChevronDown}
+                    className={`text-xs transition-transform duration-300 ${consultationsOpen ? 'rotate-180' : ''}`}
+                  />
+                </button>
+
+                {consultationsOpen && (
+                  <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50">
+                    <div className="bg-gradient-to-r from-emerald-700 to-emerald-600 px-4 py-3">
+                      <h3 className="text-white font-bold text-sm">الاستشارات</h3>
+                    </div>
+                    <div className="p-2">
+                      <Link
+                        href="/consultation-categories"
+                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition"
+                        onClick={() => setConsultationsOpen(false)}
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                          <FontAwesomeIcon icon={faComments} className="text-emerald-700" />
+                        </div>
+                        <span className="text-sm">أقسام الاستشارات</span>
+                      </Link>
+                      <Link
+                        href="/consultants"
+                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition"
+                        onClick={() => setConsultationsOpen(false)}
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                          <FontAwesomeIcon icon={faUser} className="text-blue-700" />
+                        </div>
+                        <span className="text-sm">المستشارين</span>
+                      </Link>
+                      <Link
+                        href="/consultation-request"
+                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition"
+                        onClick={() => setConsultationsOpen(false)}
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center flex-shrink-0">
+                          <FontAwesomeIcon icon={faHandshake} className="text-yellow-700" />
+                        </div>
+                        <span className="text-sm">طلب استشارة</span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Media Center */}
+              <Link href="/media-center" className="px-4 py-2.5 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition">
+                المركز الإعلامي
+              </Link>
+
+              {/* Support */}
+              <Link href="/contact" className="px-4 py-2.5 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition">
+                الدعم والمساعدة
+              </Link>
             </nav>
           </div>
 
-          {/* أيقونات البحث واللغة */}
-          <div className="hidden md:flex items-center gap-2 text-sm font-semibold">
+          {/* Right Side Actions */}
+          <div className="hidden md:flex items-center gap-3">
+            <LanguageSwitcher />
+
             {isLoggedIn ? (
               <div className="relative" data-dropdown="user">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl border border-emerald-100 hover:border-emerald-300 hover:text-primary transition"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-emerald-100 hover:border-emerald-700 hover:bg-emerald-50 transition group"
                 >
-                  <FontAwesomeIcon icon={faUser} />
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-600 to-emerald-700 flex items-center justify-center text-white text-sm font-bold">
+                    <FontAwesomeIcon icon={faUser} />
+                  </div>
                   <FontAwesomeIcon
                     icon={faChevronDown}
-                    className={`text-xs transition-transform ${userMenuOpen ? 'rotate-180' : ''}`}
+                    className={`text-xs text-slate-400 group-hover:text-emerald-700 transition-all duration-300 ${
+                      userMenuOpen ? 'rotate-180' : ''
+                    }`}
                   />
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden z-50">
-                    <Link
-                      href="/dashboard"
-                      className="block px-4 py-3 text-slate-800 hover:bg-emerald-50"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      {t('auth.control_panel')}
-                    </Link>
-                    <Link
-                      href="/student-dashboard/profile"
-                      className="block px-4 py-3 text-slate-800 hover:bg-emerald-50 border-t border-slate-100"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      {t('auth.profile')}
-                    </Link>
-                    <Link
-                      href="/settings"
-                      className="block px-4 py-3 text-slate-800 hover:bg-emerald-50 border-t border-slate-100"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      {t('auth.settings')}
-                    </Link>
-                    <button
-                      onClick={() => AuthService.logout()}
-                      className="w-full text-right px-4 py-3 text-red-600 hover:bg-red-50 border-t border-slate-100"
-                    >
-                      {t('auth.logout')}
-                    </button>
+                  <div className="absolute left-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50">
+                    <div className="bg-gradient-to-r from-emerald-700 to-emerald-600 px-4 py-3">
+                      <p className="text-white text-xs">مرحباً بك</p>
+                      <p className="text-white font-bold text-sm">أحمد محمد</p>
+                    </div>
+                    <div className="p-2">
+                      <Link
+                        href="/index"
+                        className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <FontAwesomeIcon icon={faIdCard} className="text-emerald-700" />
+                        <span className="text-sm">لوحة التحكم</span>
+                      </Link>
+                      <Link
+                        href="/student-dashboard/profile"
+                        className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <FontAwesomeIcon icon={faUser} className="text-blue-700" />
+                        <span className="text-sm">الملف الشخصي</span>
+                      </Link>
+                      <Link
+                        href="/settings"
+                        className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <FontAwesomeIcon icon={faCog} className="text-slate-500" />
+                        <span className="text-sm">الإعدادات</span>
+                      </Link>
+                      <div className="border-t border-slate-100 my-2"></div>
+                      <button
+                        onClick={async () => {
+                          setUserMenuOpen(false);
+                          await AuthService.logout();
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-red-600 hover:bg-red-50 rounded-xl transition"
+                      >
+                        <FontAwesomeIcon icon={faSignOutAlt} />
+                        <span className="text-sm">تسجيل الخروج</span>
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
             ) : (
-              <Link
-                href="/login"
-                className="px-4 py-2 rounded-xl bg-primary text-white hover:bg-emerald-700 transition"
-              >
-                {t('auth.login')}
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/register"
+                  className="px-5 py-2.5 border-2 border-emerald-700 text-emerald-700 rounded-xl hover:bg-emerald-50 transition font-semibold text-sm"
+                >
+                  التسجيل
+                </Link>
+                <Link
+                  href="/login"
+                  className="px-5 py-2.5 bg-emerald-700 text-white rounded-xl hover:bg-emerald-800 transition font-semibold text-sm"
+                >
+                  تسجيل الدخول
+                </Link>
+              </div>
             )}
-
-            <LanguageSwitcher />
-            <Link href="/jobs" className="font-semibold hover:text-primary">{t('HomeSite.jobs_portal')}</Link>
           </div>
         </div>
       </div>
 
       {/* Mobile Menu */}
-      {menuOpen && (
-        <MobileMenu
-          menuOpen={menuOpen}
-          setMenuOpen={setMenuOpen}
-          grayscale={grayscale}
-          setGrayscale={setGrayscale}
-          setSearchOpen={() => {}}
-        />
-      )}
+      {menuOpen && <MobileMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />}
     </header>
   );
 }
-

@@ -56,7 +56,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
               </div>
 
               {/* Main Content */}
-              <div className="flex-1 font-cairo mt-32">
+              <div className="flex-1 font-cairo">
                 {children}
               </div>
                {/* <WhatsAppButton /> */}

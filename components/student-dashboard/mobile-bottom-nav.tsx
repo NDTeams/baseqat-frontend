@@ -71,7 +71,7 @@ export default function MobileBottomNav() {
 
         {/* Logout */}
         <button
-          onClick={() => AuthService.logout()}
+          onClick={async () => await AuthService.logout()}
           className="flex flex-col items-center justify-center gap-1 min-w-[70px] max-w-[90px] px-2 py-2 rounded-xl flex-shrink-0 text-red-500 transition-all"
         >
           <FontAwesomeIcon icon={faSignOutAlt} className="text-lg" />

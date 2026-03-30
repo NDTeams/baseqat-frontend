@@ -22,7 +22,18 @@
       "Bash(git remote set-url:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git fsck:*)",
+      "Bash(git remote add:*)",
+      "Bash(git fetch:*)",
+      "Bash(find:*)",
+      "Bash(git restore:*)",
+      "Read(//c/Users/hp3/Downloads/**)",
+      "WebFetch(domain:coderthemes.com)"
+    ],
+    "additionalDirectories": [
+      "D:\\ND\\app\\Baseqt\\Baseqat.CORE\\Services",
+      "D:\\ND\\app\\Baseqt\\Baseqt.API\\Controllers"
     ]
   }
 }
