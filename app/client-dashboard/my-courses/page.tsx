@@ -52,8 +52,8 @@ export default function MyCoursesPage() {
   const filtered = enrollments.filter((e) => {
     const matchSearch = !search || e.courseTitle.toLowerCase().includes(search.toLowerCase()) || e.instructorName.toLowerCase().includes(search.toLowerCase());
     const matchFilter = filter === "all" ||
-      (filter === "online" && e.courseType === 0) ||
-      (filter === "in-person" && e.courseType === 1) ||
+      (filter === "in-person" && e.courseType === 0) ||
+      (filter === "online" && e.courseType === 1) ||
       (filter === "hybrid" && e.courseType === 2);
     return matchSearch && matchFilter;
   });
@@ -181,8 +181,8 @@ function MyCourseCard({ enrollment }: { enrollment: MyEnrollment }) {
   const thumbnailUrl = enrollment.thumbnailUrl ? getFileUrl(enrollment.thumbnailUrl) : null;
   const instructorAvatar = enrollment.instructorAvatarUrl ? getFileUrl(enrollment.instructorAvatarUrl) : null;
 
-  const courseTypeLabel = enrollment.courseType === 0 ? "عن بُعد" : enrollment.courseType === 1 ? "حضوري" : "مدمج";
-  const courseTypeColor = enrollment.courseType === 0 ? "bg-blue-500" : enrollment.courseType === 1 ? "bg-amber-500" : "bg-purple-500";
+  const courseTypeLabel = enrollment.courseType === 0 ? "حضوري" : enrollment.courseType === 1 ? "أونلاين" : "أونلاين + حضوري";
+  const courseTypeColor = enrollment.courseType === 0 ? "bg-amber-500" : enrollment.courseType === 1 ? "bg-sky-500" : "bg-violet-500";
 
   const levelLabel = enrollment.level === 0 ? "مبتدئ" : enrollment.level === 1 ? "متوسط" : "متقدم";
 

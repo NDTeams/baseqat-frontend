@@ -5,49 +5,73 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 interface FilterModalProps {
   closeModal: () => void;
+  filterStatus: string;
+  setFilterStatus: (val: string) => void;
+  filterRole: string;
+  setFilterRole: (val: string) => void;
+  allRoles: string[];
 }
 
-export default function FilterModal({ closeModal }: FilterModalProps) {
+export default function FilterModal({ closeModal, filterStatus, setFilterStatus, filterRole, setFilterRole, allRoles }: FilterModalProps) {
   return (
-    <div className="filter-modal-overlay fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-      <div className="filter-modal-container w-full max-w-sm mx-4 sm:mx-auto bg-white rounded-2xl p-6 relative">
-
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={closeModal}>
+      <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 ">
-          <h3 className="text-xl  text-[#30846C] m-0 font-semibold">تصفية المستخدمين</h3>
-          <button className="filter-modal-close text-gray-500" onClick={closeModal}>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+          <h3 className="text-lg font-bold text-slate-800">تصفية المستخدمين</h3>
+          <button onClick={closeModal} className="p-2 hover:bg-slate-100 rounded-lg transition text-slate-400">
             <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
 
-        {/* الحالة */}
-        <div className="mb-4 ">
-          <label className="block mb-1 font-semibold text-[#30846C] text-sm">الحالة</label>
-          <select id="statusFilter" className="w-full border border-gray-300 rounded px-3 py-2">
-            <option value="">جميع الحالات</option>
-            <option value="active">نشط</option>
-            <option value="inactive">غير نشط</option>
-          </select>
-        </div>
+        <div className="p-6 space-y-4">
+          {/* الحالة */}
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">الحالة</label>
+            <select
+              value={filterStatus}
+              onChange={e => setFilterStatus(e.target.value)}
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500 transition"
+            >
+              <option value="">جميع الحالات</option>
+              <option value="confirmed">مفعل</option>
+              <option value="unconfirmed">غير مفعل</option>
+              <option value="locked">محظور</option>
+              <option value="active">نشط (غير محظور)</option>
+            </select>
+          </div>
 
-        {/* الصلاحيات */}
-        <div className="mb-4">
-          <label className="block mb-1 font-semibold text-[#30846C] text-sm">الصلاحيات</label>
-          <select id="permissionFilter" className="w-full border border-gray-300 rounded px-3 py-2">
-            <option value="">جميع الصلاحيات</option>
-            <option value="إدارة العروض">إدارة العروض</option>
-            <option value="الاشراف على المهام">الاشراف على المهام</option>
-            <option value="الاطلاع فقط">الاطلاع فقط</option>
-          </select>
-        </div>
+          {/* الدور */}
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">الدور</label>
+            <select
+              value={filterRole}
+              onChange={e => setFilterRole(e.target.value)}
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500 transition"
+            >
+              <option value="">جميع الأدوار</option>
+              {allRoles.map(role => (
+                <option key={role} value={role}>{role}</option>
+              ))}
+            </select>
+          </div>
 
-        {/* زر مسح الفلاتر */}
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <button className="w-full px-6 py-3 bg-[#30846C] text-white rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 ease-in-out">
-            مسح الفلاتر
-          </button>
+          {/* الأزرار */}
+          <div className="flex items-center gap-3 pt-2">
+            <button
+              onClick={() => { setFilterStatus(""); setFilterRole(""); }}
+              className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
+            >
+              مسح الفلاتر
+            </button>
+            <button
+              onClick={closeModal}
+              className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold transition"
+            >
+              تطبيق
+            </button>
+          </div>
         </div>
-
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ interface Course {
   subtitle: string;
   startDate: string;
   endDate: string;
-  type: 'online' | 'onsite';
+  type: 'online' | 'onsite' | 'hybrid';
   section: string;
   durationDays: number;
   durationHours: number; 
@@ -52,8 +52,9 @@ const getStatusColor = (status: string) => {
 
 const getTypeColor = (type: string) => {
   switch (type) {
-    case 'online': return 'bg-purple-100 text-purple-800';
-    case 'onsite': return 'bg-orange-100 text-orange-800';
+    case 'online': return 'bg-sky-100 text-sky-800';
+    case 'onsite': return 'bg-amber-100 text-amber-800';
+    case 'hybrid': return 'bg-violet-100 text-violet-800';
     default: return 'bg-gray-100 text-gray-800';
   }
 };
@@ -69,8 +70,9 @@ const getStatusText = (status: string) => {
 
 const getTypeText = (type: string) => {
   switch (type) {
-    case 'online': return 'اونلاين';
+    case 'online': return 'أونلاين';
     case 'onsite': return 'حضوري';
+    case 'hybrid': return 'أونلاين + حضوري';
     default: return type;
   }
 };

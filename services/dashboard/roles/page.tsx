@@ -21,7 +21,7 @@ export interface RoleDetail extends Role {
 
 export interface PrivilegesRoleBasedDto {
   id: number;
-  privilegesId: string;
+  privilegesId: number;
   privilegeName: string;
   roleId: string;
   roleName: string;
@@ -33,7 +33,8 @@ export interface PrivilegesRoleBasedDto {
 }
 
 export interface PrivilegesRoleBasedCreateDto {
-  privilegesId: string;
+  privilegesId: number;
+  roleId: string;
   is_displayed: boolean;
   is_insert: boolean;
   is_update: boolean;
@@ -56,6 +57,20 @@ export interface Privilege {
   category?: string;
 }
 
+// واجهة تطابق استجابة الباك اند _Role_PriviligeDto
+export interface UserPrivilegeDto {
+  privilegesId: number;
+  name: string;
+  roleId: string;
+  userId?: string;
+  is_displayed: boolean;
+  is_insert: boolean;
+  is_update: boolean;
+  is_delete: boolean;
+  is_print: boolean;
+}
+
+// واجهة قديمة - للتوافق
 export interface UserPrivilege {
   privilegeId: string;
   privilegeName: string;
@@ -65,18 +80,6 @@ export interface UserPrivilege {
   isUpdate: boolean;
   isDelete: boolean;
 }
-
-// ===== Fixed System Privileges (kept for backwards compatibility) =====
-export const SYSTEM_PRIVILEGES: Privilege[] = [
-  { id: "a676129d-0000-0000-0000-000000000001", name: "إدارة المستخدمين", category: "المستخدمون" },
-  { id: "f25d9c1b-0000-0000-0000-000000000002", name: "إدارة المجموعات", category: "المجموعات" },
-  { id: "b8a3e2c1-0000-0000-0000-000000000003", name: "إدارة الصلاحيات", category: "المجموعات" },
-  { id: "c1d2e3f4-0000-0000-0000-000000000004", name: "إدارة التصنيفات", category: "الدورات" },
-  { id: "d4e5f6a7-0000-0000-0000-000000000005", name: "إدارة الدورات", category: "الدورات" },
-  { id: "e7f8a9b0-0000-0000-0000-000000000006", name: "صلاحيات الطلبات", category: "الطلبات" },
-  { id: "f0a1b2c3-0000-0000-0000-000000000007", name: "قبول الطلبات", category: "الطلبات" },
-  { id: "a1b2c3d4-0000-0000-0000-000000000008", name: "تعديل حالة الطلبات", category: "الطلبات" },
-];
 
 // ===== Roles Service =====
 export const RolesService = {
@@ -152,24 +155,18 @@ export const RolesService = {
 
 // ===== User Privileges Service =====
 export const PrivilegesService = {
-  // جلب صلاحيات مستخدم محدد
-  getUserPrivileges: async (userId: string): Promise<ApiResponse<UserPrivilege[]>> => {
-    const res = await api.post(`/UsersManagement/GetAllUserPriviliges?userId=${userId}`);
+  // جلب صلاحيات مستخدم محدد (يدمج صلاحيات المستخدم + المجموعة)
+  getUserPrivileges: async (userId: string): Promise<ApiResponse<UserPrivilegeDto[]>> => {
+    const res = await api.get(`/UsersManagement/GetAllUserPriviliges?userId=${userId}`);
     return res.data;
   },
 
-  // تحديث صلاحيات مستخدم
+  // تحديث صلاحيات مستخدم (صلاحيات خاصة تتجاوز صلاحيات المجموعة)
   updateUserPrivileges: async (
     userId: string,
-    privileges: {
-      privilegeId: string;
-      isDisplayed: boolean;
-      isInsert: boolean;
-      isUpdate: boolean;
-      isDelete: boolean;
-    }[]
+    privileges: UserPrivilegeDto[]
   ): Promise<ApiResponse<string>> => {
-    const res = await api.post("/UsersManagement/UpdateUserPrivileges", { userId, privileges });
+    const res = await api.post(`/UsersManagement/AddOrUpdatePriviligesToUser?userId=${userId}`, privileges);
     return res.data;
   },
 

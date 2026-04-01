@@ -38,6 +38,8 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
   const [consultationsOpen, setConsultationsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("مستخدم");
+  const [userRoles, setUserRoles] = useState<string[]>([]);
 
   useEffect(() => {
     const today = new Date().toLocaleDateString('ar-SA', {
@@ -76,6 +78,17 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
       typeof window !== 'undefined' &&
       (localStorage.getItem('authToken') || Cookies.get('auth_token'));
     setIsLoggedIn(Boolean(hasToken));
+
+    if (hasToken) {
+      try {
+        const stored = localStorage.getItem('user');
+        if (stored) {
+          const user = JSON.parse(stored);
+          if (user.name) setUserName(user.name);
+          if (user.roles) setUserRoles(user.roles);
+        }
+      } catch {}
+    }
   }, []);
 
   return (
@@ -326,17 +339,19 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
                   <div className="absolute left-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50">
                     <div className="bg-gradient-to-r from-emerald-700 to-emerald-600 px-4 py-3">
                       <p className="text-white text-xs">مرحباً بك</p>
-                      <p className="text-white font-bold text-sm">أحمد محمد</p>
+                      <p className="text-white font-bold text-sm">{userName}</p>
                     </div>
                     <div className="p-2">
-                      <Link
-                        href="/index"
-                        className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition"
-                        onClick={() => setUserMenuOpen(false)}
-                      >
-                        <FontAwesomeIcon icon={faIdCard} className="text-emerald-700" />
-                        <span className="text-sm">لوحة التحكم</span>
-                      </Link>
+                      {userRoles.some(r => ['SuperAdmin', 'Admin', 'BaseqatEmployee'].includes(r)) && (
+                        <Link
+                          href="/index"
+                          className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          <FontAwesomeIcon icon={faIdCard} className="text-emerald-700" />
+                          <span className="text-sm">لوحة التحكم</span>
+                        </Link>
+                      )}
                       <Link
                         href="/student-dashboard/profile"
                         className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition"

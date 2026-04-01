@@ -1,29 +1,55 @@
 "use client";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamation } from "@fortawesome/free-solid-svg-icons";
+import { faExclamationTriangle, faTrash, faEye } from "@fortawesome/free-solid-svg-icons";
+import { useRouter } from "next/navigation";
+import type { UserData } from "./addUser-section";
 
 interface DeleteUserModalProps {
+  user: UserData;
   closeModal: () => void;
+  onDelete: () => Promise<void>;
 }
 
-export default function DeleteUserModal({ closeModal }: DeleteUserModalProps) {
+export default function DeleteUserModal({ user, closeModal, onDelete }: DeleteUserModalProps) {
+  const router = useRouter();
+
+  const goToDeletePage = () => {
+    closeModal();
+    router.push(`/delete-user?userId=${user.id}`);
+  };
+
   return (
-    <div className="modal-overlay fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-      <div className="delete-modal-container w-full max-w-sm mx-4 sm:mx-auto p-6 bg-white rounded-lg shadow-lg">
-        <div className="delete-modal-header text-center space-y-3">
-          <div className="w-16 h-16 bg-red-100 border-2 border-red-200 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl text-red-600">
-            <FontAwesomeIcon icon={faExclamation} />
-          </div>
-          <h3 className="delete-modal-title text-lg font-semibold text-gray-800">حذف مستخدم</h3>
-          <p className="delete-modal-message text-gray-600">هل انت متأكد من حذف هذا المستخدم؟</p>
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={closeModal}>
+      <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-6 text-center" onClick={e => e.stopPropagation()}>
+        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <FontAwesomeIcon icon={faExclamationTriangle} className="text-red-600 text-2xl" />
         </div>
-        <div className="flex justify-center gap-4 mt-6 ">
-          <button className="btn-delete bg-red-600 text-white px-4 py-2 rounded-md font-medium hover:bg-red-700 transition">
-            حذف
+
+        <h3 className="text-lg font-bold text-slate-800 mb-2">حذف مستخدم</h3>
+        <p className="text-sm text-slate-500 mb-1">
+          هل أنت متأكد من حذف المستخدم
+        </p>
+        <p className="text-sm font-bold text-slate-800 mb-4">
+          {user.fullName || user.userName}؟
+        </p>
+        <p className="text-xs text-amber-600 mb-6 bg-amber-50 rounded-lg p-2">
+          يُنصح بمراجعة البيانات المرتبطة وتصديرها قبل الحذف
+        </p>
+
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={goToDeletePage}
+            className="w-full px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-semibold transition flex items-center justify-center gap-2"
+          >
+            <FontAwesomeIcon icon={faEye} />
+            مراجعة البيانات والحذف
           </button>
-          <button className="btn-cancel-delete bg-gray-200 text-gray-700 px-4 py-2 rounded-md font-medium hover:bg-gray-300 transition" onClick={closeModal}>
-            الغاء
+          <button
+            onClick={closeModal}
+            className="w-full px-5 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
+          >
+            إلغاء
           </button>
         </div>
       </div>

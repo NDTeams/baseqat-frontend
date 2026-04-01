@@ -8,7 +8,7 @@ import {
   faEye, faPlus, faTrash, faPen,
 } from '@fortawesome/free-solid-svg-icons';
 import { UsersManagement } from '@/services/dashboard/users-management/page';
-import { PrivilegesService, SYSTEM_PRIVILEGES, type UserPrivilege } from '@/services/dashboard/roles/page';
+import { PrivilegesService, type UserPrivilegeDto } from '@/services/dashboard/roles/page';
 
 interface StatusNotif { open: boolean; type: 'success' | 'error'; message: string; }
 
@@ -19,32 +19,26 @@ interface ApiUser {
   userImage: string | null;
 }
 
-// privilege key labels
-const PRIV_KEYS: { key: keyof UserPrivilege; label: string; icon: any; color: string }[] = [
-  { key: 'isDisplayed', label: 'عرض', icon: faEye, color: 'text-blue-600 bg-blue-50' },
-  { key: 'isInsert', label: 'إضافة', icon: faPlus, color: 'text-blue-600 bg-blue-50' },
-  { key: 'isUpdate', label: 'تعديل', icon: faPen, color: 'text-amber-600 bg-amber-50' },
-  { key: 'isDelete', label: 'حذف', icon: faTrash, color: 'text-red-600 bg-red-50' },
+// أعمدة الصلاحيات
+const PRIV_KEYS: { key: keyof Pick<UserPrivilegeDto, 'is_displayed' | 'is_insert' | 'is_update' | 'is_delete'>; label: string; icon: any; color: string }[] = [
+  { key: 'is_displayed', label: 'عرض', icon: faEye, color: 'text-blue-600 bg-blue-50' },
+  { key: 'is_insert', label: 'إضافة', icon: faPlus, color: 'text-blue-600 bg-blue-50' },
+  { key: 'is_update', label: 'تعديل', icon: faPen, color: 'text-amber-600 bg-amber-50' },
+  { key: 'is_delete', label: 'حذف', icon: faTrash, color: 'text-red-600 bg-red-50' },
 ];
 
-// ===== Privilege Toggle Row =====
+// ===== صف الصلاحية =====
 function PrivilegeRow({ priv, onChange }: {
-  priv: UserPrivilege;
-  onChange: (key: keyof UserPrivilege, val: boolean) => void;
+  priv: UserPrivilegeDto;
+  onChange: (key: string, val: boolean) => void;
 }) {
-  const systemPriv = SYSTEM_PRIVILEGES.find(p => p.id === priv.privilegeId);
-  const category = systemPriv?.category ?? priv.category ?? '—';
-
   return (
     <tr className="hover:bg-gray-50/60 transition-colors">
       <td className="px-6 py-3.5">
-        <div>
-          <p className="font-semibold text-gray-800 text-sm">{priv.privilegeName}</p>
-          <p className="text-xs text-gray-400 mt-0.5">{category}</p>
-        </div>
+        <p className="font-semibold text-gray-800 text-sm">{priv.name}</p>
       </td>
       {PRIV_KEYS.map(({ key, label, icon, color }) => (
-        <td key={key as string} className="px-4 py-3.5 text-center">
+        <td key={key} className="px-4 py-3.5 text-center">
           <button
             onClick={() => onChange(key, !(priv[key] as boolean))}
             className={`w-8 h-8 mx-auto rounded-lg flex items-center justify-center transition-all ${
@@ -75,21 +69,21 @@ function StatusToast({ notif, onClose }: { notif: StatusNotif; onClose: () => vo
   );
 }
 
-// ===== Main Page =====
+// ===== الصفحة الرئيسية =====
 export default function PrivilegesPage() {
   const [users, setUsers] = useState<ApiUser[]>([]);
   const [usersLoading, setUsersLoading] = useState(true);
   const [searchUser, setSearchUser] = useState('');
 
   const [selectedUser, setSelectedUser] = useState<ApiUser | null>(null);
-  const [privileges, setPrivileges] = useState<UserPrivilege[]>([]);
+  const [privileges, setPrivileges] = useState<UserPrivilegeDto[]>([]);
   const [privLoading, setPrivLoading] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
 
   const [notif, setNotif] = useState<StatusNotif>({ open: false, type: 'success', message: '' });
   const showNotif = (type: 'success' | 'error', message: string) => setNotif({ open: true, type, message });
 
-  // Fetch users
+  // جلب المستخدمين
   useEffect(() => {
     const load = async () => {
       setUsersLoading(true);
@@ -106,7 +100,7 @@ export default function PrivilegesPage() {
     load();
   }, []);
 
-  // Fetch privileges for selected user
+  // جلب صلاحيات المستخدم المحدد (مدمجة: مستخدم + مجموعة)
   const loadUserPrivileges = async (user: ApiUser) => {
     setSelectedUser(user);
     setPrivLoading(true);
@@ -115,39 +109,18 @@ export default function PrivilegesPage() {
       if (res.succeeded && Array.isArray(res.data) && res.data.length > 0) {
         setPrivileges(res.data);
       } else {
-        // Build from system privileges with all false
-        setPrivileges(
-          SYSTEM_PRIVILEGES.map(p => ({
-            privilegeId: p.id,
-            privilegeName: p.name,
-            category: p.category,
-            isDisplayed: false,
-            isInsert: false,
-            isUpdate: false,
-            isDelete: false,
-          }))
-        );
+        setPrivileges([]);
       }
     } catch {
-      setPrivileges(
-        SYSTEM_PRIVILEGES.map(p => ({
-          privilegeId: p.id,
-          privilegeName: p.name,
-          category: p.category,
-          isDisplayed: false,
-          isInsert: false,
-          isUpdate: false,
-          isDelete: false,
-        }))
-      );
+      setPrivileges([]);
     } finally {
       setPrivLoading(false);
     }
   };
 
-  const handleToggle = (privId: string, key: keyof UserPrivilege, val: boolean) => {
+  const handleToggle = (privilegesId: number, key: string, val: boolean) => {
     setPrivileges(prev =>
-      prev.map(p => p.privilegeId === privId ? { ...p, [key]: val } : p)
+      prev.map(p => p.privilegesId === privilegesId ? { ...p, [key]: val } : p)
     );
   };
 
@@ -155,16 +128,7 @@ export default function PrivilegesPage() {
     if (!selectedUser) return;
     setSaveLoading(true);
     try {
-      const res = await PrivilegesService.updateUserPrivileges(
-        selectedUser.id,
-        privileges.map(p => ({
-          privilegeId: p.privilegeId,
-          isDisplayed: p.isDisplayed,
-          isInsert: p.isInsert,
-          isUpdate: p.isUpdate,
-          isDelete: p.isDelete,
-        }))
-      );
+      const res = await PrivilegesService.updateUserPrivileges(selectedUser.id, privileges);
       if (res.succeeded) showNotif('success', `تم حفظ صلاحيات ${selectedUser.fullName} بنجاح`);
       else showNotif('error', res.message || 'فشل حفظ الصلاحيات');
     } catch (err: any) {
@@ -175,19 +139,11 @@ export default function PrivilegesPage() {
   };
 
   const handleEnableAll = () => {
-    setPrivileges(prev => prev.map(p => ({ ...p, isDisplayed: true, isInsert: true, isUpdate: true, isDelete: true })));
+    setPrivileges(prev => prev.map(p => ({ ...p, is_displayed: true, is_insert: true, is_update: true, is_delete: true })));
   };
   const handleDisableAll = () => {
-    setPrivileges(prev => prev.map(p => ({ ...p, isDisplayed: false, isInsert: false, isUpdate: false, isDelete: false })));
+    setPrivileges(prev => prev.map(p => ({ ...p, is_displayed: false, is_insert: false, is_update: false, is_delete: false })));
   };
-
-  // Group privileges by category
-  const groupedPrivileges = privileges.reduce<Record<string, UserPrivilege[]>>((acc, p) => {
-    const cat = SYSTEM_PRIVILEGES.find(sp => sp.id === p.privilegeId)?.category ?? 'أخرى';
-    if (!acc[cat]) acc[cat] = [];
-    acc[cat].push(p);
-    return acc;
-  }, {});
 
   const filteredUsers = users.filter(u =>
     u.fullName?.toLowerCase().includes(searchUser.toLowerCase()) ||
@@ -199,11 +155,11 @@ export default function PrivilegesPage() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">إدارة الصلاحيات</h1>
-        <p className="text-gray-500 text-sm mt-1">اختر مستخدماً لتعيين أو تعديل صلاحياته في النظام</p>
+        <p className="text-gray-500 text-sm mt-1">اختر مستخدماً لتعيين أو تعديل صلاحياته في النظام (صلاحيات المستخدم تتجاوز صلاحيات المجموعة)</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* ===== Users List ===== */}
+        {/* ===== قائمة المستخدمين ===== */}
         <div className="lg:col-span-1">
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="p-4 border-b border-gray-100">
@@ -253,7 +209,7 @@ export default function PrivilegesPage() {
           </div>
         </div>
 
-        {/* ===== Privileges Panel ===== */}
+        {/* ===== لوحة الصلاحيات ===== */}
         <div className="lg:col-span-2">
           {!selectedUser ? (
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm flex flex-col items-center justify-center py-24 text-gray-400 gap-4">
@@ -264,7 +220,7 @@ export default function PrivilegesPage() {
             </div>
           ) : (
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-              {/* Panel Header */}
+              {/* رأس اللوحة */}
               <div className="p-5 border-b border-gray-100 flex items-center justify-between flex-wrap gap-3">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
@@ -292,10 +248,15 @@ export default function PrivilegesPage() {
                 </div>
               </div>
 
-              {/* Table */}
+              {/* الجدول */}
               {privLoading ? (
                 <div className="flex items-center justify-center py-16 text-gray-400">
                   <FontAwesomeIcon icon={faSpinner} className="animate-spin text-2xl" />
+                </div>
+              ) : privileges.length === 0 ? (
+                <div className="flex flex-col items-center gap-2 py-16 text-gray-400">
+                  <FontAwesomeIcon icon={faShieldHalved} className="text-3xl" />
+                  <p className="text-sm">لا توجد صلاحيات</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -313,21 +274,12 @@ export default function PrivilegesPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
-                      {Object.entries(groupedPrivileges).map(([category, privs]) => (
-                        <>
-                          <tr key={`cat-${category}`} className="bg-gray-50/80">
-                            <td colSpan={5} className="px-6 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                              {category}
-                            </td>
-                          </tr>
-                          {privs.map(priv => (
-                            <PrivilegeRow
-                              key={priv.privilegeId}
-                              priv={priv}
-                              onChange={(key, val) => handleToggle(priv.privilegeId, key, val)}
-                            />
-                          ))}
-                        </>
+                      {privileges.map(priv => (
+                        <PrivilegeRow
+                          key={priv.privilegesId}
+                          priv={priv}
+                          onChange={(key, val) => handleToggle(priv.privilegesId, key, val)}
+                        />
                       ))}
                     </tbody>
                   </table>

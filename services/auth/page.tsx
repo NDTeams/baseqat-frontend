@@ -22,15 +22,22 @@ export const AuthService = {
     const res = await api.post("Account/LoginByEmail", { email, password: pass, rememberMe });
     const responseData = res.data;
 
-    // التحقق من النجاح وحفظ التوكن
+    // التحقق من النجاح وحفظ التوكن وبيانات المستخدم
     if (responseData.succeeded && responseData.data?.token) {
       if (rememberMe) {
-        // تذكرني: حفظ التوكن لمدة 30 يوم
         Cookies.set("auth_token", responseData.data.token, { expires: 30 });
       } else {
-        // بدون تذكرني: كوكي جلسة فقط (يُحذف عند إغلاق المتصفح)
         Cookies.set("auth_token", responseData.data.token);
       }
+
+      // حفظ بيانات المستخدم في localStorage
+      const userData = {
+        name: responseData.data.fullName || "",
+        email: responseData.data.email || "",
+        userName: responseData.data.userName || "",
+        roles: responseData.data.roles || [],
+      };
+      localStorage.setItem("user", JSON.stringify(userData));
     }
 
     return responseData;

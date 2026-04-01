@@ -278,15 +278,35 @@ export default function Users() {
     });
   };
 
-  const handleToggleLock = (user: User) => {
-    setUsers(users.map(u =>
-      u.id === user.id ? { ...u, isLocked: !u.isLocked } : u
-    ));
-    setStatusModal({
-      open: true,
-      type: 'success',
-      message: user.isLocked ? 'تم فك قفل المستخدم بنجاح' : 'تم قفل المستخدم بنجاح'
-    });
+  const handleToggleLock = async (user: User) => {
+    try {
+      const response = user.isLocked
+        ? await UsersManagement.UnlockUser(user.id)
+        : await UsersManagement.LockUser(user.id);
+
+      if (response.succeeded) {
+        setUsers(users.map(u =>
+          u.id === user.id ? { ...u, isLocked: !u.isLocked } : u
+        ));
+        setStatusModal({
+          open: true,
+          type: 'success',
+          message: user.isLocked ? 'تم فك قفل المستخدم بنجاح' : 'تم قفل المستخدم بنجاح'
+        });
+      } else {
+        setStatusModal({
+          open: true,
+          type: 'error',
+          message: response.message || 'فشل في تغيير حالة القفل'
+        });
+      }
+    } catch {
+      setStatusModal({
+        open: true,
+        type: 'error',
+        message: 'حدث خطأ أثناء تغيير حالة القفل'
+      });
+    }
   };
 
   const handleOpenPhotoModal = (user: User) => {

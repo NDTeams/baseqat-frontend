@@ -22,8 +22,11 @@ export interface ClientProfileData {
   dateOfBirth: string | null;
   profilePictureUrl: string | null;
   joinedDate: string;
+  lastLogin: string | null;
   bio: string | null;
   address: string | null;
+  region: string | null;
+  city: string | null;
   gender: number;
   genderName: string;
   cvUrl: string | null;
@@ -45,6 +48,8 @@ export interface UpdateProfileData {
   dateOfBirth?: string;
   bio?: string;
   address?: string;
+  region?: string;
+  city?: string;
   gender?: number;
   skills?: string[];
   interests?: string[];
@@ -60,6 +65,12 @@ export interface ChangePasswordData {
   currentPassword: string;
   newPassword: string;
   confirmNewPassword: string;
+}
+
+export interface ClientStats {
+  totalEnrollments: number;
+  certificateCount: number;
+  totalLearningHours: number;
 }
 
 // ===== Service =====
@@ -112,6 +123,11 @@ export const ClientProfileService = {
     data: ChangePasswordData
   ): Promise<ApiResponse<string>> => {
     const res = await api.post("/ClientProfile/ChangePassword", data);
+    return res.data;
+  },
+
+  getMyStats: async (): Promise<ApiResponse<ClientStats>> => {
+    const res = await api.get("/ClientProfile/GetMyStats");
     return res.data;
   },
 };

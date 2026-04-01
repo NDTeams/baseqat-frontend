@@ -31,6 +31,7 @@ import {
   faDatabase,
   faVial,
   faArrowDown,
+  faHistory,
 } from "@fortawesome/free-solid-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
@@ -283,7 +284,7 @@ export default function Sidebar() {
           <MenuItem
             href="/roles"
             icon={faUserShield}
-            text="الأدوار"
+            text="المجموعات"
             collapsed={isCollapsed}
             active={pathname === "/roles"}
           />
@@ -293,6 +294,13 @@ export default function Sidebar() {
             text="الصلاحيات"
             collapsed={isCollapsed}
             active={pathname === "/privileges"}
+          />
+          <MenuItem
+            href="/login-logs"
+            icon={faHistory}
+            text="سجل الدخول"
+            collapsed={isCollapsed}
+            active={pathname === "/login-logs"}
           />
         </MenuSection>
 

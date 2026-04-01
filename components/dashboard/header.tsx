@@ -63,7 +63,7 @@ const allPages = [
   // إدارة المستخدمين
   { href: "/users", title: "المستخدمين", icon: faUsers, category: "إدارة المستخدمين" },
   { href: "/user-management", title: "إدارة المستخدمين", icon: faUsersCog, category: "إدارة المستخدمين" },
-  { href: "/roles", title: "الأدوار", icon: faUserShield, category: "إدارة المستخدمين" },
+  { href: "/roles", title: "المجموعات", icon: faUserShield, category: "إدارة المستخدمين" },
   { href: "/privileges", title: "الصلاحيات", icon: faKey, category: "إدارة المستخدمين" },
 
   // الإعدادات

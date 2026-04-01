@@ -9,7 +9,7 @@ interface Course {
   subtitle: string;
   startDate: string;
   endDate: string;
-  type: 'online' | 'onsite';
+  type: 'online' | 'onsite' | 'hybrid';
   section: string;
   durationDays: number;
   durationHours: number;
@@ -261,8 +261,9 @@ export default function CourseFormModal({
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#047857] focus:border-transparent"
                 >
-                  <option value="online">اونلاين</option>
+                  <option value="online">أونلاين</option>
                   <option value="onsite">حضوري</option>
+                  <option value="hybrid">أونلاين + حضوري</option>
                 </select>
               </div>
               <div>

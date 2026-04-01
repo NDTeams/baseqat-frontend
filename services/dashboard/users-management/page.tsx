@@ -42,4 +42,34 @@ export const UsersManagement = {
     const res = await api.get(`/UsersManagement/GetUserInfo?userId=${userId}`);
     return res.data;
   },
+
+  LockUser: async (userId: string): Promise<ApiResponse> => {
+    const res = await api.post(`/UsersManagement/LockUser?userId=${userId}`);
+    return res.data;
+  },
+
+  UnlockUser: async (userId: string): Promise<ApiResponse> => {
+    const res = await api.post(`/UsersManagement/UnlockUser?userId=${userId}`);
+    return res.data;
+  },
+
+  GetUserRelatedData: async (userId: string): Promise<ApiResponse> => {
+    const res = await api.get(`/UsersManagement/GetUserRelatedData/${userId}`);
+    return res.data;
+  },
+
+  DeleteUserWithData: async (userId: string): Promise<ApiResponse> => {
+    const res = await api.delete(`/UsersManagement/DeleteUserWithData/${userId}`);
+    return res.data;
+  },
+
+  ActivateUser: async (userId: string): Promise<ApiResponse> => {
+    const res = await api.post(`/UsersManagement/ActivateUser?userId=${userId}`);
+    return res.data;
+  },
+
+  DeactivateUser: async (userId: string): Promise<ApiResponse> => {
+    const res = await api.post(`/UsersManagement/DeactivateUser?userId=${userId}`);
+    return res.data;
+  },
 };

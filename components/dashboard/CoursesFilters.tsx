@@ -75,8 +75,9 @@ export default function CoursesFilters({
               className="w-full md:w-48 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#047857] focus:border-transparent"
             >
               <option value="all">كل الأنواع</option>
-              <option value="online">اونلاين</option>
+              <option value="online">أونلاين</option>
               <option value="onsite">حضوري</option>
+              <option value="hybrid">أونلاين + حضوري</option>
             </select>
           </div>
 

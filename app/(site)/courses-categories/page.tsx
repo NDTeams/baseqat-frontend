@@ -16,6 +16,8 @@ import {
   faTriangleExclamation,
   faRotateRight,
   faLayerGroup,
+  faLaptopCode,
+  faCogs,
 } from "@fortawesome/free-solid-svg-icons";
 import { CourseCategoryService, CourseStatsService, type CourseCategory, type CourseStats } from "@/services/courses/page";
 
@@ -23,76 +25,90 @@ import { CourseCategoryService, CourseStatsService, type CourseCategory, type Co
 const visualStyles = [
   {
     icon: faLightbulb,
-    gradient: "from-blue-500 to-sky-600",
-    lightColor: "bg-blue-50 dark:bg-blue-900/20",
-    borderColor: "border-blue-200 dark:border-blue-700",
-    iconBg: "bg-blue-100 dark:bg-blue-900/40",
-    textColor: "text-blue-600 dark:text-blue-400",
+    gradient: "from-emerald-600 to-teal-700",
+    lightColor: "bg-emerald-50",
+    borderColor: "border-emerald-200",
+    iconBg: "bg-emerald-100",
+    textColor: "text-emerald-700",
   },
   {
     icon: faChartLine,
-    gradient: "from-blue-500 to-indigo-600",
-    lightColor: "bg-blue-50 dark:bg-blue-900/20",
-    borderColor: "border-blue-200 dark:border-blue-700",
-    iconBg: "bg-blue-100 dark:bg-blue-900/40",
-    textColor: "text-blue-600 dark:text-blue-400",
+    gradient: "from-teal-600 to-cyan-700",
+    lightColor: "bg-teal-50",
+    borderColor: "border-teal-200",
+    iconBg: "bg-teal-100",
+    textColor: "text-teal-700",
   },
   {
     icon: faPalette,
-    gradient: "from-purple-500 to-pink-600",
-    lightColor: "bg-purple-50 dark:bg-purple-900/20",
-    borderColor: "border-purple-200 dark:border-purple-700",
-    iconBg: "bg-purple-100 dark:bg-purple-900/40",
-    textColor: "text-purple-600 dark:text-purple-400",
+    gradient: "from-amber-500 to-orange-600",
+    lightColor: "bg-amber-50",
+    borderColor: "border-amber-200",
+    iconBg: "bg-amber-100",
+    textColor: "text-amber-700",
   },
   {
     icon: faBriefcase,
-    gradient: "from-orange-500 to-amber-600",
-    lightColor: "bg-orange-50 dark:bg-orange-900/20",
-    borderColor: "border-orange-200 dark:border-orange-700",
-    iconBg: "bg-orange-100 dark:bg-orange-900/40",
-    textColor: "text-orange-600 dark:text-orange-400",
+    gradient: "from-emerald-500 to-green-700",
+    lightColor: "bg-green-50",
+    borderColor: "border-green-200",
+    iconBg: "bg-green-100",
+    textColor: "text-green-700",
   },
   {
     icon: faHandshake,
-    gradient: "from-sky-500 to-sky-600",
-    lightColor: "bg-sky-50 dark:bg-sky-900/20",
-    borderColor: "border-sky-200 dark:border-sky-700",
-    iconBg: "bg-sky-100 dark:bg-sky-900/40",
-    textColor: "text-sky-600 dark:text-sky-400",
+    gradient: "from-cyan-600 to-teal-600",
+    lightColor: "bg-cyan-50",
+    borderColor: "border-cyan-200",
+    iconBg: "bg-cyan-100",
+    textColor: "text-cyan-700",
+  },
+  {
+    icon: faLaptopCode,
+    gradient: "from-green-600 to-emerald-700",
+    lightColor: "bg-green-50",
+    borderColor: "border-green-200",
+    iconBg: "bg-green-100",
+    textColor: "text-green-700",
+  },
+  {
+    icon: faCogs,
+    gradient: "from-teal-500 to-emerald-600",
+    lightColor: "bg-teal-50",
+    borderColor: "border-teal-200",
+    iconBg: "bg-teal-100",
+    textColor: "text-teal-700",
   },
   {
     icon: faLayerGroup,
-    gradient: "from-rose-500 to-red-600",
-    lightColor: "bg-rose-50 dark:bg-rose-900/20",
-    borderColor: "border-rose-200 dark:border-rose-700",
-    iconBg: "bg-rose-100 dark:bg-rose-900/40",
-    textColor: "text-rose-600 dark:text-rose-400",
+    gradient: "from-emerald-600 to-green-600",
+    lightColor: "bg-emerald-50",
+    borderColor: "border-emerald-200",
+    iconBg: "bg-emerald-100",
+    textColor: "text-emerald-700",
   },
 ];
-
 
 // ===== Skeleton Card =====
 function SkeletonCard() {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-3xl overflow-hidden border-2 border-gray-100 dark:border-gray-700 shadow-md animate-pulse">
-      <div className="h-3 w-full bg-gray-200 dark:bg-gray-700" />
+    <div className="bg-white rounded-3xl overflow-hidden border-2 border-gray-100 shadow-md animate-pulse">
+      <div className="h-3 w-full bg-gray-200" />
       <div className="p-8 space-y-5">
         <div className="flex items-start justify-between">
-          <div className="w-16 h-16 rounded-2xl bg-gray-200 dark:bg-gray-700" />
-          <div className="w-16 h-6 rounded-full bg-gray-200 dark:bg-gray-700" />
+          <div className="w-16 h-16 rounded-2xl bg-gray-200" />
+          <div className="w-16 h-6 rounded-full bg-gray-200" />
         </div>
         <div className="space-y-2">
-          <div className="h-5 w-2/3 rounded bg-gray-200 dark:bg-gray-700" />
-          <div className="h-4 w-full rounded bg-gray-200 dark:bg-gray-700" />
-          <div className="h-4 w-4/5 rounded bg-gray-200 dark:bg-gray-700" />
+          <div className="h-5 w-2/3 rounded bg-gray-200" />
+          <div className="h-4 w-full rounded bg-gray-200" />
+          <div className="h-4 w-4/5 rounded bg-gray-200" />
         </div>
         <div className="flex gap-2 pt-1">
-          <div className="h-6 w-20 rounded-full bg-gray-200 dark:bg-gray-700" />
-          <div className="h-6 w-16 rounded-full bg-gray-200 dark:bg-gray-700" />
+          <div className="h-6 w-20 rounded-full bg-gray-200" />
         </div>
-        <div className="flex justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
-          <div className="h-4 w-24 rounded bg-gray-200 dark:bg-gray-700" />
+        <div className="flex justify-between pt-3 border-t border-gray-100">
+          <div className="h-4 w-24 rounded bg-gray-200" />
         </div>
       </div>
     </div>
@@ -130,18 +146,18 @@ export default function CoursesCategoriesPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-950 font-cairo" dir="rtl">
+    <main className="min-h-screen bg-gray-50 font-cairo" dir="rtl">
       {/* ===== Hero Section ===== */}
-      <section className="relative pt-32 pb-24 px-5 sm:px-8 bg-gradient-to-br from-blue-700 via-blue-800 to-sky-800 dark:from-blue-900 dark:via-blue-950 dark:to-sky-950 text-white overflow-hidden">
+      <section className="relative pt-32 pb-24 px-5 sm:px-8 bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-700 text-white overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-10 right-10 w-80 h-80 bg-white opacity-10 rounded-full filter blur-3xl" />
-          <div className="absolute bottom-0 left-16 w-72 h-72 bg-sky-300 opacity-10 rounded-full filter blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-400 opacity-5 rounded-full filter blur-3xl" />
+          <div className="absolute bottom-0 left-16 w-72 h-72 bg-teal-300 opacity-10 rounded-full filter blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-400 opacity-5 rounded-full filter blur-3xl" />
         </div>
 
         <div className="relative max-w-5xl mx-auto text-center space-y-6">
           {/* Breadcrumb */}
-          <div className="flex items-center justify-center gap-2 text-blue-200 text-sm">
+          <div className="flex items-center justify-center gap-2 text-emerald-200 text-sm">
             <Link href="/" className="hover:text-white transition-colors">
               الرئيسية
             </Link>
@@ -149,7 +165,7 @@ export default function CoursesCategoriesPage() {
             <span className="text-white font-medium">أقسام الدورات</span>
           </div>
 
-          <p className="inline-block text-blue-100 text-sm font-semibold uppercase tracking-widest bg-white/10 px-5 py-2 rounded-full border border-white/20 backdrop-blur-sm">
+          <p className="inline-block text-emerald-100 text-sm font-semibold uppercase tracking-widest bg-white/10 px-5 py-2 rounded-full border border-white/20 backdrop-blur-sm">
             برامجنا التدريبية
           </p>
 
@@ -157,7 +173,7 @@ export default function CoursesCategoriesPage() {
             أقسام الدورات التدريبية
           </h1>
 
-          <p className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-emerald-100 max-w-2xl mx-auto leading-relaxed">
             اختر القسم المناسب لك وابدأ رحلتك التعليمية مع أفضل المدربين والمحتوى المتخصص
           </p>
 
@@ -172,16 +188,16 @@ export default function CoursesCategoriesPage() {
                 key={i}
                 className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 px-6 py-3 rounded-2xl"
               >
-                <FontAwesomeIcon icon={stat.icon} className="text-blue-300 text-lg" />
+                <FontAwesomeIcon icon={stat.icon} className="text-emerald-300 text-lg" />
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-2xl font-bold text-white" suppressHydrationWarning>
                     {loading ? (
                       <span className="inline-block w-8 h-6 bg-white/20 rounded animate-pulse" />
                     ) : (
                       (stat.value ?? 0).toLocaleString("ar-SA")
                     )}
                   </p>
-                  <p className="text-blue-200 text-xs">{stat.label}</p>
+                  <p className="text-emerald-200 text-xs">{stat.label}</p>
                 </div>
               </div>
             ))}
@@ -192,10 +208,10 @@ export default function CoursesCategoriesPage() {
       {/* ===== Categories Grid ===== */}
       <section className="max-w-7xl mx-auto px-5 sm:px-8 py-20">
         <div className="text-center mb-14 space-y-3">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
             تصفح حسب القسم
           </h2>
-          <p className="text-gray-500 dark:text-gray-400 text-lg max-w-xl mx-auto">
+          <p className="text-gray-500 text-lg max-w-xl mx-auto">
             كل قسم يضم مجموعة متكاملة من الدورات المصممة لتطوير مهاراتك المهنية
           </p>
         </div>
@@ -203,21 +219,16 @@ export default function CoursesCategoriesPage() {
         {/* Error State */}
         {error && (
           <div className="flex flex-col items-center justify-center gap-6 py-24 text-center">
-            <div className="w-20 h-20 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-              <FontAwesomeIcon
-                icon={faTriangleExclamation}
-                className="text-red-500 text-3xl"
-              />
+            <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center">
+              <FontAwesomeIcon icon={faTriangleExclamation} className="text-red-500 text-3xl" />
             </div>
             <div className="space-y-1">
-              <p className="text-xl font-bold text-gray-800 dark:text-gray-100">
-                تعذّر تحميل الأقسام
-              </p>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">{error}</p>
+              <p className="text-xl font-bold text-gray-800">تعذّر تحميل الأقسام</p>
+              <p className="text-gray-500 text-sm">{error}</p>
             </div>
             <button
               onClick={fetchData}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-emerald-800 text-white font-semibold rounded-xl transition-colors"
             >
               <FontAwesomeIcon icon={faRotateRight} />
               إعادة المحاولة
@@ -249,7 +260,7 @@ export default function CoursesCategoriesPage() {
                 >
                   <div
                     className={`
-                      relative bg-white dark:bg-gray-800 rounded-3xl overflow-hidden
+                      relative bg-white rounded-3xl overflow-hidden
                       border-2 ${style.borderColor}
                       shadow-md hover:shadow-2xl
                       transition-all duration-500
@@ -270,46 +281,27 @@ export default function CoursesCategoriesPage() {
                             shadow-lg group-hover:scale-110 transition-transform duration-300
                           `}
                         >
-                          <FontAwesomeIcon
-                            icon={style.icon}
-                            className="text-white text-2xl"
-                          />
+                          <FontAwesomeIcon icon={style.icon} className="text-white text-2xl" />
                         </div>
-                        {/* Category ID badge */}
-                        <span
-                          className={`
-                            text-xs font-bold px-3 py-1.5 rounded-full
-                            ${style.lightColor} ${style.borderColor} border
-                            ${style.textColor}
-                          `}
-                        >
-                          #{cat.id}
-                        </span>
+                        <div className={`flex items-center gap-1.5 text-xs font-semibold ${style.textColor} ${style.lightColor} ${style.borderColor} border px-3 py-1.5 rounded-full`}>
+                          <FontAwesomeIcon icon={faGraduationCap} className="text-[10px]" />
+                          دورات متاحة
+                        </div>
                       </div>
 
                       {/* Title & Description */}
                       <div className="space-y-2">
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                        <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors duration-300">
                           {cat.name}
                         </h3>
-                        <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                          {cat.description}
+                        <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">
+                          {cat.description || "اكتشف الدورات المتاحة في هذا القسم"}
                         </p>
                       </div>
 
-                      {/* Active Badge */}
-                      <div className="flex items-center gap-2 pt-1">
-                        <span className="flex items-center gap-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 px-3 py-1 rounded-full">
-                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                          متاح الآن
-                        </span>
-                      </div>
-
                       {/* Action Row */}
-                      <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
-                        <span
-                          className={`text-sm font-semibold bg-gradient-to-r ${style.gradient} bg-clip-text text-transparent`}
-                        >
+                      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <span className={`text-sm font-semibold bg-gradient-to-r ${style.gradient} bg-clip-text text-transparent`}>
                           استعرض الدورات
                         </span>
                         <div
@@ -321,10 +313,7 @@ export default function CoursesCategoriesPage() {
                             transition-all duration-300 shadow-md
                           `}
                         >
-                          <FontAwesomeIcon
-                            icon={faArrowLeft}
-                            className="text-white text-sm"
-                          />
+                          <FontAwesomeIcon icon={faArrowLeft} className="text-white text-sm" />
                         </div>
                       </div>
                     </div>
@@ -353,37 +342,33 @@ export default function CoursesCategoriesPage() {
       </section>
 
       {/* ===== Feature Highlights ===== */}
-      <section className="bg-white dark:bg-gray-900 py-20 px-5 sm:px-8">
+      <section className="bg-white py-20 px-5 sm:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12 space-y-3">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
               لماذا تختار دوراتنا؟
             </h2>
-            <p className="text-gray-500 dark:text-gray-400 text-lg">
+            <p className="text-gray-500 text-lg">
               نقدم تجربة تعليمية متكاملة تضمن لك أفضل النتائج
             </p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { icon: "🎓", title: "شهادات معتمدة", desc: "شهادات موثوقة تُعزز سيرتك الذاتية" },
-              { icon: "⏱️", title: "مرونة في التعلم", desc: "تعلّم في أي وقت ومن أي مكان" },
-              { icon: "👨‍🏫", title: "مدربون متخصصون", desc: "خبراء ذوو تجربة ميدانية حقيقية" },
-              { icon: "📱", title: "محتوى تفاعلي", desc: "فيديوهات ومهام عملية متنوعة" },
+              { icon: faGraduationCap, title: "شهادات معتمدة", desc: "شهادات موثوقة تُعزز سيرتك الذاتية" },
+              { icon: faBookOpen, title: "مرونة في التعلم", desc: "تعلّم في أي وقت ومن أي مكان" },
+              { icon: faUsers, title: "مدربون متخصصون", desc: "خبراء ذوو تجربة ميدانية حقيقية" },
+              { icon: faLaptopCode, title: "محتوى تفاعلي", desc: "فيديوهات ومهام عملية متنوعة" },
             ].map((item, i) => (
               <div
                 key={i}
-                className="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-lg transition-all duration-300 group"
+                className="text-center p-6 bg-gray-50 rounded-2xl border border-gray-200 hover:border-primary hover:shadow-lg transition-all duration-300 group"
               >
-                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                  {item.icon}
+                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-emerald-50 flex items-center justify-center group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
+                  <FontAwesomeIcon icon={item.icon} className="text-xl text-primary group-hover:text-white transition-colors" />
                 </div>
-                <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-1">
-                  {item.title}
-                </h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                  {item.desc}
-                </p>
+                <h3 className="font-bold text-gray-900 text-sm mb-1">{item.title}</h3>
+                <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -393,31 +378,31 @@ export default function CoursesCategoriesPage() {
       {/* ===== CTA Section ===== */}
       <section className="relative py-20 px-5 sm:px-8 overflow-hidden">
         <div className="max-w-4xl mx-auto">
-          <div className="relative bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 dark:from-gray-950 dark:via-blue-950 dark:to-gray-950 rounded-3xl px-8 py-16 text-white text-center overflow-hidden">
-            <div className="absolute top-0 right-0 w-72 h-72 bg-blue-500 opacity-20 rounded-full filter blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-72 h-72 bg-sky-500 opacity-20 rounded-full filter blur-3xl pointer-events-none" />
+          <div className="relative bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-900 rounded-3xl px-8 py-16 text-white text-center overflow-hidden">
+            <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-500 opacity-20 rounded-full filter blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-72 h-72 bg-teal-500 opacity-20 rounded-full filter blur-3xl pointer-events-none" />
 
             <div className="relative space-y-6">
-              <p className="inline-block text-blue-300 text-sm font-semibold tracking-widest bg-white/10 px-4 py-1.5 rounded-full border border-white/10">
+              <p className="inline-block text-emerald-300 text-sm font-semibold tracking-widest bg-white/10 px-4 py-1.5 rounded-full border border-white/10">
                 ابدأ اليوم
               </p>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight">
                 هل أنت مستعد للانطلاق؟
               </h2>
-              <p className="text-blue-200 text-lg max-w-xl mx-auto">
+              <p className="text-emerald-200 text-lg max-w-xl mx-auto">
                 سجّل الآن واحصل على وصول فوري لمئات الدورات التدريبية المتخصصة
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
                 <Link
                   href="/courses-archive"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-blue-700 font-bold rounded-xl hover:bg-blue-50 transition-all duration-300 hover:scale-105 shadow-xl"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-primary font-bold rounded-xl hover:bg-emerald-50 transition-all duration-300 hover:scale-105 shadow-xl"
                 >
                   <FontAwesomeIcon icon={faGraduationCap} />
                   استعرض جميع الدورات
                 </Link>
                 <Link
                   href="/register"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-500 border-2 border-blue-400 text-white font-bold rounded-xl transition-all duration-300 hover:scale-105"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-emerald-600 hover:bg-emerald-500 border-2 border-emerald-400 text-white font-bold rounded-xl transition-all duration-300 hover:scale-105"
                 >
                   سجّل مجاناً
                   <FontAwesomeIcon icon={faArrowLeft} />

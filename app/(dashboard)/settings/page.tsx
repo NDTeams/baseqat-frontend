@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -13,7 +14,11 @@ import {
   faMoneyBillWave,
   faCity,
   faArrowLeft,
+  faShieldAlt,
+  faSpinner,
+  faEnvelopeCircleCheck,
 } from "@fortawesome/free-solid-svg-icons";
+import { AppSettingsService } from "@/services/dashboard/app-settings/page";
 
 const settingsList = [
   {
@@ -47,7 +52,7 @@ const settingsList = [
     arrowHover: "group-hover:text-green-600",
   },
   {
-    title: "إدارة الأدوار",
+    title: "إدارة المجموعات",
     href: "/Roles",
     icon: faUserTag,
     bg: "bg-orange-50",
@@ -108,7 +113,55 @@ const settingsList = [
   },
 ];
 
+interface AppSettingItem {
+  key: string;
+  value: string;
+  description: string | null;
+}
+
 export default function Settings() {
+  const [settings, setSettings] = useState<AppSettingItem[]>([]);
+  const [loadingSettings, setLoadingSettings] = useState(true);
+  const [updatingKey, setUpdatingKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const res = await AppSettingsService.getAll();
+      if (res.succeeded && Array.isArray(res.data)) {
+        setSettings(res.data);
+      }
+    } catch {
+      // silent
+    } finally {
+      setLoadingSettings(false);
+    }
+  };
+
+  const toggleSetting = async (key: string, currentValue: string) => {
+    const newValue = currentValue === "true" ? "false" : "true";
+    setUpdatingKey(key);
+    setSettings(prev => prev.map(s => s.key === key ? { ...s, value: newValue } : s));
+    try {
+      const res = await AppSettingsService.update(key, newValue);
+      if (!res.succeeded) {
+        setSettings(prev => prev.map(s => s.key === key ? { ...s, value: currentValue } : s));
+      }
+    } catch {
+      setSettings(prev => prev.map(s => s.key === key ? { ...s, value: currentValue } : s));
+    } finally {
+      setUpdatingKey(null);
+    }
+  };
+
+  const getSettingIcon = (key: string) => {
+    if (key === "RequireEmailConfirmation") return faEnvelopeCircleCheck;
+    return faShieldAlt;
+  };
+
   return (
     <main className="flex-1 overflow-y-auto p-4 sm:p-6 fade-in-up delay-200">
       {/* Page Header */}
@@ -116,6 +169,58 @@ export default function Settings() {
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
           الاعدادات
         </h1>
+      </div>
+
+      {/* إعدادات الأمان */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+            <FontAwesomeIcon icon={faShieldAlt} className="text-emerald-700" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-gray-800">إعدادات الأمان</h2>
+            <p className="text-sm text-gray-500">التحكم في إعدادات التسجيل والمصادقة</p>
+          </div>
+        </div>
+
+        {loadingSettings ? (
+          <div className="flex justify-center py-6">
+            <FontAwesomeIcon icon={faSpinner} className="text-emerald-700 text-xl animate-spin" />
+          </div>
+        ) : settings.length === 0 ? (
+          <p className="text-sm text-gray-400 text-center py-4">لا توجد إعدادات</p>
+        ) : (
+          <div className="space-y-4">
+            {settings.map((setting) => (
+              <div key={setting.key} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div className="flex items-center gap-3">
+                  <FontAwesomeIcon icon={getSettingIcon(setting.key)} className="text-gray-500" />
+                  <div>
+                    <p className="font-medium text-gray-800 text-sm">{setting.description || setting.key}</p>
+                    <p className="text-xs text-gray-400 mt-0.5 font-mono">{setting.key}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => toggleSetting(setting.key, setting.value)}
+                  disabled={updatingKey === setting.key}
+                  className={`relative w-14 h-7 rounded-full transition-colors duration-200 ${
+                    setting.value === "true" ? "bg-emerald-600" : "bg-gray-300"
+                  }`}
+                >
+                  {updatingKey === setting.key ? (
+                    <FontAwesomeIcon icon={faSpinner} className="text-white text-xs animate-spin absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                  ) : (
+                    <span
+                      className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-all duration-200 ${
+                        setting.value === "true" ? "left-0.5" : "left-[calc(100%-1.625rem)]"
+                      }`}
+                    />
+                  )}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Settings Grid */}
