@@ -6,8 +6,8 @@ import CoursesSlider from "@/components/site/courses-slider";
 import Teachers from "@/components/site/teachers";
 import  StatsSection  from '@/components/site/company-statistics';
 import News from '@/components/site/news'; 
+import ArticlesSection from '@/components/site/articles-section';
 import Gallery from '@/components/site/gallery';
-import VideoLibrary from '@/components/site/videoLibrary';
 export default function Home() {
 
   return (
@@ -17,8 +17,8 @@ export default function Home() {
     <CoursesSlider />
     <Teachers />
     <News />
+    <ArticlesSection />
     <Gallery />
-    <VideoLibrary />
 
 
   </div>

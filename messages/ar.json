@@ -48,8 +48,12 @@
     "monthlyWorkshops": "ورش وجلسات شهرية"
   } ,
   "CoursesSlider":{
-  "basqat_programs": "برامج باسقات",
-  "choose_service_for_stage": "اختر الخدمة التي تناسب مرحلة مشروعك"
+  "basqat_programs": "الدورات التدريبية",
+  "choose_service_for_stage": "طور مهاراتك مع أفضل الدورات التدريبية",
+  "view_more": "عرض المزيد",
+  "sar": "ر.س",
+  "free": "مجاناً",
+  "no_courses": "لا توجد دورات متاحة حالياً"
 },
 "Teachers": {
     "experts_network": "شبكة الخبراء",

@@ -1,15 +1,13 @@
+'use client';
 
-import CourseHero from "@/components/site/course-hero";
-import CourseSection from "@/components/site/course-section"
-import SimilarCourses from "@/components/site/similar-courses";
-export default function BlogDetailsPage() {
-    return (
-        <div className="flex flex-col justify-center items-center ">
-            <CourseHero />
-            <CourseSection />
-            <SimilarCourses />
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-           
-        </div>
-    );
+// Old route - redirect to /courses
+export default function CourseDetailsRedirect() {
+  const router = useRouter();
+  useEffect(() => {
+    router.replace('/courses');
+  }, [router]);
+  return null;
 }

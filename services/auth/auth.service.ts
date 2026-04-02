@@ -1,4 +1,4 @@
-import api from "@/lib/axios";
+import api, { clearTokenCookie } from "@/lib/axios";
 
 export interface LoginRequest {
   email: string;
@@ -53,7 +53,6 @@ class AuthService {
     }
   }
 
-  // Logout - backend clears HttpOnly cookies
   async logout(): Promise<void> {
     try {
       await api.post("/Account/logout");
@@ -62,6 +61,7 @@ class AuthService {
     } finally {
       localStorage.clear();
       sessionStorage.clear();
+      clearTokenCookie();
       window.location.href = "/";
     }
   }
@@ -81,7 +81,7 @@ class AuthService {
 
   isAuthenticated(): boolean {
     if (typeof window === "undefined") return false;
-    return !!localStorage.getItem("user");
+    return !!localStorage.getItem("token");
   }
 
   hasRole(roles: string[]): boolean {

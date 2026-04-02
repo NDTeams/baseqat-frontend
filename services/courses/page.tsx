@@ -328,7 +328,18 @@ export const CoursesAdminService = {
 
   // تعديل دورة
   update: async (id: number, data: Partial<Course>): Promise<ApiResponse<Course>> => {
-    const res = await api.put(`/Course/Update/${id}`, data);
+    // Clean data for backend compatibility
+    const clean: Record<string, any> = { ...data };
+    const dateFields = ['startDate', 'endDate'];
+    for (const key of Object.keys(clean)) {
+      if (clean[key] === '' || clean[key] === undefined) {
+        clean[key] = null;
+      } else if (dateFields.includes(key) && clean[key] != null) {
+        const d = new Date(clean[key]);
+        clean[key] = isNaN(d.getTime()) ? null : d.toISOString();
+      }
+    }
+    const res = await api.put(`/Course/Update/${id}`, clean);
     return res.data;
   },
 

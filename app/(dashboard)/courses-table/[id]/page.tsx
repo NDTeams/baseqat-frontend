@@ -215,7 +215,10 @@ function OverviewTab({ course, courseId, notif, onCourseUpdated }: {
         notif('error', res.message || 'فشل الحفظ');
       }
     } catch (err: any) {
-      notif('error', err.message || 'حدث خطأ');
+      const detail = err.response?.data;
+      console.error('Save error:', JSON.stringify(detail, null, 2));
+      const msg = detail?.message || detail?.title || err.message || 'حدث خطأ';
+      notif('error', typeof msg === 'string' ? msg : JSON.stringify(msg));
     } finally {
       setSaving(false);
     }

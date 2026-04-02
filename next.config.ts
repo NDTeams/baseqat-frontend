@@ -1,5 +1,11 @@
 // next.config.ts
 const nextConfig = {
+  images: {
+    remotePatterns: [
+      { protocol: 'http' as const, hostname: 'localhost', port: '5139', pathname: '/**' },
+      { protocol: 'https' as const, hostname: 'images.unsplash.com', pathname: '/**' },
+    ],
+  },
   async rewrites() {
     // استخدام API محلي للتطوير أو API الإنتاج
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5139';

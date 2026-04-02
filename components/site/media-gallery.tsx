@@ -1,71 +1,64 @@
 'use client';
 
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-
-interface GalleryItem {
-  img: string;
-  label: string;
-}
-
-const galleryItems: GalleryItem[] = [
-  {
-    img: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1800&q=80',
-    label: 'Workshop Session',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1800&q=80',
-    label: 'Team Collaboration',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1557804506-669714d2e9d8?auto=format&fit=crop&w=1800&q=80',
-    label: 'Launch Event',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1800&q=80',
-    label: 'Networking Session',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1800&q=80',
-    label: 'Team Building',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1800&q=80',
-    label: 'Workshop Activity',
-  },
-];
+import { useState, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner, faImages } from '@fortawesome/free-solid-svg-icons';
+import { MediaCenterService, type MediaItem } from '@/services/media-center/page';
+import { getFileUrl } from '@/lib/config';
 
 export default function MediaGallery() {
-  const { t } = useTranslation();
+  const [items, setItems] = useState<MediaItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const prev = () =>
-    setCurrentIndex((i) => (i === 0 ? galleryItems.length - 1 : i - 1));
-  const next = () =>
-    setCurrentIndex((i) => (i === galleryItems.length - 1 ? 0 : i + 1));
+  useEffect(() => {
+    MediaCenterService.getActiveByType(0)
+      .then((res) => {
+        if (res.succeeded && res.data) setItems(res.data);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const prev = () => setCurrentIndex((i) => (i === 0 ? items.length - 1 : i - 1));
+  const next = () => setCurrentIndex((i) => (i === items.length - 1 ? 0 : i + 1));
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-20">
+        <FontAwesomeIcon icon={faSpinner} spin className="text-3xl text-primary" />
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-20 text-slate-400">
+        <FontAwesomeIcon icon={faImages} className="text-4xl" />
+        <p className="text-lg font-semibold">لا توجد صور حالياً</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
       {/* Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {galleryItems.map((item, idx) => (
+        {items.map((item, idx) => (
           <div
-            key={idx}
+            key={item.id}
             className="relative group overflow-hidden rounded-2xl shadow-md border border-gray-200 dark:border-slate-700 cursor-pointer transition-all hover:shadow-lg"
-            onClick={() => {
-              setCurrentIndex(idx);
-              setOpen(true);
-            }}
+            onClick={() => { setCurrentIndex(idx); setOpen(true); }}
           >
             <img
-              src={item.img}
-              alt={item.label}
-              className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
+              src={item.imageUrl ? getFileUrl(item.imageUrl) : '/site/logo.png'}
+              alt={item.title}
+              className={`w-full h-64 transition-transform duration-500 group-hover:scale-105 ${item.imageUrl ? 'object-cover' : 'object-contain p-8 bg-slate-50'}`}
             />
-            <div className="absolute inset-0 bg-emerald-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-emerald-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <span className="absolute bottom-3 right-3 bg-white/90 dark:bg-slate-800/90 text-emerald-700 dark:text-emerald-400 text-sm font-semibold px-3 py-1 rounded-full">
-              {item.label}
+              {item.title}
             </span>
           </div>
         ))}
@@ -76,15 +69,15 @@ export default function MediaGallery() {
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
           <div className="relative max-w-4xl w-full">
             <img
-              src={galleryItems[currentIndex].img}
-              alt={galleryItems[currentIndex].label}
+              src={items[currentIndex].imageUrl ? getFileUrl(items[currentIndex].imageUrl!) : '/site/logo.png'}
+              alt={items[currentIndex].title}
               className="w-full max-h-[80vh] object-contain rounded-lg shadow-lg"
             />
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 text-slate-900 px-4 py-2 rounded-lg font-semibold">
-              {galleryItems[currentIndex].label}
+              {items[currentIndex].title}
             </div>
 
-            {/* Close Button */}
+            {/* Close */}
             <button
               onClick={() => setOpen(false)}
               className="absolute top-2 right-2 text-white text-2xl font-bold bg-black/50 rounded-full w-10 h-10 flex items-center justify-center hover:bg-black/70 transition-colors"
@@ -92,32 +85,30 @@ export default function MediaGallery() {
               ×
             </button>
 
-            {/* Navigation Buttons */}
+            {/* Nav */}
             <button
               onClick={prev}
-              className="absolute top-1/2 left-2 transform -translate-y-1/2 text-white text-3xl font-bold bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/70 transition-colors"
+              className="absolute top-1/2 left-2 -translate-y-1/2 text-white text-3xl font-bold bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/70 transition-colors"
             >
               ‹
             </button>
             <button
               onClick={next}
-              className="absolute top-1/2 right-2 transform -translate-y-1/2 text-white text-3xl font-bold bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/70 transition-colors"
+              className="absolute top-1/2 right-2 -translate-y-1/2 text-white text-3xl font-bold bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/70 transition-colors"
             >
               ›
             </button>
 
             {/* Thumbnails */}
             <div className="flex gap-2 mt-4 overflow-x-auto justify-center px-2">
-              {galleryItems.map((item, idx) => (
+              {items.map((item, idx) => (
                 <img
-                  key={idx}
-                  src={item.img}
-                  alt={item.label}
+                  key={item.id}
+                  src={item.imageUrl ? getFileUrl(item.imageUrl) : '/site/logo.png'}
+                  alt={item.title}
                   onClick={() => setCurrentIndex(idx)}
                   className={`w-20 h-16 object-cover rounded-lg cursor-pointer border-2 transition-colors ${
-                    idx === currentIndex
-                      ? 'border-emerald-500'
-                      : 'border-transparent hover:border-emerald-300'
+                    idx === currentIndex ? 'border-emerald-500' : 'border-transparent hover:border-emerald-300'
                   }`}
                 />
               ))}

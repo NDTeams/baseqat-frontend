@@ -1,4 +1,4 @@
-import api from "@/lib/axios";
+import api, { setTokenCookie, clearTokenCookie } from "@/lib/axios";
 
 interface ApiResponse {
   succeeded: boolean;
@@ -13,12 +13,21 @@ export const AuthService = {
     return res.data;
   },
 
-  // Login - HttpOnly cookies (access_token, refresh_token) are set by the backend
   login: async (email: string, pass: string, rememberMe: boolean = false): Promise<ApiResponse> => {
     const res = await api.post("Account/LoginByEmail", { email, password: pass, rememberMe });
     const responseData = res.data;
 
     if (responseData.succeeded && responseData.data) {
+      // Store tokens
+      localStorage.setItem("token", responseData.data.token);
+      if (responseData.data.refreshToken) {
+        localStorage.setItem("refreshToken", responseData.data.refreshToken);
+      }
+
+      // Set cookie for middleware route protection
+      setTokenCookie(responseData.data.token);
+
+      // Store user info
       const userData = {
         name: responseData.data.fullName || "",
         email: responseData.data.email || "",
@@ -41,7 +50,6 @@ export const AuthService = {
     return res.data;
   },
 
-  // Logout - backend clears HttpOnly cookies
   logout: async () => {
     try {
       await api.post("/Account/logout");
@@ -50,6 +58,7 @@ export const AuthService = {
     } finally {
       localStorage.clear();
       sessionStorage.clear();
+      clearTokenCookie();
       window.location.href = "/";
     }
   },

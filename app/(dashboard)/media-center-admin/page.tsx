@@ -1017,17 +1017,32 @@ export default function MediaCenterAdminPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        {item.imageUrl ? (
-                          <img
-                            src={getFileUrl(item.imageUrl)}
-                            alt={item.title}
-                            className="w-12 h-12 rounded-lg object-cover"
-                          />
-                        ) : (
-                          <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400">
-                            <FontAwesomeIcon icon={faImage} className="text-lg" />
-                          </div>
-                        )}
+                        <div
+                          className="relative w-12 h-12 rounded-lg overflow-hidden cursor-pointer group/img flex-shrink-0"
+                          onClick={() => filterActive !== 'deleted' && handleUploadImage(item)}
+                          title="انقر لتغيير الصورة"
+                        >
+                          {item.imageUrl ? (
+                            <img
+                              src={getFileUrl(item.imageUrl)}
+                              alt={item.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
+                              <FontAwesomeIcon icon={faImage} className="text-lg" />
+                            </div>
+                          )}
+                          {filterActive !== 'deleted' && (
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                              {imageLoadingId === item.id ? (
+                                <FontAwesomeIcon icon={faSpinner} className="text-white text-sm animate-spin" />
+                              ) : (
+                                <FontAwesomeIcon icon={faUpload} className="text-white text-sm" />
+                              )}
+                            </div>
+                          )}
+                        </div>
                         <div>
                           <span className="font-semibold text-gray-800 block">{item.title}</span>
                           {item.description && (
