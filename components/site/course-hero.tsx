@@ -20,7 +20,7 @@ import {
   faInstagram 
 } from '@fortawesome/free-brands-svg-icons';
 
-export default function CourseHero() {
+export default function CourseHero({ course }: { course?: any }) {
   return (
     <section className="course-hero w-full py-12 md:py-16 relative z-10 bg-gradient-to-br from-[#0a2e1f] via-[#1a5f4a] to-[#2d8659]">
       <div className="container mx-auto px-6 relative z-10">

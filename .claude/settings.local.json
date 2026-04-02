@@ -29,7 +29,17 @@
       "Bash(find:*)",
       "Bash(git restore:*)",
       "Read(//c/Users/hp3/Downloads/**)",
-      "WebFetch(domain:coderthemes.com)"
+      "WebFetch(domain:coderthemes.com)",
+      "Bash(\"D:\\\\ND\\\\app\\\\Baseqt\\\\Baseqat.EF\\\\Models\\\\Auth\\\\RevokedToken.cs\":*)",
+      "Bash(\"D:\\\\ND\\\\app\\\\Baseqt\\\\Baseqt.API\\\\Middleware\\\\JwtBlacklistMiddleware.cs\":*)",
+      "Bash(dotnet ef migrations add:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet ef database update:*)",
+      "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZDI4ZjUwMS0zYjExLTQzMTEtYTgyMC0wNmY2YjY2MDIzZmUiLCJ1bmlxdWVfbmFtZSI6ImFsLWJheXRpQGhvdG1haWwuY29tIiwianRpIjoiMGZjYWRlMDItYzA3Ny00OWNlLTgzMWItYjViODk5MzQxNjBlIiwicm9sZSI6IlN1cGVyQWRtaW4iLCJuYmYiOjE3NzQ4MzU5OTYsImV4cCI6MTc3NDgzOTU5NiwiaWF0IjoxNzc0ODM1OTk2LCJpc3MiOiJIdXNCYWl0aSIsImF1ZCI6Ik1DQ0lFbXBsb3llZSJ9.sH5hIOLP_GBR-znmUbENsOmHbAEeU-4yxgOwLezWl6w\")",
+      "Bash(pkill:*)",
+      "Bash(tasklist:*)",
+      "Bash(wc:*)",
+      "Bash(findstr:*)"
     ],
     "additionalDirectories": [
       "D:\\ND\\app\\Baseqt\\Baseqat.CORE\\Services",

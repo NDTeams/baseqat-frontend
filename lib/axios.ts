@@ -1,58 +1,113 @@
-// // lib/axios.ts
-// import axios from "axios";
-
-// const api = axios.create({
-//   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost",
-//   headers: {
-//     "Content-Type": "application/json",
-//   },
-// });
-
-// // Request interceptor لإضافة Authorization Header تلقائيًا
-// api.interceptors.request.use((config) => {
-//   if (typeof window !== "undefined") {
-//     const token = localStorage.getItem("token"); // توكن PHP
-//     if (token) config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });
-
-// export default api;
-import axios from "axios";
-import Cookies from "js-cookie";
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 const api = axios.create({
-  // استخدام رابط محلي (سيتم توجيهه عبر Next.js rewrites)
-  baseURL: "/api", 
+  baseURL: "/api",
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true, // Send HttpOnly cookies automatically
 });
 
-// إضافة التوكن تلقائياً لكل طلب يخرج من التطبيق
-api.interceptors.request.use((config) => {
-  const token = Cookies.get("auth_token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// ===== Token Refresh State =====
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (value?: any) => void;
+  reject: (error: any) => void;
+}> = [];
 
-// معالجة الأخطاء العالمية
+const processQueue = (error: any) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve();
+    }
+  });
+  failedQueue = [];
+};
+
+// ===== Response Interceptor with Auto-Refresh =====
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    // التحقق من أننا في جهة العميل (Client-side) قبل استخدام window
-    if (error.response?.status === 401 && typeof window !== "undefined") {
-      // لا نعيد التوجيه تلقائياً للـ login، فقط نحذف التوكن
-      // سيتم التعامل مع إعادة التوجيه من خلال middleware أو الصفحة نفسها
-      Cookies.remove("auth_token");
-      Cookies.remove("auth_token", { path: "/" });
-      localStorage.clear();
-      sessionStorage.clear();
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+
+    // Only handle 401 errors on client-side
+    if (error.response?.status !== 401 || typeof window === "undefined") {
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
+
+    // Don't retry refresh/login requests (avoid infinite loop)
+    if (originalRequest.url?.includes("Account/RefreshToken") || originalRequest.url?.includes("Account/LoginByEmail")) {
+      return Promise.reject(error);
+    }
+
+    // Don't retry if already retried
+    if (originalRequest._retry) {
+      forceLogout();
+      return Promise.reject(error);
+    }
+
+    // If already refreshing, queue this request
+    if (isRefreshing) {
+      return new Promise((resolve, reject) => {
+        failedQueue.push({ resolve, reject });
+      }).then(() => {
+        return api(originalRequest);
+      }).catch((err) => Promise.reject(err));
+    }
+
+    originalRequest._retry = true;
+    isRefreshing = true;
+
+    try {
+      // HttpOnly cookies (access_token, refresh_token) are sent automatically
+      const res = await axios.post("/api/Account/RefreshToken", {}, { withCredentials: true });
+
+      const data = res.data;
+
+      if (data.succeeded && data.data) {
+        // Update user data in localStorage
+        if (data.data.fullName) {
+          const userData = {
+            name: data.data.fullName || "",
+            email: data.data.email || "",
+            userName: data.data.userName || "",
+            roles: data.data.roles || [],
+          };
+          localStorage.setItem("user", JSON.stringify(userData));
+        }
+
+        processQueue(null);
+
+        // Retry original request (new HttpOnly cookies are set automatically)
+        return api(originalRequest);
+      } else {
+        throw new Error("Refresh failed");
+      }
+    } catch (refreshError) {
+      processQueue(refreshError);
+      forceLogout();
+      return Promise.reject(refreshError);
+    } finally {
+      isRefreshing = false;
+    }
   }
 );
+
+// ===== Force Logout Helper =====
+function forceLogout() {
+  localStorage.clear();
+  sessionStorage.clear();
+
+  // Try to clear HttpOnly cookies via logout API (fire-and-forget)
+  try {
+    axios.post("/api/Account/logout", {}, { withCredentials: true }).catch(() => {});
+  } catch {}
+
+  if (!window.location.pathname.includes("/login")) {
+    window.location.href = "/login";
+  }
+}
 
 export default api;

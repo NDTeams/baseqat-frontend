@@ -76,7 +76,9 @@ function hasAdminRole(role: string | null): boolean {
 }
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get('auth_token')?.value;
+  // Read access_token HttpOnly cookie (primary) or legacy auth_token (fallback)
+  const token = request.cookies.get('access_token')?.value
+    || request.cookies.get('auth_token')?.value;
   const { pathname } = request.nextUrl;
 
   // 1. حماية لوحة التحكم الإدارية (/index)

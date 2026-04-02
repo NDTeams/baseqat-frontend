@@ -14,7 +14,7 @@ interface Course {
   subtitle: string;
   startDate: string;
   endDate: string;
-  type: 'online' | 'onsite';
+  type: 'online' | 'onsite' | 'hybrid';
   section: string;
   durationDays: number;
   durationHours: number;

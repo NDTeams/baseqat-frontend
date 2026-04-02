@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChess, faCoins, faBullhorn, faGavel, faUsers, faLaptopCode,
@@ -66,7 +65,7 @@ function Toast({ open, type, message, onClose }: { open: boolean; type: string; 
   );
 }
 
-export default function ConsultationRequestPage() {
+function ConsultationRequestPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const prefilledDate = searchParams.get('date');
@@ -98,8 +97,7 @@ export default function ConsultationRequestPage() {
 
   // Check authentication on mount
   useEffect(() => {
-    const token = Cookies.get('auth_token') || localStorage.getItem('auth_token');
-    setIsLoggedIn(!!token);
+    setIsLoggedIn(!!localStorage.getItem('user'));
   }, []);
 
   // Load categories (only if logged in)
@@ -609,5 +607,13 @@ export default function ConsultationRequestPage() {
 
       <Toast open={notif.open} type={notif.type} message={notif.message} onClose={() => setNotif(p => ({ ...p, open: false }))} />
     </main>
+  );
+}
+
+export default function ConsultationRequestPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600" /></div>}>
+      <ConsultationRequestPageInner />
+    </Suspense>
   );
 }

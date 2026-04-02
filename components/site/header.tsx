@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
-import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faAdjust,
@@ -74,21 +73,15 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
   }, []);
 
   useEffect(() => {
-    const hasToken =
-      typeof window !== 'undefined' &&
-      (localStorage.getItem('authToken') || Cookies.get('auth_token'));
-    setIsLoggedIn(Boolean(hasToken));
-
-    if (hasToken) {
-      try {
-        const stored = localStorage.getItem('user');
-        if (stored) {
-          const user = JSON.parse(stored);
-          if (user.name) setUserName(user.name);
-          if (user.roles) setUserRoles(user.roles);
-        }
-      } catch {}
-    }
+    try {
+      const stored = localStorage.getItem('user');
+      if (stored) {
+        const user = JSON.parse(stored);
+        setIsLoggedIn(true);
+        if (user.name) setUserName(user.name);
+        if (user.roles) setUserRoles(user.roles);
+      }
+    } catch {}
   }, []);
 
   return (
@@ -404,7 +397,7 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
       </div>
 
       {/* Mobile Menu */}
-      {menuOpen && <MobileMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />}
+      {menuOpen && <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} grayscale={grayscale} setGrayscale={setGrayscale} />}
     </header>
   );
 }

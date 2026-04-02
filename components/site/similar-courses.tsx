@@ -2,7 +2,7 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar, faBook, faUsers } from "@fortawesome/free-solid-svg-icons";
 
-export default function SimilarCourses() {
+export default function SimilarCourses({ categoryId, currentCourseId }: { categoryId?: number; currentCourseId?: number }) {
   return (
     <section className="py-16 bg-neutral-50">
       <div className="container mx-auto px-6">

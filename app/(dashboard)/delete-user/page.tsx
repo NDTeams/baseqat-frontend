@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -43,7 +43,7 @@ interface RelatedData {
   };
 }
 
-export default function DeleteUserPage() {
+function DeleteUserPageInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const userId = searchParams.get('userId');
@@ -495,6 +495,14 @@ export default function DeleteUserPage() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function DeleteUserPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600" /></div>}>
+      <DeleteUserPageInner />
+    </Suspense>
   );
 }
 

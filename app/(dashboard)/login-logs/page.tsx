@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -30,7 +30,7 @@ interface LoginLog {
   createdAt: string;
 }
 
-export default function LoginLogsPage() {
+function LoginLogsPageInner() {
   const searchParams = useSearchParams();
   const userIdParam = searchParams.get('userId');
   const [logs, setLogs] = useState<LoginLog[]>([]);
@@ -324,5 +324,13 @@ export default function LoginLogsPage() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function LoginLogsPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600" /></div>}>
+      <LoginLogsPageInner />
+    </Suspense>
   );
 }

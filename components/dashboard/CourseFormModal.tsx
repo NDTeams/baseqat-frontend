@@ -78,7 +78,7 @@ export default function CourseFormModal({
     setFormData(prev => {
       const newArray = [...prev[field]];
       if (subField) {
-        newArray[index] = { ...newArray[index], [subField]: value };
+        newArray[index] = { ...(newArray[index] as any), [subField]: value };
       } else {
         newArray[index] = value;
       }

@@ -25,7 +25,7 @@ import {
 import { faYoutube } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-export default function CourseDetails() {
+export default function CourseDetails({ course }: { course?: any }) {
   const [activeTab, setActiveTab] = useState('overview');
   const [activeAccordion, setActiveAccordion] = useState<number | null>(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);

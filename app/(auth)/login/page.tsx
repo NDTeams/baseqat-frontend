@@ -85,9 +85,6 @@ export default function LoginPage() {
       const response = await AuthService.login(email, password, rememberMe);
 
       if (response.succeeded) {
-        if (response.data.token) {
-          localStorage.setItem("authToken", response.data.token);
-        }
         if (response.data.isAuthenticated) {
           showModal(
             "success",

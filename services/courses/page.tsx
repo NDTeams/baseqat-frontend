@@ -336,7 +336,9 @@ export const CoursesAdminService = {
   uploadThumbnail: async (id: number, file: File): Promise<ApiResponse<{ imageUrl: string }>> => {
     const formData = new FormData();
     formData.append("file", file);
-    const res = await api.post(`/Course/UploadThumbnail/${id}`, formData);
+    const res = await api.post(`/Course/UploadThumbnail/${id}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
     return res.data;
   },
 
@@ -438,7 +440,9 @@ export const InstructorAdminService = {
   uploadAvatar: async (id: number, file: File): Promise<ApiResponse<{ avatarUrl: string }>> => {
     const formData = new FormData();
     formData.append("file", file);
-    const res = await api.post(`/Instructor/UploadAvatar/${id}`, formData);
+    const res = await api.post(`/Instructor/UploadAvatar/${id}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
     return res.data;
   },
 
@@ -446,7 +450,9 @@ export const InstructorAdminService = {
   uploadCv: async (id: number, file: File): Promise<ApiResponse<{ cvUrl: string }>> => {
     const formData = new FormData();
     formData.append("file", file);
-    const res = await api.post(`/Instructor/UploadCv/${id}`, formData);
+    const res = await api.post(`/Instructor/UploadCv/${id}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
     return res.data;
   },
 

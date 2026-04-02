@@ -1083,6 +1083,7 @@ export default function ConsultantsPage() {
       yearsOfExperience: c.yearsOfExperience ?? null,
       linkedInUrl: c.linkedInUrl ?? '', xUrl: c.xUrl ?? '',
       instagramUrl: c.instagramUrl ?? '', facebookUrl: c.facebookUrl ?? '',
+      email: '', phoneNumber: '', password: '',
     });
     setFormModal(true);
   };

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheck, faTimes, faSpinner, faRefresh,
@@ -18,8 +17,9 @@ interface TestResult {
 }
 
 export default function AuthTestPage() {
-  const [token, setToken] = useState<string | null>(null);
-  const [localToken, setLocalToken] = useState<string | null>(null);
+  const [userData, setUserData] = useState<any>(null);
+  const [meData, setMeData] = useState<any>(null);
+  const [meLoading, setMeLoading] = useState(true);
   const [results, setResults] = useState<TestResult[]>([
     { label: 'جلب أقسام الدورات (Admin)', status: 'idle', detail: 'GET /CourseCategory/GetAllAsync' },
     { label: 'جلب أقسام الدورات (Public)', status: 'idle', detail: 'GET /CourseCategory/GetAllHome' },
@@ -28,10 +28,19 @@ export default function AuthTestPage() {
   ]);
 
   useEffect(() => {
-    setToken(Cookies.get('auth_token') ?? null);
-    setLocalToken(
-      localStorage.getItem('auth_token') ?? localStorage.getItem('authToken') ?? null
-    );
+    // Read user from localStorage
+    try {
+      const stored = localStorage.getItem('user');
+      if (stored) setUserData(JSON.parse(stored));
+    } catch {}
+
+    // Verify HttpOnly cookie via /Account/Me
+    api.get('/Account/Me')
+      .then(res => {
+        if (res.data.succeeded) setMeData(res.data.data);
+      })
+      .catch(() => {})
+      .finally(() => setMeLoading(false));
   }, []);
 
   const runTests = async () => {
@@ -74,23 +83,12 @@ export default function AuthTestPage() {
     }
   };
 
-  const migrateToken = () => {
-    const t = localStorage.getItem('auth_token') ?? localStorage.getItem('authToken');
-    if (t) {
-      Cookies.set('auth_token', t, { expires: 7 });
-      setToken(t);
-    }
-  };
-
   const clearAll = () => {
-    Cookies.remove('auth_token');
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('authToken');
-    setToken(null);
-    setLocalToken(null);
+    localStorage.clear();
+    sessionStorage.clear();
+    setUserData(null);
+    setMeData(null);
   };
-
-  const shortToken = (t: string) => t.slice(0, 30) + '...' + t.slice(-10);
 
   return (
     <div className="p-6 max-w-3xl mx-auto space-y-6" dir="rtl">
@@ -99,55 +97,52 @@ export default function AuthTestPage() {
           <FontAwesomeIcon icon={faShieldHalved} className="text-primary" />
           تشخيص المصادقة
         </h1>
-        <p className="text-gray-500 text-sm mt-1">فحص حالة التوكن وجاهزية الـ API</p>
+        <p className="text-gray-500 text-sm mt-1">فحص حالة المصادقة عبر HttpOnly Cookies</p>
       </div>
 
-      {/* Token Status */}
+      {/* Auth Status */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 space-y-4">
         <h2 className="font-bold text-gray-700 flex items-center gap-2">
           <FontAwesomeIcon icon={faKey} className="text-amber-500" />
-          حالة التوكن
+          حالة المصادقة
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {/* Cookie */}
-          <div className={`p-3 rounded-xl border-2 ${token ? 'border-blue-200 bg-blue-50' : 'border-red-200 bg-red-50'}`}>
+          {/* HttpOnly Cookie Status */}
+          <div className={`p-3 rounded-xl border-2 ${meData ? 'border-blue-200 bg-blue-50' : 'border-red-200 bg-red-50'}`}>
             <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-semibold text-gray-700">Cookie: auth_token</span>
-              <FontAwesomeIcon icon={token ? faCheck : faTimes} className={token ? 'text-blue-600' : 'text-red-500'} />
+              <span className="text-sm font-semibold text-gray-700">HttpOnly Cookie</span>
+              {meLoading ? (
+                <FontAwesomeIcon icon={faSpinner} className="animate-spin text-blue-500" />
+              ) : (
+                <FontAwesomeIcon icon={meData ? faCheck : faTimes} className={meData ? 'text-blue-600' : 'text-red-500'} />
+              )}
             </div>
-            <p className="text-xs font-mono text-gray-500 break-all">
-              {token ? shortToken(token) : 'غير موجود'}
+            <p className="text-xs text-gray-500">
+              {meLoading ? 'جاري التحقق...' : meData ? `مصادق كـ ${meData.userName}` : 'غير مصادق'}
             </p>
           </div>
 
           {/* localStorage */}
-          <div className={`p-3 rounded-xl border-2 ${localToken ? 'border-amber-200 bg-amber-50' : 'border-gray-200 bg-gray-50'}`}>
+          <div className={`p-3 rounded-xl border-2 ${userData ? 'border-amber-200 bg-amber-50' : 'border-gray-200 bg-gray-50'}`}>
             <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-semibold text-gray-700">localStorage (قديم)</span>
-              <FontAwesomeIcon icon={localToken ? faCheck : faTimes} className={localToken ? 'text-amber-500' : 'text-gray-400'} />
+              <span className="text-sm font-semibold text-gray-700">localStorage (user)</span>
+              <FontAwesomeIcon icon={userData ? faCheck : faTimes} className={userData ? 'text-amber-500' : 'text-gray-400'} />
             </div>
-            <p className="text-xs font-mono text-gray-500 break-all">
-              {localToken ? shortToken(localToken) : 'غير موجود'}
+            <p className="text-xs text-gray-500">
+              {userData ? `${userData.name} (${userData.email})` : 'غير موجود'}
             </p>
           </div>
         </div>
 
-        {/* Actions */}
         <div className="flex flex-wrap gap-2">
-          {localToken && !token && (
-            <button onClick={migrateToken}
-              className="px-4 py-2 bg-amber-500 text-white rounded-xl text-sm font-medium hover:bg-amber-600">
-              نقل التوكن من localStorage للـ Cookie
-            </button>
-          )}
-          {(token || localToken) && (
+          {(userData) && (
             <button onClick={clearAll}
               className="px-4 py-2 bg-red-100 text-red-700 rounded-xl text-sm font-medium hover:bg-red-200">
-              حذف جميع التوكنات (تسجيل الخروج)
+              مسح بيانات localStorage
             </button>
           )}
-          {!token && !localToken && (
+          {!meData && !meLoading && (
             <a href="/login" className="px-4 py-2 bg-primary text-white rounded-xl text-sm font-medium hover:opacity-90">
               الذهاب لصفحة تسجيل الدخول
             </a>
@@ -216,11 +211,11 @@ export default function AuthTestPage() {
         <p className="font-bold mb-2 flex items-center gap-2">
           <FontAwesomeIcon icon={faUser} /> كيفية التفسير:</p>
         <ul className="space-y-1 list-disc list-inside text-xs">
-          <li><strong>200</strong> — ناجح، الـ API يعمل بشكل صحيح</li>
-          <li><strong>401</strong> — التوكن غير موجود أو منتهي الصلاحية</li>
-          <li><strong>403</strong> — التوكن صحيح لكن حسابك ليس لديه صلاحية Admin</li>
-          <li><strong>404</strong> — مسار الـ API غير صحيح</li>
-          <li><strong>500</strong> — خطأ في السيرفر</li>
+          <li><strong>200</strong> - ناجح، الـ API يعمل بشكل صحيح</li>
+          <li><strong>401</strong> - التوكن غير موجود أو منتهي الصلاحية</li>
+          <li><strong>403</strong> - التوكن صحيح لكن حسابك ليس لديه صلاحية Admin</li>
+          <li><strong>404</strong> - مسار الـ API غير صحيح</li>
+          <li><strong>500</strong> - خطأ في السيرفر</li>
         </ul>
       </div>
     </div>

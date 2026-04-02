@@ -1,5 +1,4 @@
 import api from "@/lib/axios";
-import Cookies from "js-cookie";
 
 export interface LoginRequest {
   email: string;
@@ -25,17 +24,11 @@ export interface AuthResponse {
 }
 
 class AuthService {
-  /**
-   * تسجيل الدخول
-   */
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     try {
-      const response = await api.post<AuthResponse>("/auth/login", credentials);
+      const response = await api.post<AuthResponse>("/Account/LoginByEmail", credentials);
 
-      if (response.data.succeeded && response.data.data?.token) {
-        // حفظ التوكن في الكوكيز
-        Cookies.set("auth_token", response.data.data.token, { expires: 7 });
-        // حفظ معلومات المستخدم
+      if (response.data.succeeded && response.data.data?.user) {
         localStorage.setItem("user", JSON.stringify(response.data.data.user));
       }
 
@@ -48,9 +41,6 @@ class AuthService {
     }
   }
 
-  /**
-   * فتح قفل الشاشة
-   */
   async unlock(request: UnlockRequest): Promise<AuthResponse> {
     try {
       const response = await api.post<AuthResponse>("/auth/unlock", request);
@@ -63,49 +53,19 @@ class AuthService {
     }
   }
 
-  /**
-   * تسجيل الخروج
-   */
+  // Logout - backend clears HttpOnly cookies
   async logout(): Promise<void> {
     try {
-      // إرسال طلب تسجيل الخروج للباك اند لإلغاء التوكن
-      const token = Cookies.get("auth_token");
-      if (token) {
-        await api.post("/Account/logout", {}, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-      }
+      await api.post("/Account/logout");
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      // حذف التوكن من الكوكيز بجميع الطرق الممكنة
-      Cookies.remove("auth_token", { path: "/" });
-      Cookies.remove("auth_token", { path: "/", domain: window.location.hostname });
-      Cookies.remove("auth_token");
-
-      // حذف أي كوكيز أخرى قد تكون موجودة
-      document.cookie.split(";").forEach((c) => {
-        document.cookie = c
-          .replace(/^ +/, "")
-          .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-      });
-
-      // حذف جميع البيانات من localStorage
       localStorage.clear();
-
-      // حذف جميع البيانات من sessionStorage
       sessionStorage.clear();
-
-      // إعادة توجيه إلى الصفحة الرئيسية مع إعادة تحميل كاملة
       window.location.href = "/";
     }
   }
 
-  /**
-   * الحصول على معلومات المستخدم الحالي
-   */
   getCurrentUser() {
     if (typeof window === "undefined") return null;
 
@@ -119,27 +79,20 @@ class AuthService {
     }
   }
 
-  /**
-   * التحقق من وجود توكن
-   */
   isAuthenticated(): boolean {
-    return !!Cookies.get("auth_token");
+    if (typeof window === "undefined") return false;
+    return !!localStorage.getItem("user");
   }
 
-  /**
-   * التحقق من دور المستخدم
-   */
   hasRole(roles: string[]): boolean {
     const user = this.getCurrentUser();
-    if (!user || !user.role) return false;
-    return roles.includes(user.role);
+    if (!user) return false;
+    const userRoles = user.roles || (user.role ? [user.role] : []);
+    return userRoles.some((r: string) => roles.includes(r));
   }
 
-  /**
-   * التحقق من إمكانية الوصول للوحة التحكم
-   */
   canAccessAdminDashboard(): boolean {
-    return this.hasRole(['admin', 'BASEQATEMPLOYEE', 'SUPERADMIN']);
+    return this.hasRole(['admin', 'Admin', 'BASEQATEMPLOYEE', 'BaseqatEmployee', 'SUPERADMIN', 'SuperAdmin']);
   }
 }
 

@@ -28,6 +28,11 @@ import {
   faStar,
   faInfoCircle,
   faSave,
+  faCloudUploadAlt,
+  faTrashAlt,
+  faPlay,
+  faCamera,
+  faVideo,
 } from '@fortawesome/free-solid-svg-icons';
 import {
   CoursesAdminService,
@@ -50,6 +55,16 @@ import {
   type Instructor,
 } from '@/services/courses/page';
 import { getFileUrl } from '@/lib/config';
+
+// ===========================
+// Helpers
+// ===========================
+function extractYouTubeId(url: string): string {
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?\s]+)/);
+  return match?.[1] || '';
+}
+
+const PLATFORM_LOGO = '/site/logo.png';
 
 // ===========================
 // Types
@@ -154,6 +169,9 @@ function OverviewTab({ course, courseId, notif, onCourseUpdated }: {
     language: course.language || 'العربية',
     hasCertificate: course.hasCertificate ?? false,
     courseType: course.courseType ?? 0,
+    courseDays: course.courseDays ?? 31,
+    startDate: course.startDate?.split('T')[0] || '',
+    endDate: course.endDate?.split('T')[0] || '',
     location: course.location || '',
     platformName: course.platformName || '',
     platformUrl: course.platformUrl || '',
@@ -169,6 +187,12 @@ function OverviewTab({ course, courseId, notif, onCourseUpdated }: {
   const [categories, setCategories] = useState<CourseCategory[]>([]);
   const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [saving, setSaving] = useState(false);
+
+  // Thumbnail upload
+  const [thumbnailPreview, setThumbnailPreview] = useState<string>(
+    course.thumbnailUrl ? getFileUrl(course.thumbnailUrl) : ''
+  );
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -194,6 +218,30 @@ function OverviewTab({ course, courseId, notif, onCourseUpdated }: {
       notif('error', err.message || 'حدث خطأ');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // Preview
+    const reader = new FileReader();
+    reader.onload = () => setThumbnailPreview(reader.result as string);
+    reader.readAsDataURL(file);
+    // Upload
+    setUploadingThumbnail(true);
+    try {
+      const res = await CoursesAdminService.uploadThumbnail(courseId, file);
+      if (res.succeeded) {
+        notif('success', 'تم رفع الصورة بنجاح');
+        onCourseUpdated({ ...course, thumbnailUrl: (res.data as any)?.imageUrl || course.thumbnailUrl });
+      } else {
+        notif('error', res.message || 'فشل رفع الصورة');
+      }
+    } catch (err: any) {
+      notif('error', err.message || 'حدث خطأ أثناء الرفع');
+    } finally {
+      setUploadingThumbnail(false);
     }
   };
 
@@ -293,10 +341,18 @@ function OverviewTab({ course, courseId, notif, onCourseUpdated }: {
         </div>
       </div>
 
-      {/* Duration */}
+      {/* Duration & Dates */}
       <div>
-        <h3 className="font-bold text-gray-800 mb-4">المدة</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <h3 className="font-bold text-gray-800 mb-4">المدة والمواعيد</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className={labelClass}>تاريخ البداية</label>
+            <input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>تاريخ النهاية</label>
+            <input type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} className={inputClass} />
+          </div>
           <div>
             <label className={labelClass}>المدة بالأيام</label>
             <input type="number" value={form.durationInDays} onChange={(e) => setForm({ ...form, durationInDays: Number(e.target.value) })} min="0" className={inputClass} />
@@ -306,6 +362,7 @@ function OverviewTab({ course, courseId, notif, onCourseUpdated }: {
             <input type="number" value={form.totalDurationInHours} onChange={(e) => setForm({ ...form, totalDurationInHours: Number(e.target.value) })} min="0" className={inputClass} />
           </div>
         </div>
+        <CourseDaysPicker value={form.courseDays} onChange={(v) => setForm({ ...form, courseDays: v })} labelClass={labelClass} />
       </div>
 
       {/* Status & Visibility */}
@@ -335,12 +392,80 @@ function OverviewTab({ course, courseId, notif, onCourseUpdated }: {
         </div>
       </div>
 
-      {/* Promo Video */}
+      {/* Media: Thumbnail + Promo Video */}
       <div>
-        <h3 className="font-bold text-gray-800 mb-4">الوسائط</h3>
-        <div>
-          <label className={labelClass}>رابط الفيديو الترويجي</label>
-          <input type="url" value={form.promoVideoUrl} onChange={(e) => setForm({ ...form, promoVideoUrl: e.target.value })} placeholder="https://youtube.com/..." className={inputClass} dir="ltr" />
+        <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <FontAwesomeIcon icon={faCamera} className="text-blue-500" />
+          الوسائط
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Thumbnail Upload */}
+          <div>
+            <label className={labelClass}>صورة الدورة (Thumbnail)</label>
+            <div className="relative group">
+              {thumbnailPreview ? (
+                <div className="relative rounded-xl overflow-hidden border border-gray-200">
+                  <img src={thumbnailPreview} alt="صورة الدورة" className="w-full h-48 object-cover" />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                    <label className="cursor-pointer w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-blue-600 hover:bg-white transition-colors">
+                      <FontAwesomeIcon icon={faEdit} className="text-sm" />
+                      <input type="file" accept="image/*" onChange={handleThumbnailUpload} className="hidden" />
+                    </label>
+                  </div>
+                  {uploadingThumbnail && (
+                    <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+                      <FontAwesomeIcon icon={faSpinner} className="text-2xl text-blue-600 animate-spin" />
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <label className="cursor-pointer flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-400 hover:bg-blue-50/30 transition-colors">
+                  {uploadingThumbnail ? (
+                    <FontAwesomeIcon icon={faSpinner} className="text-2xl text-blue-600 animate-spin" />
+                  ) : (
+                    <>
+                      <img src="/site/logo.png" alt="شعار المنصة" className="w-16 h-16 object-contain opacity-30 mb-2" />
+                      <FontAwesomeIcon icon={faCloudUploadAlt} className="text-2xl text-gray-400 mb-2" />
+                      <span className="text-sm text-gray-500 font-medium">اسحب الصورة أو انقر للرفع</span>
+                      <span className="text-xs text-gray-400 mt-1">JPG, PNG, WEBP</span>
+                    </>
+                  )}
+                  <input type="file" accept="image/*" onChange={handleThumbnailUpload} className="hidden" />
+                </label>
+              )}
+            </div>
+          </div>
+
+          {/* Promo Video URL */}
+          <div>
+            <label className={labelClass}>فيديو الشرح / الفيديو الترويجي</label>
+            <input type="url" value={form.promoVideoUrl} onChange={(e) => setForm({ ...form, promoVideoUrl: e.target.value })} placeholder="https://youtube.com/watch?v=..." className={`${inputClass} mb-3`} dir="ltr" />
+            {form.promoVideoUrl ? (
+              <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-900">
+                {form.promoVideoUrl.includes('youtube.com') || form.promoVideoUrl.includes('youtu.be') ? (
+                  <iframe
+                    src={`https://www.youtube.com/embed/${extractYouTubeId(form.promoVideoUrl)}`}
+                    className="w-full h-40"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
+                    allowFullScreen
+                  />
+                ) : form.promoVideoUrl.match(/\.(mp4|webm|ogg)$/i) ? (
+                  <video src={form.promoVideoUrl} controls className="w-full h-40 object-cover" />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-40 text-white/60">
+                    <FontAwesomeIcon icon={faVideo} className="text-2xl mb-2" />
+                    <a href={form.promoVideoUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-400 hover:underline">فتح رابط الفيديو</a>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-40 border-2 border-dashed border-gray-300 rounded-xl text-gray-400">
+                <FontAwesomeIcon icon={faVideo} className="text-2xl mb-2" />
+                <span className="text-sm">أضف رابط الفيديو الترويجي</span>
+                <span className="text-xs mt-1">YouTube, MP4, أو أي رابط فيديو</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -980,13 +1105,314 @@ function EnrollmentsTab({ courseId, notif }: { courseId: number; notif: (t: 'suc
 // ===========================
 // Main Page
 // ===========================
+// ===========================
+// Course Days Picker (أيام الدورة)
+// ===========================
+const WEEK_DAYS = [
+  { value: 1, label: 'الأحد' },
+  { value: 2, label: 'الاثنين' },
+  { value: 4, label: 'الثلاثاء' },
+  { value: 8, label: 'الأربعاء' },
+  { value: 16, label: 'الخميس' },
+  { value: 32, label: 'الجمعة' },
+  { value: 64, label: 'السبت' },
+];
+
+function CourseDaysPicker({ value, onChange, labelClass }: { value: number; onChange: (v: number) => void; labelClass: string }) {
+  const toggleDay = (dayValue: number) => {
+    onChange(value ^ dayValue); // XOR to toggle bit
+  };
+
+  return (
+    <div>
+      <label className={labelClass}>أيام الدورة</label>
+      <div className="flex flex-wrap gap-2 mt-1">
+        {WEEK_DAYS.map((day) => {
+          const isSelected = (value & day.value) !== 0;
+          return (
+            <button
+              key={day.value}
+              type="button"
+              onClick={() => toggleDay(day.value)}
+              className={`px-3.5 py-2 rounded-xl text-sm font-semibold border transition-all ${
+                isSelected
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                  : 'bg-white text-gray-600 border-gray-300 hover:border-blue-400 hover:text-blue-600'
+              }`}
+            >
+              {day.label}
+            </button>
+          );
+        })}
+      </div>
+      {value > 0 && (
+        <p className="text-xs text-gray-400 mt-1.5">
+          الأيام المختارة: {WEEK_DAYS.filter(d => (value & d.value) !== 0).map(d => d.label).join('، ')}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ===========================
+// New Course Form (إضافة دورة جديدة)
+// ===========================
+function NewCourseForm() {
+  const router = useRouter();
+  const [categories, setCategories] = useState<CourseCategory[]>([]);
+  const [instructors, setInstructors] = useState<Instructor[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [notif, setNotif] = useState<StatusNotif>({ open: false, type: 'success', message: '' });
+
+  const [form, setForm] = useState({
+    title: '',
+    subtitle: '',
+    description: '',
+    price: 0,
+    level: 1,
+    language: 'العربية',
+    hasCertificate: false,
+    courseType: 0,
+    courseDays: 31, // الأحد-الخميس (1+2+4+8+16)
+    startDate: '',
+    endDate: '',
+    location: '',
+    platformName: '',
+    platformUrl: '',
+    status: 0,
+    isActive: true,
+    durationInDays: 0,
+    totalDurationInHours: 0,
+    promoVideoUrl: '',
+    courseCategoryId: 0,
+    instructorId: 0,
+  });
+
+  useEffect(() => {
+    Promise.all([
+      CourseCategoryAdminService.getAll(),
+      InstructorAdminService.getAll(),
+    ]).then(([catRes, instRes]) => {
+      if (catRes.succeeded) setCategories(catRes.data ?? []);
+      if (instRes.succeeded) setInstructors(instRes.data ?? []);
+    });
+  }, []);
+
+  const handleCreate = async () => {
+    if (!form.title.trim()) {
+      setNotif({ open: true, type: 'error', message: 'عنوان الدورة مطلوب' });
+      return;
+    }
+    if (!form.courseCategoryId) {
+      setNotif({ open: true, type: 'error', message: 'اختر قسم الدورة' });
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await CoursesAdminService.add(form);
+      if (res.succeeded) {
+        setNotif({ open: true, type: 'success', message: 'تم إنشاء الدورة بنجاح' });
+        setTimeout(() => router.push(`/courses-table/${res.data.id}`), 1000);
+      } else {
+        setNotif({ open: true, type: 'error', message: res.message || 'فشل الإنشاء' });
+      }
+    } catch (err: any) {
+      setNotif({ open: true, type: 'error', message: err.message || 'حدث خطأ' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const inputClass = "w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm";
+  const labelClass = "block text-sm font-semibold text-gray-700 mb-1.5";
+
+  return (
+    <div className="p-4 sm:p-6" dir="rtl">
+      <button onClick={() => router.push('/courses-table')} className="flex items-center gap-2 text-gray-500 hover:text-gray-700 text-sm mb-4 transition-colors">
+        <FontAwesomeIcon icon={faArrowRight} />
+        العودة لقائمة الدورات
+      </button>
+
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
+          <FontAwesomeIcon icon={faPlus} className="text-blue-600 text-lg" />
+        </div>
+        <h1 className="text-2xl font-bold text-gray-800">إضافة دورة جديدة</h1>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 space-y-6">
+        {/* Basic Info */}
+        <div>
+          <h3 className="font-bold text-gray-800 mb-4">المعلومات الأساسية</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:col-span-2">
+              <label className={labelClass}>عنوان الدورة <span className="text-red-500">*</span></label>
+              <input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="أدخل عنوان الدورة" className={inputClass} />
+            </div>
+            <div className="md:col-span-2">
+              <label className={labelClass}>العنوان الفرعي</label>
+              <input type="text" value={form.subtitle} onChange={(e) => setForm({ ...form, subtitle: e.target.value })} placeholder="عنوان فرعي (اختياري)" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>القسم <span className="text-red-500">*</span></label>
+              <select value={form.courseCategoryId} onChange={(e) => setForm({ ...form, courseCategoryId: Number(e.target.value) })} className={inputClass}>
+                <option value={0} disabled>اختر القسم</option>
+                {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>المدرب الرئيسي</label>
+              <select value={form.instructorId} onChange={(e) => setForm({ ...form, instructorId: Number(e.target.value) })} className={inputClass}>
+                <option value={0}>بدون مدرب</option>
+                {instructors.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Description */}
+        <div>
+          <h3 className="font-bold text-gray-800 mb-4">وصف الدورة</h3>
+          <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={4} placeholder="أدخل وصفاً مفصلاً للدورة..." className={`${inputClass} resize-y`} />
+        </div>
+
+        {/* Pricing & Level */}
+        <div>
+          <h3 className="font-bold text-gray-800 mb-4">التسعير والمستوى</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className={labelClass}>السعر (ر.س)</label>
+              <input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} min="0" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>المستوى</label>
+              <select value={form.level} onChange={(e) => setForm({ ...form, level: Number(e.target.value) })} className={inputClass}>
+                <option value={1}>مبتدئ</option>
+                <option value={2}>متوسط</option>
+                <option value={3}>متقدم</option>
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>اللغة</label>
+              <input type="text" value={form.language} onChange={(e) => setForm({ ...form, language: e.target.value })} className={inputClass} />
+            </div>
+          </div>
+        </div>
+
+        {/* Type & Location */}
+        <div>
+          <h3 className="font-bold text-gray-800 mb-4">النوع والموقع</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className={labelClass}>نوع الدورة</label>
+              <select value={form.courseType} onChange={(e) => setForm({ ...form, courseType: Number(e.target.value) })} className={inputClass}>
+                <option value={0}>حضوري</option>
+                <option value={1}>أونلاين</option>
+                <option value={2}>أونلاين + حضوري</option>
+              </select>
+            </div>
+            {(form.courseType === 0 || form.courseType === 2) && (
+              <div className="md:col-span-2">
+                <label className={labelClass}>الموقع</label>
+                <input type="text" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="مثال: الرياض - حي العليا" className={inputClass} />
+              </div>
+            )}
+            {(form.courseType === 1 || form.courseType === 2) && (
+              <>
+                <div>
+                  <label className={labelClass}>اسم المنصة</label>
+                  <input type="text" value={form.platformName} onChange={(e) => setForm({ ...form, platformName: e.target.value })} placeholder="Zoom, Teams..." className={inputClass} />
+                </div>
+                <div>
+                  <label className={labelClass}>رابط المنصة</label>
+                  <input type="url" value={form.platformUrl} onChange={(e) => setForm({ ...form, platformUrl: e.target.value })} placeholder="https://..." className={inputClass} dir="ltr" />
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Duration & Dates */}
+        <div>
+          <h3 className="font-bold text-gray-800 mb-4">المدة والمواعيد</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className={labelClass}>تاريخ البداية</label>
+              <input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>تاريخ النهاية</label>
+              <input type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>المدة بالأيام</label>
+              <input type="number" value={form.durationInDays} onChange={(e) => setForm({ ...form, durationInDays: Number(e.target.value) })} min="0" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>إجمالي الساعات</label>
+              <input type="number" value={form.totalDurationInHours} onChange={(e) => setForm({ ...form, totalDurationInHours: Number(e.target.value) })} min="0" className={inputClass} />
+            </div>
+          </div>
+          <CourseDaysPicker value={form.courseDays} onChange={(v) => setForm({ ...form, courseDays: v })} labelClass={labelClass} />
+        </div>
+
+        {/* Promo Video URL */}
+        <div>
+          <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <FontAwesomeIcon icon={faVideo} className="text-blue-500" />
+            الوسائط
+          </h3>
+          <div>
+            <label className={labelClass}>رابط الفيديو الترويجي</label>
+            <input type="url" value={form.promoVideoUrl} onChange={(e) => setForm({ ...form, promoVideoUrl: e.target.value })} placeholder="https://youtube.com/watch?v=..." className={inputClass} dir="ltr" />
+            <p className="text-xs text-gray-400 mt-1">يمكنك رفع صورة الدورة بعد الإنشاء من صفحة التعديل</p>
+          </div>
+        </div>
+
+        {/* Options */}
+        <div>
+          <h3 className="font-bold text-gray-800 mb-4">خيارات إضافية</h3>
+          <div className="flex flex-wrap gap-6">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} className="w-4 h-4 text-blue-600 rounded" />
+              <span className="text-sm font-medium text-gray-700">مفعّلة (ظاهرة)</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={form.hasCertificate} onChange={(e) => setForm({ ...form, hasCertificate: e.target.checked })} className="w-4 h-4 text-blue-600 rounded" />
+              <span className="text-sm font-medium text-gray-700">شهادة إتمام</span>
+            </label>
+          </div>
+        </div>
+
+        {/* Save */}
+        <div className="flex justify-end pt-4 border-t border-gray-100">
+          <button
+            onClick={handleCreate}
+            disabled={saving}
+            className="flex items-center gap-2 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors disabled:opacity-60"
+          >
+            {saving ? <FontAwesomeIcon icon={faSpinner} className="animate-spin" /> : <FontAwesomeIcon icon={faPlus} />}
+            إنشاء الدورة
+          </button>
+        </div>
+      </div>
+
+      <StatusToast notif={notif} onClose={() => setNotif({ ...notif, open: false })} />
+    </div>
+  );
+}
+
+// ===========================
+// Main Page
+// ===========================
 export default function CourseDetailAdminPage() {
   const params = useParams();
   const router = useRouter();
-  const courseId = Number(params.id);
+  const isNew = params.id === 'new';
+  const courseId = isNew ? 0 : Number(params.id);
 
   const [course, setCourse] = useState<Course | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!isNew);
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const [notif, setNotif] = useState<StatusNotif>({ open: false, type: 'success', message: '' });
 
@@ -994,7 +1420,7 @@ export default function CourseDetailAdminPage() {
     setNotif({ open: true, type, message });
 
   useEffect(() => {
-    if (!courseId) return;
+    if (isNew || !courseId) return;
     setLoading(true);
     CoursesAdminService.getById(courseId)
       .then((res) => {
@@ -1002,7 +1428,12 @@ export default function CourseDetailAdminPage() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [courseId]);
+  }, [courseId, isNew]);
+
+  // Show create form for new courses
+  if (isNew) {
+    return <NewCourseForm />;
+  }
 
   const tabs: { key: TabKey; label: string; icon: any }[] = [
     { key: 'overview', label: 'نظرة عامة', icon: faInfoCircle },
@@ -1046,13 +1477,20 @@ export default function CourseDetailAdminPage() {
         </button>
 
         <div className="flex items-start gap-4">
-          {course.thumbnailUrl ? (
-            <img src={getFileUrl(course.thumbnailUrl)} alt={course.title} className="w-20 h-20 rounded-xl object-cover" />
-          ) : (
-            <div className="w-20 h-20 rounded-xl bg-blue-100 flex items-center justify-center">
-              <FontAwesomeIcon icon={faGraduationCap} className="text-blue-600 text-2xl" />
-            </div>
-          )}
+          <div className="relative flex-shrink-0">
+            {course.thumbnailUrl ? (
+              <img src={getFileUrl(course.thumbnailUrl)} alt={course.title} className="w-20 h-20 rounded-xl object-cover" />
+            ) : (
+              <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center border border-emerald-200">
+                <img src={PLATFORM_LOGO} alt="شعار المنصة" className="w-12 h-12 object-contain" />
+              </div>
+            )}
+            {course.promoVideoUrl && (
+              <div className="absolute -bottom-1 -left-1 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center shadow-sm">
+                <FontAwesomeIcon icon={faPlay} className="text-white text-[8px] mr-[-1px]" />
+              </div>
+            )}
+          </div>
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-gray-800">{course.title}</h1>
             <div className="flex items-center gap-3 mt-2 flex-wrap">
