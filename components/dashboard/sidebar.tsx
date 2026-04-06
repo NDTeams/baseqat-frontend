@@ -32,6 +32,7 @@ import {
   faVial,
   faArrowDown,
   faHistory,
+  faCertificate,
 } from "@fortawesome/free-solid-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
@@ -158,6 +159,27 @@ export default function Sidebar() {
             text="التسجيلات"
             collapsed={isCollapsed}
             active={pathname === "/enrollments"}
+          />
+          <MenuItem
+            href="/certificates"
+            icon={faCertificate}
+            text="الشهادات"
+            collapsed={isCollapsed}
+            active={pathname === "/certificates"}
+          />
+          <MenuItem
+            href="/quizzes"
+            icon={faClipboardList}
+            text="الاختبارات"
+            collapsed={isCollapsed}
+            active={pathname === "/quizzes"}
+          />
+          <MenuItem
+            href="/payments"
+            icon={faChartLine}
+            text="المدفوعات"
+            collapsed={isCollapsed}
+            active={pathname === "/payments"}
           />
         </MenuSection>
 

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faChalkboardTeacher,
+  faUserTie,
   faUser,
   faBriefcase,
   faFileAlt,
@@ -26,8 +26,11 @@ import {
   faLightbulb,
   faPlus,
   faTimes,
-  faTimesCircle,
   faClock,
+  faDollarSign,
+  faTag,
+  faLayerGroup,
+  faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faLinkedin,
@@ -35,18 +38,21 @@ import {
   faInstagram,
   faFacebook,
 } from "@fortawesome/free-brands-svg-icons";
-import { InstructorAdminService } from "@/services/courses/page";
+import { ConsultantAdminService, ConsultationCategoryPublicService, type ConsultationCategory } from "@/services/consultants/page";
 import ModalMessage from "@/components/modal-message";
 
 // ===========================
 // Types
 // ===========================
-interface InstructorFormData {
+interface ConsultantFormData {
   name: string;
   title: string;
   bio: string;
   gender: number;
   yearsOfExperience: string;
+  specialty: string;
+  hourlyRate: string;
+  availability: string;
   linkedInUrl: string;
   xUrl: string;
   instagramUrl: string;
@@ -62,13 +68,13 @@ const STEPS = [
 ];
 const TOTAL_STEPS = STEPS.length;
 
-export default function BecomeInstructorPage() {
+export default function BecomeConsultantPage() {
   const [requestStatus, setRequestStatus] = useState<number | null>(null);
   const [denialReason, setDenialReason] = useState<string>("");
   const [checkingStatus, setCheckingStatus] = useState(true);
 
   useEffect(() => {
-    InstructorAdminService.getMyRequest().then(res => {
+    ConsultantAdminService.getMyRequest().then(res => {
       if (res.succeeded && res.data) {
         setRequestStatus(res.data.requestStatus ?? null);
         setDenialReason(res.data.denialReason || "");
@@ -81,12 +87,15 @@ export default function BecomeInstructorPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Form data
-  const [formData, setFormData] = useState<InstructorFormData>({
+  const [formData, setFormData] = useState<ConsultantFormData>({
     name: "",
     title: "",
     bio: "",
     gender: 1,
     yearsOfExperience: "",
+    specialty: "",
+    hourlyRate: "",
+    availability: "",
     linkedInUrl: "",
     xUrl: "",
     instagramUrl: "",
@@ -104,6 +113,10 @@ export default function BecomeInstructorPage() {
   const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState("");
 
+  // Categories
+  const [availableCategories, setAvailableCategories] = useState<ConsultationCategory[]>([]);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
+
   const addSkill = () => {
     const trimmed = newSkill.trim();
     if (trimmed && !skills.includes(trimmed)) {
@@ -115,6 +128,15 @@ export default function BecomeInstructorPage() {
   const removeSkill = (skill: string) => {
     setSkills(skills.filter((s) => s !== skill));
   };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await ConsultationCategoryPublicService.getActive();
+        if (res.succeeded) setAvailableCategories(res.data || []);
+      } catch {}
+    })();
+  }, []);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -190,17 +212,21 @@ export default function BecomeInstructorPage() {
 
     setIsSubmitting(true);
     try {
-      const res = await InstructorAdminService.registerRequest({
+      const res = await ConsultantAdminService.registerRequest({
         name: formData.name.trim(),
         title: formData.title.trim(),
         bio: formData.bio.trim() || undefined,
         gender: formData.gender,
         yearsOfExperience: formData.yearsOfExperience ? parseInt(formData.yearsOfExperience) : undefined,
+        specialty: formData.specialty.trim() || undefined,
+        hourlyRate: formData.hourlyRate ? parseFloat(formData.hourlyRate) : undefined,
+        availability: formData.availability.trim() || undefined,
         linkedInUrl: formData.linkedInUrl.trim() || undefined,
         xUrl: formData.xUrl.trim() || undefined,
         instagramUrl: formData.instagramUrl.trim() || undefined,
         facebookUrl: formData.facebookUrl.trim() || undefined,
         skills: skills.length > 0 ? skills : undefined,
+        categoryIds: selectedCategoryIds.length > 0 ? selectedCategoryIds : undefined,
         avatarFile: avatarFile || undefined,
         cvFile: cvFile || undefined,
       });
@@ -223,7 +249,6 @@ export default function BecomeInstructorPage() {
       } else if (Array.isArray(errData?.errors) && errData.errors.length) {
         msg = errData.errors[0];
       } else if (errData?.errors && typeof errData.errors === "object") {
-        // ASP.NET validation errors format: { "Field": ["error msg"] }
         const firstField = Object.values(errData.errors)[0];
         msg = Array.isArray(firstField) ? firstField[0] : String(firstField);
       } else if (errData?.title) {
@@ -256,7 +281,7 @@ export default function BecomeInstructorPage() {
           </div>
           <h2 className="text-3xl font-black text-gray-800 mb-3">تمت الموافقة على طلبك</h2>
           <p className="text-gray-600 mb-8 leading-relaxed">
-            تهانينا! تمت الموافقة على طلبك كمدرب في منصة باسقات. يمكنك الآن البدء بإنشاء دوراتك التدريبية.
+            تهانينا! تمت الموافقة على طلبك كمستشار في منصة باسقات. يمكنك الآن استقبال طلبات الاستشارات.
           </p>
           <a
             href="/student-dashboard/index"
@@ -279,7 +304,7 @@ export default function BecomeInstructorPage() {
           </div>
           <h2 className="text-3xl font-black text-gray-800 mb-3">تم رفض طلبك</h2>
           <p className="text-gray-600 mb-4 leading-relaxed">
-            للأسف تم رفض طلبك للانضمام كمدرب في منصة باسقات.
+            للأسف تم رفض طلبك للانضمام كمستشار في منصة باسقات.
           </p>
           {denialReason && (
             <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 text-right">
@@ -308,7 +333,7 @@ export default function BecomeInstructorPage() {
           </div>
           <h2 className="text-3xl font-black text-gray-800 mb-3">طلبك قيد المراجعة</h2>
           <p className="text-gray-600 mb-8 leading-relaxed">
-            تم استلام طلبك للانضمام كمدرب وهو الآن قيد المراجعة من قبل فريق الإدارة. سيتم إبلاغك بالنتيجة قريبًا.
+            تم استلام طلبك للانضمام كمستشار وهو الآن قيد المراجعة من قبل فريق الإدارة. سيتم إبلاغك بالنتيجة قريبًا.
           </p>
           <a
             href="/student-dashboard/index"
@@ -326,30 +351,30 @@ export default function BecomeInstructorPage() {
     return (
       <div dir="rtl" className="min-h-[60vh] flex items-center justify-center">
         <div className="text-center max-w-md mx-auto">
-          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-blue-100 flex items-center justify-center">
-            <FontAwesomeIcon icon={faCheck} className="text-blue-600 text-4xl" />
+          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-sky-100 flex items-center justify-center">
+            <FontAwesomeIcon icon={faCheck} className="text-sky-600 text-4xl" />
           </div>
           <h2 className="text-3xl font-black text-gray-800 mb-3">تم إرسال طلبك بنجاح!</h2>
           <p className="text-gray-600 mb-8 leading-relaxed">
-            شكرًا لاهتمامك بالانضمام كمدرب في منصة باسقات.
+            شكرًا لاهتمامك بالانضمام كمستشار في منصة باسقات.
             سيتم مراجعة طلبك من قبل فريق الإدارة وسنتواصل معك عبر البريد الإلكتروني قريبًا.
           </p>
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+          <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 mb-6">
             <div className="flex items-start gap-3">
-              <FontAwesomeIcon icon={faInfoCircle} className="text-blue-600 mt-1" />
+              <FontAwesomeIcon icon={faInfoCircle} className="text-sky-600 mt-1" />
               <div className="text-right">
-                <p className="text-sm font-semibold text-blue-800 mb-1">ماذا بعد؟</p>
-                <ul className="text-xs text-blue-700 space-y-1">
+                <p className="text-sm font-semibold text-sky-800 mb-1">ماذا بعد؟</p>
+                <ul className="text-xs text-sky-700 space-y-1">
                   <li>- سيتم مراجعة بياناتك خلال 2-3 أيام عمل</li>
                   <li>- ستصلك رسالة تأكيد على بريدك الإلكتروني</li>
-                  <li>- بعد القبول ستتمكن من إنشاء دوراتك التدريبية</li>
+                  <li>- بعد القبول ستتمكن من تقديم استشاراتك عبر المنصة</li>
                 </ul>
               </div>
             </div>
           </div>
           <a
             href="/student-dashboard/index"
-            className="inline-flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-sky-600 text-white rounded-xl font-semibold hover:bg-sky-700 transition-colors"
           >
             العودة للوحة التحكم
           </a>
@@ -372,12 +397,12 @@ export default function BecomeInstructorPage() {
       {/* Page Header */}
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-2">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
-            <FontAwesomeIcon icon={faChalkboardTeacher} className="text-white text-2xl" />
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center shadow-lg">
+            <FontAwesomeIcon icon={faUserTie} className="text-white text-2xl" />
           </div>
           <div>
-            <h1 className="text-3xl font-black text-gray-800">كن مدربًا</h1>
-            <p className="text-gray-500 text-sm">انضم إلى فريق المدربين وشارك خبراتك مع الآخرين</p>
+            <h1 className="text-3xl font-black text-gray-800">كن مستشارًا</h1>
+            <p className="text-gray-500 text-sm">انضم إلى فريق المستشارين وقدّم خبراتك للعملاء</p>
           </div>
         </div>
       </div>
@@ -394,9 +419,9 @@ export default function BecomeInstructorPage() {
                   }}
                   className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
                     step.id === currentStep
-                      ? "bg-blue-600 text-white shadow-lg scale-110"
+                      ? "bg-sky-600 text-white shadow-lg scale-110"
                       : step.id < currentStep
-                      ? "bg-blue-100 text-blue-600 cursor-pointer hover:bg-blue-200"
+                      ? "bg-sky-100 text-sky-600 cursor-pointer hover:bg-sky-200"
                       : "bg-gray-100 text-gray-400"
                   }`}
                 >
@@ -409,9 +434,9 @@ export default function BecomeInstructorPage() {
                 <span
                   className={`text-xs mt-2 font-semibold hidden sm:block ${
                     step.id === currentStep
-                      ? "text-blue-600"
+                      ? "text-sky-600"
                       : step.id < currentStep
-                      ? "text-blue-500"
+                      ? "text-sky-500"
                       : "text-gray-400"
                   }`}
                 >
@@ -421,7 +446,7 @@ export default function BecomeInstructorPage() {
               {index < STEPS.length - 1 && (
                 <div
                   className={`h-1 flex-1 rounded-full mx-2 transition-all duration-300 ${
-                    step.id < currentStep ? "bg-blue-400" : "bg-gray-200"
+                    step.id < currentStep ? "bg-sky-400" : "bg-gray-200"
                   }`}
                 />
               )}
@@ -436,34 +461,34 @@ export default function BecomeInstructorPage() {
         {currentStep === 1 && (
           <div className="space-y-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
-                <FontAwesomeIcon icon={faUser} className="text-blue-600" />
+              <div className="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center">
+                <FontAwesomeIcon icon={faUser} className="text-sky-600" />
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-800">المعلومات الأساسية</h2>
-                <p className="text-sm text-gray-500">أدخل بياناتك الشخصية كمدرب</p>
+                <p className="text-sm text-gray-500">أدخل بياناتك الشخصية كمستشار</p>
               </div>
             </div>
 
             {/* Name */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                <FontAwesomeIcon icon={faUser} className="ml-2 text-blue-600" />
+                <FontAwesomeIcon icon={faUser} className="ml-2 text-sky-600" />
                 الاسم الكامل <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="أدخل اسمك الكامل كما سيظهر للمتدربين"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-sm"
+                placeholder="أدخل اسمك الكامل كما سيظهر للعملاء"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none transition-all text-sm"
               />
             </div>
 
             {/* Gender */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                <FontAwesomeIcon icon={faVenusMars} className="ml-2 text-blue-600" />
+                <FontAwesomeIcon icon={faVenusMars} className="ml-2 text-sky-600" />
                 الجنس <span className="text-red-500">*</span>
               </label>
               <div className="flex gap-4">
@@ -514,34 +539,71 @@ export default function BecomeInstructorPage() {
         {currentStep === 2 && (
           <div className="space-y-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
-                <FontAwesomeIcon icon={faBriefcase} className="text-blue-600" />
+              <div className="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center">
+                <FontAwesomeIcon icon={faBriefcase} className="text-sky-600" />
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-800">التخصص والخبرة</h2>
-                <p className="text-sm text-gray-500">حدثنا عن تخصصك ومجال خبرتك</p>
+                <p className="text-sm text-gray-500">حدثنا عن تخصصك ومجال خبرتك الاستشارية</p>
               </div>
             </div>
 
             {/* Title/Specialization */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                <FontAwesomeIcon icon={faGraduationCap} className="ml-2 text-blue-600" />
-                اللقب / التخصص <span className="text-red-500">*</span>
+                <FontAwesomeIcon icon={faGraduationCap} className="ml-2 text-sky-600" />
+                اللقب / المسمى الوظيفي <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="مثال: مدرب تطوير ويب، خبير تسويق رقمي، مستشار إداري"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-sm"
+                placeholder="مثال: مستشار إداري، خبير تقنية معلومات، مستشار مالي"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none transition-all text-sm"
               />
+            </div>
+
+            {/* Consultation Categories */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <FontAwesomeIcon icon={faLayerGroup} className="ml-2 text-sky-600" />
+                أقسام الاستشارات
+              </label>
+              {availableCategories.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {availableCategories.map((cat) => {
+                    const isSelected = selectedCategoryIds.includes(cat.id);
+                    return (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() =>
+                          setSelectedCategoryIds((prev) =>
+                            isSelected
+                              ? prev.filter((id) => id !== cat.id)
+                              : [...prev, cat.id]
+                          )
+                        }
+                        className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                          isSelected
+                            ? "bg-sky-600 text-white"
+                            : "border border-gray-300 text-gray-700 hover:border-sky-400 hover:text-sky-600"
+                        }`}
+                      >
+                        {cat.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-400">لا توجد أقسام متاحة</p>
+              )}
             </div>
 
             {/* Years of Experience */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                <FontAwesomeIcon icon={faStar} className="ml-2 text-blue-600" />
+                <FontAwesomeIcon icon={faStar} className="ml-2 text-sky-600" />
                 سنوات الخبرة
               </label>
               <input
@@ -550,15 +612,47 @@ export default function BecomeInstructorPage() {
                 max="50"
                 value={formData.yearsOfExperience}
                 onChange={(e) => setFormData({ ...formData, yearsOfExperience: e.target.value })}
-                placeholder="عدد سنوات الخبرة في مجال التدريب"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-sm"
+                placeholder="عدد سنوات الخبرة في مجال الاستشارات"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none transition-all text-sm"
+              />
+            </div>
+
+            {/* Hourly Rate */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <FontAwesomeIcon icon={faDollarSign} className="ml-2 text-sky-600" />
+                سعر الساعة (ريال)
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={formData.hourlyRate}
+                onChange={(e) => setFormData({ ...formData, hourlyRate: e.target.value })}
+                placeholder="سعر الساعة الاستشارية بالريال السعودي"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none transition-all text-sm"
+              />
+            </div>
+
+            {/* Availability */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <FontAwesomeIcon icon={faClock} className="ml-2 text-sky-600" />
+                أوقات التوفر
+              </label>
+              <input
+                type="text"
+                value={formData.availability}
+                onChange={(e) => setFormData({ ...formData, availability: e.target.value })}
+                placeholder="مثال: الأحد - الخميس، 9 صباحاً - 5 مساءً"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none transition-all text-sm"
               />
             </div>
 
             {/* Skills */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                <FontAwesomeIcon icon={faLightbulb} className="ml-2 text-blue-600" />
+                <FontAwesomeIcon icon={faLightbulb} className="ml-2 text-sky-600" />
                 المهارات والاهتمامات
               </label>
               <div className="flex gap-2 mb-3">
@@ -568,13 +662,13 @@ export default function BecomeInstructorPage() {
                   onChange={(e) => setNewSkill(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
                   placeholder="أدخل مهارة واضغط Enter أو زر إضافة"
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-sm"
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none transition-all text-sm"
                 />
                 <button
                   type="button"
                   onClick={addSkill}
                   disabled={!newSkill.trim()}
-                  className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
+                  className="px-5 py-3 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
                 >
                   <FontAwesomeIcon icon={faPlus} />
                   إضافة
@@ -585,7 +679,7 @@ export default function BecomeInstructorPage() {
                   {skills.map((skill) => (
                     <span
                       key={skill}
-                      className="px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold flex items-center gap-2"
+                      className="px-4 py-2 bg-sky-50 text-sky-700 rounded-full text-sm font-semibold flex items-center gap-2"
                     >
                       {skill}
                       <button
@@ -612,7 +706,7 @@ export default function BecomeInstructorPage() {
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-800">السيرة الذاتية</h2>
-                <p className="text-sm text-gray-500">اكتب نبذة تعريفية عنك تظهر للمتدربين</p>
+                <p className="text-sm text-gray-500">اكتب نبذة تعريفية عنك تظهر للعملاء</p>
               </div>
             </div>
 
@@ -624,7 +718,7 @@ export default function BecomeInstructorPage() {
                 value={formData.bio}
                 onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                 rows={8}
-                placeholder="اكتب نبذة تعريفية شاملة عن نفسك، خبراتك، إنجازاتك، وما الذي يميزك كمدرب. هذا النص سيظهر في صفحتك الشخصية كمدرب وسيساعد المتدربين على التعرف عليك..."
+                placeholder="اكتب نبذة تعريفية شاملة عن نفسك، خبراتك الاستشارية، إنجازاتك، وما الذي يميزك كمستشار. هذا النص سيظهر في صفحتك الشخصية كمستشار وسيساعد العملاء على التعرف عليك..."
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm resize-none"
               />
               <div className="flex items-center justify-between mt-2">
@@ -643,10 +737,10 @@ export default function BecomeInstructorPage() {
                 <div>
                   <p className="text-sm font-semibold text-purple-800 mb-2">نصائح لكتابة سيرة مميزة:</p>
                   <ul className="text-xs text-purple-700 space-y-1.5">
-                    <li>- ابدأ بتعريف موجز عن نفسك وتخصصك</li>
-                    <li>- اذكر سنوات خبرتك وأبرز إنجازاتك</li>
-                    <li>- أضف المؤهلات والشهادات الحاصل عليها</li>
-                    <li>- وضّح الفائدة التي سيحصل عليها المتدرب</li>
+                    <li>- ابدأ بتعريف موجز عن نفسك وتخصصك الاستشاري</li>
+                    <li>- اذكر سنوات خبرتك وأبرز المشاريع التي عملت عليها</li>
+                    <li>- أضف المؤهلات والشهادات المهنية الحاصل عليها</li>
+                    <li>- وضّح القيمة التي سيحصل عليها العميل من استشاراتك</li>
                   </ul>
                 </div>
               </div>
@@ -675,11 +769,11 @@ export default function BecomeInstructorPage() {
               </label>
               <div
                 onClick={() => avatarInputRef.current?.click()}
-                className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors"
+                className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-sky-400 hover:bg-sky-50/30 transition-colors"
               >
                 {avatarPreview ? (
                   <div className="flex flex-col items-center">
-                    <img src={avatarPreview} alt="preview" className="w-28 h-28 rounded-2xl object-cover mb-3 border-4 border-blue-200 shadow-lg" />
+                    <img src={avatarPreview} alt="preview" className="w-28 h-28 rounded-2xl object-cover mb-3 border-4 border-sky-200 shadow-lg" />
                     <p className="text-sm font-semibold text-gray-700">{avatarFile?.name}</p>
                     <p className="text-xs text-gray-500 mt-1">{avatarFile ? (avatarFile.size / 1024 / 1024).toFixed(2) + " MB" : ""}</p>
                     <button
@@ -841,8 +935,12 @@ export default function BecomeInstructorPage() {
                   <span className="font-semibold text-gray-800">{formData.name || "-"}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500">التخصص:</span>{" "}
+                  <span className="text-gray-500">المسمى:</span>{" "}
                   <span className="font-semibold text-gray-800">{formData.title || "-"}</span>
+                </div>
+                <div>
+                  <span className="text-gray-500">التخصص:</span>{" "}
+                  <span className="font-semibold text-gray-800">{formData.specialty || "-"}</span>
                 </div>
                 <div>
                   <span className="text-gray-500">الجنس:</span>{" "}
@@ -851,6 +949,14 @@ export default function BecomeInstructorPage() {
                 <div>
                   <span className="text-gray-500">سنوات الخبرة:</span>{" "}
                   <span className="font-semibold text-gray-800">{formData.yearsOfExperience || "-"}</span>
+                </div>
+                <div>
+                  <span className="text-gray-500">سعر الساعة:</span>{" "}
+                  <span className="font-semibold text-gray-800">{formData.hourlyRate ? `${formData.hourlyRate} ريال` : "-"}</span>
+                </div>
+                <div className="sm:col-span-2">
+                  <span className="text-gray-500">أوقات التوفر:</span>{" "}
+                  <span className="font-semibold text-gray-800">{formData.availability || "-"}</span>
                 </div>
                 <div className="sm:col-span-2">
                   <span className="text-gray-500">السيرة:</span>{" "}
@@ -862,15 +968,23 @@ export default function BecomeInstructorPage() {
                     <span className="font-semibold text-gray-800">{skills.join("، ")}</span>
                   </div>
                 )}
+                {selectedCategoryIds.length > 0 && (
+                  <div className="sm:col-span-2">
+                    <span className="text-gray-500">أقسام الاستشارات:</span>{" "}
+                    <span className="font-semibold text-gray-800">
+                      {availableCategories.filter(c => selectedCategoryIds.includes(c.id)).map(c => c.name).join("، ")}
+                    </span>
+                  </div>
+                )}
                 <div>
                   <span className="text-gray-500">الصورة:</span>{" "}
-                  <span className={`font-semibold ${avatarFile ? "text-blue-600" : "text-gray-400"}`}>
+                  <span className={`font-semibold ${avatarFile ? "text-sky-600" : "text-gray-400"}`}>
                     {avatarFile ? "مرفقة" : "غير مرفقة"}
                   </span>
                 </div>
                 <div>
                   <span className="text-gray-500">السيرة الذاتية:</span>{" "}
-                  <span className={`font-semibold ${cvFile ? "text-blue-600" : "text-gray-400"}`}>
+                  <span className={`font-semibold ${cvFile ? "text-sky-600" : "text-gray-400"}`}>
                     {cvFile ? "مرفقة" : "غير مرفقة"}
                   </span>
                 </div>
@@ -901,7 +1015,7 @@ export default function BecomeInstructorPage() {
             type="button"
             onClick={nextStep}
             disabled={!isStepValid(currentStep)}
-            className="flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            className="flex items-center gap-2 px-8 py-3 bg-sky-600 text-white rounded-xl font-semibold hover:bg-sky-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
             التالي
             <FontAwesomeIcon icon={faArrowLeft} />
@@ -911,7 +1025,7 @@ export default function BecomeInstructorPage() {
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-60 shadow-lg"
+            className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-sky-600 to-sky-700 text-white rounded-xl font-semibold hover:from-sky-700 hover:to-sky-800 transition-all disabled:opacity-60 shadow-lg"
           >
             {isSubmitting ? (
               <>

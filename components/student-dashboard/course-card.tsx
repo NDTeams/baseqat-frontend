@@ -1,187 +1,147 @@
 "use client";
 
-// import Image from "next/image";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  faUsers, 
-  faStar, 
-  faUserTie, 
-  faEllipsisV, 
-  faArrowLeft, 
-  faCertificate 
+import {
+  faUsers,
+  faStar,
+  faUserTie,
+  faArrowLeft,
+  faCertificate,
+  faSpinner,
+  faBookOpen,
 } from "@fortawesome/free-solid-svg-icons";
+import { CourseEnrollmentService, type MyEnrollment } from "@/services/courses/page";
+import { getFileUrl } from "@/lib/config";
 
-interface CourseCardProps {
-  image: string;
-  title: string;
-  instructorName: string;
-  instructorColor?: string;
-  instructorIcon?: any;
-  students: string;
-  rating: string;
-  progressPercentage: number;
-  lessonsDone: string;
-  hoursLeft: string;
-  statusText: string;
-  statusColor?: string;
-  mainButtonText: string;
-  mainButtonIcon?: any;
-  mainButtonLink: string;
-}
+function EnrollmentCard({ enrollment }: { enrollment: MyEnrollment }) {
+  const isCompleted = enrollment.status === 2;
 
-// كومبوننت بطاقة واحدة
-function CourseCard({
-  image,
-  title,
-  instructorName,
-  instructorColor = "bg-primary/10",
-  instructorIcon = faUserTie,
-  students,
-  rating,
-  progressPercentage,
-  lessonsDone,
-  hoursLeft,
-  statusText,
-  statusColor = "bg-primary",
-  mainButtonText,
-  mainButtonIcon = faArrowLeft,
-  mainButtonLink,
-}: CourseCardProps) {
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group" data-aos="fade-up">
       <div className="relative overflow-hidden">
         <img
-          src={image}
-          alt={title}
-          width={600}
-          height={400}
-          className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+          src={enrollment.thumbnailUrl ? getFileUrl(enrollment.thumbnailUrl) : "/site/logo.png"}
+          alt={enrollment.courseTitle}
+          className={`w-full h-48 transition-transform duration-300 group-hover:scale-110 ${
+            enrollment.thumbnailUrl ? "object-cover" : "object-contain p-8 bg-slate-50"
+          }`}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
 
         <div className="absolute top-4 right-4">
-          <span className={`text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg ${statusColor}`}>
-            {statusText}
+          <span className={`text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg ${
+            isCompleted ? "bg-green-500" : "bg-primary"
+          }`}>
+            {enrollment.statusName || (isCompleted ? "مكتمل" : "قيد التنفيذ")}
           </span>
         </div>
+
+        {enrollment.courseTypeName && (
+          <div className="absolute top-4 left-4">
+            <span className="bg-white/90 text-slate-700 px-2.5 py-1 rounded-full text-xs font-semibold">
+              {enrollment.courseTypeName}
+            </span>
+          </div>
+        )}
 
         <div className="absolute bottom-4 right-4 left-4">
           <div className="flex items-center justify-between text-white">
             <div className="flex items-center gap-2">
               <FontAwesomeIcon icon={faUsers} className="text-sm" />
-              <span className="text-sm">{students}</span>
+              <span className="text-sm">{enrollment.totalEnrollments} طالب</span>
             </div>
-            <div className="flex items-center gap-1">
-              <FontAwesomeIcon icon={faStar} className="text-yellow-400 text-sm" />
-              <span className="text-sm font-semibold">{rating}</span>
-            </div>
+            {enrollment.levelName && (
+              <span className="text-sm bg-white/20 px-2 py-0.5 rounded-full">{enrollment.levelName}</span>
+            )}
           </div>
         </div>
       </div>
 
       <div className="p-6">
         <div className="flex items-center gap-2 mb-3">
-          <div className={`w-10 h-10 rounded-full ${instructorColor} flex items-center justify-center`}>
-            <FontAwesomeIcon icon={instructorIcon} className="text-sm" />
+          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+            {enrollment.instructorAvatarUrl ? (
+              <img
+                src={getFileUrl(enrollment.instructorAvatarUrl)}
+                alt={enrollment.instructorName}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <FontAwesomeIcon icon={faUserTie} className="text-sm text-primary" />
+            )}
           </div>
-          
           <div>
             <p className="text-xs text-neutral-500">المدرب</p>
-            <p className="text-sm font-semibold text-neutral-900">{instructorName}</p>
+            <p className="text-sm font-semibold text-neutral-900">{enrollment.instructorName}</p>
           </div>
         </div>
 
-        <h3 className="text-xl font-bold text-neutral-900 mb-3 line-clamp-2">{title}</h3>
+        <h3 className="text-lg font-bold text-neutral-900 mb-3 line-clamp-2">{enrollment.courseTitle}</h3>
 
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-neutral-600">التقدم</span>
-            <span className="text-sm font-bold text-primary">{progressPercentage}%</span>
+        {enrollment.totalDurationInHours > 0 && (
+          <div className="flex items-center gap-4 text-xs text-slate-400 mb-4">
+            <span>{enrollment.totalDurationInHours} ساعة</span>
+            {enrollment.totalSections > 0 && <span>{enrollment.totalSections} قسم</span>}
           </div>
-          <div className="h-2 rounded-full bg-neutral-200 overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-500"
-              style={{ width: `${progressPercentage}%` }}
-            ></div>
-          </div>
-          <div className="flex items-center justify-between mt-2 text-xs text-neutral-500">
-            <span>{lessonsDone}</span>
-            <span>{hoursLeft}</span>
-          </div>
-        </div>
+        )}
 
         <div className="flex items-center gap-3 pt-4 border-t border-neutral-100">
-          <a
-            href={mainButtonLink}
-            className="flex-1 bg-primary text-white text-center py-2.5 rounded-xl font-semibold hover:bg-accent transition text-sm flex items-center justify-center gap-1"
+          <Link
+            href={isCompleted ? `/student-dashboard/certificates` : `/courses/${enrollment.courseId}`}
+            className="flex-1 bg-primary text-white text-center py-2.5 rounded-xl font-semibold hover:opacity-90 transition text-sm flex items-center justify-center gap-2"
           >
-            {mainButtonText}
-            <FontAwesomeIcon icon={mainButtonIcon} />
-          </a>
-
-          <button className="w-10 h-10 rounded-xl border border-neutral-300 hover:bg-neutral-50 transition flex items-center justify-center">
-            <FontAwesomeIcon icon={faEllipsisV} className="text-neutral-600" />
-          </button>
+            {isCompleted ? "عرض الشهادة" : "متابعة التعلم"}
+            <FontAwesomeIcon icon={isCompleted ? faCertificate : faArrowLeft} className="text-xs" />
+          </Link>
         </div>
       </div>
     </div>
   );
 }
 
-// كومبوننت Grid كامل لجميع الكورسات
 export default function CourseGrid() {
-  const courses: CourseCardProps[] = [
-    {
-      image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=600&h=400&fit=crop&q=90",
-      title: "أساسيات التحول الرقمي في المنشآت",
-      instructorName: "د. محمد أحمد",
-      students: "1,234 طالب",
-      rating: "4.8",
-      progressPercentage: 50,
-      lessonsDone: "12/24 درس",
-      hoursLeft: "5/10 ساعات متبقية",
-      statusText: "قيد التنفيذ",
-      statusColor: "bg-primary",
-      mainButtonText: "متابعة التعلم",
-      mainButtonIcon: faArrowLeft,
-      mainButtonLink: "../course-details.html",
-    },
-    {
-      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop&q=90",
-      title: "تطوير تطبيقات الويب الحديثة",
-      instructorName: "د. سارة علي",
-      students: "2,456 طالب",
-      rating: "4.9",
-      progressPercentage: 100,
-      lessonsDone: "24/24 درس",
-      hoursLeft: "مكتمل",
-      statusText: "مكتمل",
-      statusColor: "bg-green-500",
-      mainButtonText: "عرض الشهادة",
-      mainButtonIcon: faCertificate,
-      mainButtonLink: "certificates.html",
-    },
-    {
-      image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=400&fit=crop&q=90",
-      title: "إدارة المشاريع الرقمية",
-      instructorName: "د. خالد حسن",
-      students: "856 طالب",
-      rating: "4.7",
-      progressPercentage: 30,
-      lessonsDone: "6/20 درس",
-      hoursLeft: "12/16 ساعة متبقية",
-      statusText: "قيد التنفيذ",
-      statusColor: "bg-primary",
-      mainButtonText: "متابعة التعلم",
-      mainButtonIcon: faArrowLeft,
-      mainButtonLink: "../course-details.html",
-    },
-  ];
+  const [enrollments, setEnrollments] = useState<MyEnrollment[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    CourseEnrollmentService.getMyEnrollments()
+      .then((res) => {
+        if (res.succeeded && res.data) setEnrollments(res.data);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-16">
+        <FontAwesomeIcon icon={faSpinner} spin className="text-3xl text-primary" />
+      </div>
+    );
+  }
+
+  if (enrollments.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-16 text-slate-400">
+        <FontAwesomeIcon icon={faBookOpen} className="text-4xl" />
+        <p className="text-lg font-semibold">لا توجد دورات مسجلة حالياً</p>
+        <Link
+          href="/courses-archive"
+          className="mt-2 inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-white font-semibold rounded-xl hover:opacity-90 transition text-sm"
+        >
+          تصفح الدورات المتاحة
+          <FontAwesomeIcon icon={faArrowLeft} className="text-xs" />
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {courses.map((course, index) => (
-        <CourseCard key={index} {...course} />
+      {enrollments.map((enrollment) => (
+        <EnrollmentCard key={enrollment.enrollmentId} enrollment={enrollment} />
       ))}
     </div>
   );

@@ -547,6 +547,12 @@ export const InstructorAdminService = {
     return res.data;
   },
 
+  // جلب طلبي كمدرب
+  getMyRequest: async (): Promise<ApiResponse<Instructor>> => {
+    const res = await api.get("/Instructor/GetMyRequest");
+    return res.data;
+  },
+
   // جلب طلبات المدربين (للأدمن)
   getRequests: async (params?: { instructorId?: number; status?: number }): Promise<ApiResponse<Instructor[]>> => {
     const res = await api.get("/Instructor/GetRequests", { params });
@@ -635,10 +641,16 @@ export const InstructorSkillAdminService = {
 export interface CourseEnrollment {
   id: number;
   courseId: number;
+  courseTitle?: string;
   courseName?: string;
   userId: string;
   userName?: string;
+  userEmail?: string;
   enrolledAt: string;
+  enrollmentStatus: number;
+  enrollmentStatusName: string;
+  approvedAt?: string;
+  rejectionReason?: string;
 }
 
 export interface CourseEnrollmentFilter {
@@ -647,6 +659,7 @@ export interface CourseEnrollmentFilter {
   userId?: string;
   enrolledFrom?: string;
   enrolledTo?: string;
+  enrollmentStatus?: number;
 }
 
 export interface CourseInstructor {
@@ -736,6 +749,10 @@ export interface CourseReviewFilter {
 export interface MyEnrollment {
   enrollmentId: number;
   enrolledAt: string;
+  enrollmentStatus: number;
+  enrollmentStatusName: string;
+  approvedAt?: string;
+  rejectionReason?: string;
   courseId: number;
   courseTitle: string;
   courseSubtitle: string | null;
@@ -805,6 +822,26 @@ export const CourseEnrollmentService = {
 
   getMyEnrollments: async (): Promise<ApiResponse<MyEnrollment[]>> => {
     const res = await api.get("/CourseEnrollment/GetMyEnrollments");
+    return res.data;
+  },
+
+  enrollMe: async (courseId: number): Promise<ApiResponse<string>> => {
+    const res = await api.post(`/CourseEnrollment/EnrollMe/${courseId}`);
+    return res.data;
+  },
+
+  cancelMyEnrollment: async (enrollmentId: number): Promise<ApiResponse<string>> => {
+    const res = await api.delete(`/CourseEnrollment/CancelMyEnrollment/${enrollmentId}`);
+    return res.data;
+  },
+
+  approve: async (id: number): Promise<ApiResponse<CourseEnrollment>> => {
+    const res = await api.put(`/CourseEnrollment/Approve/${id}`);
+    return res.data;
+  },
+
+  reject: async (id: number, rejectionReason?: string): Promise<ApiResponse<CourseEnrollment>> => {
+    const res = await api.put(`/CourseEnrollment/Reject/${id}`, { rejectionReason });
     return res.data;
   },
 };
@@ -1040,6 +1077,311 @@ export const CourseReviewService = {
 
   getAverageRating: async (courseId: number): Promise<ApiResponse<number>> => {
     const res = await api.get(`/CourseReview/AverageRating/${courseId}`);
+    return res.data;
+  },
+};
+
+// ===== Certificate Types & Service =====
+export interface CertificateData {
+  id: number;
+  certificateNumber: string;
+  userId: string;
+  studentName: string;
+  courseId: number;
+  courseTitle: string;
+  enrollmentId: number;
+  issuedAt: string;
+  courseDurationHours: number;
+  courseStartDate?: string;
+  courseEndDate?: string;
+  instructorName: string;
+  isRevoked: boolean;
+}
+
+export interface CertificateFilter {
+  id?: number;
+  userId?: string;
+  courseId?: number;
+  certificateNumber?: string;
+}
+
+export const CertificateService = {
+  getAll: async (): Promise<ApiResponse<CertificateData[]>> => {
+    const res = await api.get("/Certificate/GetAll");
+    return res.data;
+  },
+
+  getAllPaged: async (
+    pagination: PaginationParams,
+    filter?: CertificateFilter
+  ): Promise<PagedResponse<CertificateData>> => {
+    const res = await api.get("/Certificate/GetAllAsync", {
+      params: { pageNumber: pagination.pageNumber, pageSize: pagination.pageSize, ...filter },
+    });
+    return res.data;
+  },
+
+  issue: async (enrollmentId: number): Promise<ApiResponse<CertificateData>> => {
+    const res = await api.post(`/Certificate/Issue/${enrollmentId}`);
+    return res.data;
+  },
+
+  issueForCourse: async (courseId: number): Promise<ApiResponse<string>> => {
+    const res = await api.post(`/Certificate/IssueForCourse/${courseId}`);
+    return res.data;
+  },
+
+  revoke: async (id: number): Promise<ApiResponse<string>> => {
+    const res = await api.put(`/Certificate/Revoke/${id}`);
+    return res.data;
+  },
+
+  delete: async (id: number): Promise<ApiResponse<string>> => {
+    const res = await api.delete(`/Certificate/Delete/${id}`);
+    return res.data;
+  },
+
+  getMyCertificates: async (): Promise<ApiResponse<CertificateData[]>> => {
+    const res = await api.get("/Certificate/GetMyCertificates");
+    return res.data;
+  },
+
+  verify: async (certificateNumber: string): Promise<ApiResponse<CertificateData>> => {
+    const res = await api.get(`/Certificate/Verify/${certificateNumber}`);
+    return res.data;
+  },
+};
+
+// ===== Quiz Types & Service =====
+export interface QuizData {
+  id: number;
+  title: string;
+  description?: string;
+  courseId: number;
+  courseTitle: string;
+  passingScore: number;
+  durationInMinutes: number;
+  isActive: boolean;
+  questionsCount: number;
+  attemptsCount: number;
+  createdAt: string;
+}
+
+export interface QuizForStudent {
+  id: number;
+  title: string;
+  description?: string;
+  courseId: number;
+  courseTitle: string;
+  passingScore: number;
+  durationInMinutes: number;
+  questionsCount: number;
+  questions: QuizQuestionForStudent[];
+}
+
+export interface QuizQuestionForStudent {
+  id: number;
+  questionText: string;
+  orderIndex: number;
+  points: number;
+  options: QuizOptionForStudent[];
+}
+
+export interface QuizOptionForStudent {
+  id: number;
+  optionText: string;
+  orderIndex: number;
+}
+
+export interface QuizAttemptData {
+  id: number;
+  quizId: number;
+  quizTitle: string;
+  courseTitle: string;
+  userId: string;
+  studentName: string;
+  startedAt: string;
+  completedAt?: string;
+  totalQuestions: number;
+  correctAnswers: number;
+  scorePercentage: number;
+  passed: boolean;
+}
+
+export interface QuizQuestion {
+  id: number;
+  quizId: number;
+  questionText: string;
+  orderIndex: number;
+  points: number;
+  options: QuizOption[];
+}
+
+export interface QuizOption {
+  id: number;
+  optionText: string;
+  isCorrect: boolean;
+  orderIndex: number;
+}
+
+export const QuizService = {
+  getAll: async (): Promise<ApiResponse<QuizData[]>> => {
+    const res = await api.get("/Quiz/GetAll");
+    return res.data;
+  },
+
+  getAllPaged: async (pagination: PaginationParams, filter?: { courseId?: number; isActive?: boolean }): Promise<PagedResponse<QuizData>> => {
+    const res = await api.get("/Quiz/GetAllAsync", {
+      params: { pageNumber: pagination.pageNumber, pageSize: pagination.pageSize, ...filter },
+    });
+    return res.data;
+  },
+
+  getById: async (id: number): Promise<ApiResponse<QuizData>> => {
+    const res = await api.get(`/Quiz/${id}`);
+    return res.data;
+  },
+
+  getQuestions: async (quizId: number): Promise<ApiResponse<QuizQuestion[]>> => {
+    const res = await api.get(`/Quiz/${quizId}/Questions`);
+    return res.data;
+  },
+
+  add: async (data: { title: string; description?: string; courseId: number; passingScore?: number; durationInMinutes?: number }): Promise<ApiResponse<QuizData>> => {
+    const res = await api.post("/Quiz/Add", data);
+    return res.data;
+  },
+
+  update: async (id: number, data: { title?: string; description?: string; passingScore?: number; durationInMinutes?: number; isActive?: boolean }): Promise<ApiResponse<string>> => {
+    const res = await api.put(`/Quiz/Update/${id}`, data);
+    return res.data;
+  },
+
+  delete: async (id: number): Promise<ApiResponse<string>> => {
+    const res = await api.delete(`/Quiz/Delete/${id}`);
+    return res.data;
+  },
+
+  addQuestion: async (data: { quizId: number; questionText: string; orderIndex: number; points?: number; options: { optionText: string; isCorrect: boolean; orderIndex: number }[] }): Promise<ApiResponse<string>> => {
+    const res = await api.post("/Quiz/AddQuestion", data);
+    return res.data;
+  },
+
+  deleteQuestion: async (questionId: number): Promise<ApiResponse<string>> => {
+    const res = await api.delete(`/Quiz/DeleteQuestion/${questionId}`);
+    return res.data;
+  },
+
+  getAttempts: async (quizId: number): Promise<ApiResponse<QuizAttemptData[]>> => {
+    const res = await api.get(`/Quiz/${quizId}/Attempts`);
+    return res.data;
+  },
+
+  // Student endpoints
+  forCourse: async (courseId: number): Promise<ApiResponse<QuizForStudent[]>> => {
+    const res = await api.get(`/Quiz/ForCourse/${courseId}`);
+    return res.data;
+  },
+
+  start: async (quizId: number): Promise<ApiResponse<QuizForStudent>> => {
+    const res = await api.get(`/Quiz/Start/${quizId}`);
+    return res.data;
+  },
+
+  submit: async (data: { quizId: number; answers: { questionId: number; selectedOptionId: number | null }[] }): Promise<ApiResponse<QuizAttemptData>> => {
+    const res = await api.post("/Quiz/Submit", data);
+    return res.data;
+  },
+
+  myAttempts: async (): Promise<ApiResponse<QuizAttemptData[]>> => {
+    const res = await api.get("/Quiz/MyAttempts");
+    return res.data;
+  },
+};
+
+// ===== Payment Types & Service =====
+export interface PaymentData {
+  id: number;
+  invoiceNumber: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  courseId: number;
+  courseTitle: string;
+  enrollmentId?: number;
+  amount: number;
+  paymentMethod: number;
+  paymentMethodName: string;
+  paymentStatus: number;
+  paymentStatusName: string;
+  transactionId?: string;
+  notes?: string;
+  createdAt: string;
+  paidAt?: string;
+  refundedAt?: string;
+  refundReason?: string;
+}
+
+export interface PaymentFilter {
+  id?: number;
+  userId?: string;
+  courseId?: number;
+  paymentStatus?: number;
+  paymentMethod?: number;
+  invoiceNumber?: string;
+}
+
+export const PaymentService = {
+  getAll: async (): Promise<ApiResponse<PaymentData[]>> => {
+    const res = await api.get("/Payment/GetAll");
+    return res.data;
+  },
+
+  getAllPaged: async (
+    pagination: PaginationParams,
+    filter?: PaymentFilter
+  ): Promise<PagedResponse<PaymentData>> => {
+    const res = await api.get("/Payment/GetAllAsync", {
+      params: { pageNumber: pagination.pageNumber, pageSize: pagination.pageSize, ...filter },
+    });
+    return res.data;
+  },
+
+  getById: async (id: number): Promise<ApiResponse<PaymentData>> => {
+    const res = await api.get(`/Payment/${id}`);
+    return res.data;
+  },
+
+  add: async (data: {
+    userId: string;
+    courseId: number;
+    enrollmentId?: number;
+    amount: number;
+    paymentMethod?: number;
+    transactionId?: string;
+    notes?: string;
+  }): Promise<ApiResponse<PaymentData>> => {
+    const res = await api.post("/Payment/Add", data);
+    return res.data;
+  },
+
+  updateStatus: async (id: number, data: { paymentStatus: number; notes?: string }): Promise<ApiResponse<PaymentData>> => {
+    const res = await api.put(`/Payment/UpdateStatus/${id}`, data);
+    return res.data;
+  },
+
+  refund: async (id: number, refundReason?: string): Promise<ApiResponse<PaymentData>> => {
+    const res = await api.put(`/Payment/Refund/${id}`, { refundReason });
+    return res.data;
+  },
+
+  delete: async (id: number): Promise<ApiResponse<string>> => {
+    const res = await api.delete(`/Payment/Delete/${id}`);
+    return res.data;
+  },
+
+  getMyPayments: async (): Promise<ApiResponse<PaymentData[]>> => {
+    const res = await api.get("/Payment/GetMyPayments");
     return res.data;
   },
 };

@@ -320,6 +320,11 @@ export const ConsultantAdminService = {
     const res = await api.postForm("/Consultant/RegisterRequest", formData);
     return res.data;
   },
+
+  getMyRequest: async (): Promise<ApiResponse<Consultant>> => {
+    const res = await api.get("/Consultant/GetMyRequest");
+    return res.data;
+  },
 };
 
 // ===== Consultant Skill Admin Service =====

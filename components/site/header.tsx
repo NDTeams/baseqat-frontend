@@ -187,60 +187,6 @@ export default function Header({ grayscale, setGrayscale }: HeaderProps) {
                 خدمات
               </Link>
 
-              {/* Courses Dropdown */}
-              <div className="relative" data-dropdown="courses">
-                <button
-                  onClick={() => setCoursesOpen(!coursesOpen)}
-                  className="px-4 py-2.5 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-2 transition"
-                >
-                  الدورات التدريبية
-                  <FontAwesomeIcon
-                    icon={faChevronDown}
-                    className={`text-xs transition-transform duration-300 ${coursesOpen ? 'rotate-180' : ''}`}
-                  />
-                </button>
-
-                {coursesOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50">
-                    <div className="bg-gradient-to-r from-emerald-700 to-emerald-600 px-4 py-3">
-                      <h3 className="text-white font-bold text-sm">الدورات التدريبية</h3>
-                    </div>
-                    <div className="p-2">
-                      <Link
-                        href="/courses-archive"
-                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition"
-                        onClick={() => setCoursesOpen(false)}
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                          <FontAwesomeIcon icon={faGraduationCap} className="text-emerald-700" />
-                        </div>
-                        <span className="text-sm">الدورات التدريبية</span>
-                      </Link>
-                      <Link
-                        href="/courses-categories"
-                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition"
-                        onClick={() => setCoursesOpen(false)}
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                          <FontAwesomeIcon icon={faGraduationCap} className="text-blue-700" />
-                        </div>
-                        <span className="text-sm">أقسام الدورات</span>
-                      </Link>
-                      <Link
-                        href="/instructors"
-                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition"
-                        onClick={() => setCoursesOpen(false)}
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
-                          <FontAwesomeIcon icon={faUser} className="text-purple-700" />
-                        </div>
-                        <span className="text-sm">المدربين</span>
-                      </Link>
-                    </div>
-                  </div>
-                )}
-              </div>
-
               {/* Consultations Dropdown */}
               <div className="relative" data-dropdown="consultations">
                 <button

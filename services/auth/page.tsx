@@ -33,6 +33,7 @@ export const AuthService = {
         email: responseData.data.email || "",
         userName: responseData.data.userName || "",
         roles: responseData.data.roles || [],
+        isEmailConfirmed: responseData.data.isEmailConfirmed ?? true,
       };
       localStorage.setItem("user", JSON.stringify(userData));
     }

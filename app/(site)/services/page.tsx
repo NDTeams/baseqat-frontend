@@ -34,14 +34,6 @@ export default function ServicesPage() {
       color: "from-blue-500 to-cyan-500",
     },
     {
-      id: 3,
-      titleKey: "services.training.title",
-      descKey: "services.training.description",
-      featuresKey: "services.training.features",
-      icon: "📚",
-      color: "from-orange-500 to-yellow-500",
-    },
-    {
       id: 4,
       titleKey: "services.workspace.title",
       descKey: "services.workspace.description",
@@ -209,10 +201,10 @@ export default function ServicesPage() {
                 {t("about.contactUs")} →
               </a>
               <a
-                href="/courses-archive"
+                href="/consultants"
                 className="inline-flex items-center justify-center px-8 py-4 bg-emerald-600 hover:bg-emerald-700 border-2 border-emerald-400 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105"
               >
-                {t("about.explorePrograms")} ↗
+                {t("about.exploreConsultants") || "استكشف المستشا��ين"} ↗
               </a>
             </div>
           </div>

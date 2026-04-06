@@ -2,7 +2,6 @@
 
 import '@/lib/i18n';
 import Hero from '@/components/site/hero';
-import CoursesSlider from "@/components/site/courses-slider";
 import Teachers from "@/components/site/teachers";
 import  StatsSection  from '@/components/site/company-statistics';
 import News from '@/components/site/news'; 
@@ -14,7 +13,6 @@ export default function Home() {
   <div className='flex flex-col justify-center items-center min-h-screen'>
     <Hero />
     <StatsSection />
-    <CoursesSlider />
     <Teachers />
     <News />
     <ArticlesSection />

@@ -20,11 +20,10 @@ function decodeJWT(token: string) {
   }
 }
 
-// استخراج الدور من payload بطرق مختلفة
-function extractRole(payload: any): string | null {
-  if (!payload) return null;
+// استخراج الأدوار من payload (يدعم دور واحد أو عدة أدوار)
+function extractRoles(payload: any): string[] {
+  if (!payload) return [];
 
-  // جرّب جميع الاحتمالات الممكنة لمفتاح الدور
   const possibleRoleKeys = [
     'role',
     'Role',
@@ -41,85 +40,99 @@ function extractRole(payload: any): string | null {
   for (const key of possibleRoleKeys) {
     if (payload[key]) {
       const roleValue = payload[key];
-      // إذا كان array، خذ أول عنصر
       if (Array.isArray(roleValue)) {
-        return roleValue[0]?.toString() || null;
+        return roleValue.map((r: any) => r.toString());
       }
-      return roleValue.toString();
+      return [roleValue.toString()];
     }
   }
 
-  // إذا فشلت جميع المحاولات، طباعة payload للتشخيص
-  console.log('JWT Payload:', JSON.stringify(payload, null, 2));
-  return null;
+  return [];
 }
 
-// الأدوار المسموح لها بالوصول للوحة التحكم (بجميع حالات الأحرف)
-const ALLOWED_ADMIN_ROLES = [
-  'admin',
-  'Admin',
-  'ADMIN',
-  'baseqatemployee',
-  'BASEQATEMPLOYEE',
-  'BaseqatEmployee',
-  'superadmin',
-  'SUPERADMIN',
-  'SuperAdmin',
+// الأدوار المسموح لها بالوصول للوحة التحكم الإدارية
+const ALLOWED_ADMIN_ROLES = ['superadmin', 'admin', 'baseqatemployee'];
+
+function hasAdminRole(roles: string[]): boolean {
+  return roles.some(r => ALLOWED_ADMIN_ROLES.includes(r.toLowerCase()));
+}
+
+// جميع مسارات لوحة التحكم الإدارية (dashboard)
+const ADMIN_DASHBOARD_PATHS = [
+  '/index',
+  '/settings',
+  '/users',
+  '/user-management',
+  '/roles',
+  '/privileges',
+  '/courses',
+  '/courses-table',
+  '/course-categories',
+  '/enrollments',
+  '/certificates',
+  '/quizzes',
+  '/payments',
+  '/instructors-admin',
+  '/instructor-skills',
+  '/consultants-admin',
+  '/consultation-categories-admin',
+  '/consultation-requests-admin',
+  '/consultations',
+  '/media-center-admin',
+  '/home-statistics',
+  '/indicators',
+  '/calendar',
+  '/contact-requests',
+  '/login-logs',
+  '/delete-user',
+  '/seed',
+  '/auth-test',
 ];
 
-function hasAdminRole(role: string | null): boolean {
-  if (!role) return false;
-
-  // تحويل إلى lowercase للمقارنة
-  const roleLower = role.toLowerCase();
-  return ALLOWED_ADMIN_ROLES.some(r => r.toLowerCase() === roleLower);
+function isAdminPath(pathname: string): boolean {
+  return ADMIN_DASHBOARD_PATHS.some(p =>
+    pathname === p || pathname.startsWith(p + '/')
+  );
 }
 
 export function middleware(request: NextRequest) {
-  // Read access_token HttpOnly cookie (primary) or legacy auth_token (fallback)
   const token = request.cookies.get('access_token')?.value
     || request.cookies.get('auth_token')?.value;
   const { pathname } = request.nextUrl;
 
-  // 1. حماية لوحة التحكم الإدارية (/index)
-  if (pathname.startsWith('/index')) {
-    // التحقق من وجود توكن
+  // 1. حماية لوحة التحكم الإدارية (جميع صفحات الداشبورد)
+  if (isAdminPath(pathname)) {
     if (!token) {
-      console.log('No token found, redirecting to /login');
       return NextResponse.redirect(new URL('/login', request.url));
     }
 
-    // فك تشفير التوكن للحصول على الدور
     const payload = decodeJWT(token);
-    const userRole = extractRole(payload);
+    const userRoles = extractRoles(payload);
 
-    console.log('User role extracted:', userRole);
-
-    // التحقق من الدور
-    if (!hasAdminRole(userRole)) {
-      console.log('User does not have admin role, redirecting to /student-dashboard');
-      return NextResponse.redirect(new URL('/student-dashboard', request.url));
+    if (!hasAdminRole(userRoles)) {
+      return NextResponse.redirect(new URL('/student-dashboard/index', request.url));
     }
-
-    console.log('Admin access granted');
   }
 
-  // 2. حماية صفحات student-dashboard
+  // 2. حماية صفحات student-dashboard (يجب تسجيل الدخول)
   if (pathname.startsWith('/student-dashboard') && !token) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // 3. منع المستخدم المسجل من العودة لصفحة الدخول
-  if (token && (pathname === '/login' || pathname === '/register')) {
-    // فك تشفير التوكن لتحديد نوع المستخدم
-    const payload = decodeJWT(token);
-    const userRole = extractRole(payload);
+  // 3. حماية صفحات client-dashboard (يجب تسجيل الدخول)
+  if (pathname.startsWith('/client-dashboard') && !token) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
 
-    // إعادة توجيه حسب الدور
-    if (hasAdminRole(userRole)) {
+  // 4. منع المستخدم المسجل من العودة لصفحة الدخول
+  if (token && (pathname === '/login' || pathname === '/register')) {
+    const payload = decodeJWT(token);
+    const userRoles = extractRoles(payload);
+
+    if (hasAdminRole(userRoles)) {
       return NextResponse.redirect(new URL('/index', request.url));
     } else {
-      return NextResponse.redirect(new URL('/student-dashboard', request.url));
+      return NextResponse.redirect(new URL('/student-dashboard/index', request.url));
     }
   }
 
@@ -130,7 +143,35 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/index/:path*',
+    '/settings/:path*',
+    '/users/:path*',
+    '/user-management/:path*',
+    '/roles/:path*',
+    '/privileges/:path*',
+    '/courses/:path*',
+    '/courses-table/:path*',
+    '/course-categories/:path*',
+    '/enrollments/:path*',
+    '/certificates/:path*',
+    '/quizzes/:path*',
+    '/payments/:path*',
+    '/instructors-admin/:path*',
+    '/instructor-skills/:path*',
+    '/consultants-admin/:path*',
+    '/consultation-categories-admin/:path*',
+    '/consultation-requests-admin/:path*',
+    '/consultations/:path*',
+    '/media-center-admin/:path*',
+    '/home-statistics/:path*',
+    '/indicators/:path*',
+    '/calendar/:path*',
+    '/contact-requests/:path*',
+    '/login-logs/:path*',
+    '/delete-user/:path*',
+    '/seed/:path*',
+    '/auth-test/:path*',
     '/student-dashboard/:path*',
+    '/client-dashboard/:path*',
     '/login',
     '/register',
   ],

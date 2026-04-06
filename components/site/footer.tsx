@@ -27,7 +27,6 @@ export default function Footer() {
   const quickLinks = [
     { href: "/", label: t('footer.links.home') || "الرئيسية" },
     { href: "/services", label: t('footer.links.services') || "الخدمات" },
-    { href: "/courses-archive", label: t('footer.links.programs') || "البرامج" },
     { href: "/aboutus", label: t('HomeSite.about_us') || "من نحن" },
     { href: "/terms", label: t('footer.links.terms') || "الشروط والأحكام" },
     { href: "/privacy", label: t('footer.links.privacy') || "سياسة الخصوصية" },

@@ -22,8 +22,8 @@ const slides = [
     title: "سرّع منتجك",
     subtitle: "بخطة إطلاق واضحة",
     desc: "برنامج تسريع يشمل إعداد المبيعات، الملفات الاستثمارية، وتجربة العملاء مع فريق تشغيلي يرافقك حتى أول عميل مدفوع",
-    btn: "استكشف البرامج",
-    link: "/courses-archive",
+    btn: "استكشف خدماتنا",
+    link: "/services",
     img: "/site/slide1.png",
   },
   {
@@ -92,7 +92,7 @@ export default function HeroSection() {
             <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md border border-white/30 rounded-full px-4 py-2 shadow-lg">
               <span className="w-2 h-2 bg-emerald-300 rounded-full animate-pulse"></span>
               <span className="text-white font-semibold text-xs tracking-wide">
-                منصة باسقات للتدريب والاستشارات
+                منصة باسقات للأعمال والاستشارات
               </span>
             </div>
 
@@ -138,15 +138,6 @@ export default function HeroSection() {
                 </div>
                 <div className="text-xs text-emerald-200 font-semibold">
                   متدرب
-                </div>
-              </div>
-              <div className="w-px h-10 bg-white/30"></div>
-              <div className="text-center lg:text-right">
-                <div className="text-2xl lg:text-3xl font-black text-white">
-                  50+
-                </div>
-                <div className="text-xs text-emerald-200 font-semibold">
-                  دورة تدريبية
                 </div>
               </div>
               <div className="w-px h-10 bg-white/30"></div>

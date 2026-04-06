@@ -30,6 +30,7 @@ import {
   faDollarSign,
   faTag,
   faLayerGroup,
+  faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faLinkedin,
@@ -68,6 +69,19 @@ const STEPS = [
 const TOTAL_STEPS = STEPS.length;
 
 export default function BecomeConsultantPage() {
+  const [requestStatus, setRequestStatus] = useState<number | null>(null);
+  const [denialReason, setDenialReason] = useState<string>("");
+  const [checkingStatus, setCheckingStatus] = useState(true);
+
+  useEffect(() => {
+    ConsultantAdminService.getMyRequest().then(res => {
+      if (res.succeeded && res.data) {
+        setRequestStatus(res.data.requestStatus ?? null);
+        setDenialReason(res.data.denialReason || "");
+      }
+    }).catch(() => {}).finally(() => setCheckingStatus(false));
+  }, []);
+
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -247,6 +261,90 @@ export default function BecomeConsultantPage() {
       setIsSubmitting(false);
     }
   };
+
+  // Loading status check
+  if (checkingStatus) {
+    return (
+      <div dir="rtl" className="min-h-[60vh] flex items-center justify-center">
+        <FontAwesomeIcon icon={faSpinner} className="animate-spin text-blue-600 text-3xl" />
+      </div>
+    );
+  }
+
+  // Approved - hide the form
+  if (requestStatus === 2) {
+    return (
+      <div dir="rtl" className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto">
+          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
+            <FontAwesomeIcon icon={faCheck} className="text-green-600 text-4xl" />
+          </div>
+          <h2 className="text-3xl font-black text-gray-800 mb-3">تمت الموافقة على طلبك</h2>
+          <p className="text-gray-600 mb-8 leading-relaxed">
+            تهانينا! تمت الموافقة على طلبك كمستشار في منصة باسقات. يمكنك الآن استقبال طلبات الاستشارات.
+          </p>
+          <a
+            href="/client-dashboard/index"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition-colors"
+          >
+            العودة للوحة التحكم
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // Denied - show denial reason
+  if (requestStatus === 3) {
+    return (
+      <div dir="rtl" className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto">
+          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-red-100 flex items-center justify-center">
+            <FontAwesomeIcon icon={faTimesCircle} className="text-red-600 text-4xl" />
+          </div>
+          <h2 className="text-3xl font-black text-gray-800 mb-3">تم رفض طلبك</h2>
+          <p className="text-gray-600 mb-4 leading-relaxed">
+            للأسف تم رفض طلبك للانضمام كمستشار في منصة باسقات.
+          </p>
+          {denialReason && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 text-right">
+              <p className="text-sm font-semibold text-red-800 mb-1">سبب الرفض:</p>
+              <p className="text-sm text-red-700">{denialReason}</p>
+            </div>
+          )}
+          <a
+            href="/client-dashboard/index"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+          >
+            العودة للوحة التحكم
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // Pending - show waiting screen
+  if (requestStatus === 1) {
+    return (
+      <div dir="rtl" className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto">
+          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-amber-100 flex items-center justify-center">
+            <FontAwesomeIcon icon={faClock} className="text-amber-600 text-4xl" />
+          </div>
+          <h2 className="text-3xl font-black text-gray-800 mb-3">طلبك قيد المراجعة</h2>
+          <p className="text-gray-600 mb-8 leading-relaxed">
+            تم استلام طلبك للانضمام كمستشار وهو الآن قيد المراجعة من قبل فريق الإدارة. سيتم إبلاغك بالنتيجة قريبًا.
+          </p>
+          <a
+            href="/client-dashboard/index"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+          >
+            العودة للوحة التحكم
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   // Success screen
   if (isSubmitted) {

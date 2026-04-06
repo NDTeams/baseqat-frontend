@@ -5,18 +5,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHome,
   faUser,
-  faCalendarCheck,
-  faBookOpen,
-  faTasks,
-  faHeart,
-  faCertificate,
-  faClipboardCheck,
   faShoppingBag,
   faCog,
   faComments,
   faSignOutAlt,
   faBars,
   faXmark,
+  faUserTie,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -30,15 +25,10 @@ interface SidebarItem {
 const sidebarItems: SidebarItem[] = [
   { href: "/student-dashboard", label: "لوحة التحكم", icon: faHome },
   { href: "/student-dashboard/profile", label: "الملف الشخصي", icon: faUser },
-  { href: "/student-dashboard/attendance", label: "حضور الدورات", icon: faCalendarCheck },
-  { href: "/student-dashboard/my-courses", label: "دوراتي", icon: faBookOpen },
-  { href: "/student-dashboard/tasks", label: "المهام", icon: faTasks },
-  { href: "/student-dashboard/wishlist", label: "المفضلة", icon: faHeart },
-  { href: "/student-dashboard/certificates", label: "الشهادات", icon: faCertificate },
-  { href: "/student-dashboard/quizzes", label: "الاختبارات", icon: faClipboardCheck },
   { href: "/student-dashboard/orders", label: "المدفوعات", icon: faShoppingBag },
   { href: "/student-dashboard/settings", label: "الإعدادات", icon: faCog },
   { href: "/student-dashboard/consultations", label: "الاستشارات", icon: faComments },
+  { href: "/student-dashboard/become-consultant", label: "كن مستشاراً", icon: faUserTie },
 ];
 
 const Sidebar = () => {
